@@ -54,6 +54,16 @@ class AnalysisResult:
     reason: str
 
 
+HEURISTIC_KEYWORDS: List[Tuple[str, str]] = [
+    ("ללא מענה משטרתי", "law_enforcement_failure"),
+    ("חוסר משילות", "lack_of_governance"),
+    ("אי אכיפה", "law_enforcement_failure"),
+    ("היעדר אכיפה", "law_enforcement_failure"),
+    ("נשק לא חוקי", "crime"),
+    ("אנרכיה", "lack_of_governance"),
+]
+
+
 def setup_logging() -> None:
     logging.basicConfig(
         level=logging.INFO,
@@ -318,12 +328,35 @@ def _coerce_analysis_result(payload: Dict[str, Any]) -> AnalysisResult:
     )
 
 
+def heuristic_governance_classification(article: Article) -> Optional[AnalysisResult]:
+    text = f"{article.title} {article.summary}".lower()
+    matched_categories = [category for keyword, category in HEURISTIC_KEYWORDS if keyword in text]
+
+    if not matched_categories:
+        return None
+
+    if "law_enforcement_failure" in matched_categories:
+        category = "law_enforcement_failure"
+    elif "crime" in matched_categories:
+        category = "crime"
+    else:
+        category = "lack_of_governance"
+
+    return AnalysisResult(
+        relevant=True,
+        category=category,
+        confidence=0.9,
+        reason="זוהו מונחי משילות/אכיפה מובהקים בתוכן הכתבה.",
+    )
+
+
 def analyze_article(
     model: genai.GenerativeModel,
     article: Article,
     max_retries: int,
     retry_base_seconds: float,
 ) -> AnalysisResult:
+    heuristic_result = heuristic_governance_classification(article)
     prompt = build_ai_prompt(article)
 
     for attempt in range(1, max_retries + 1):
@@ -341,7 +374,13 @@ def analyze_article(
                 raise ValueError("Model response did not contain valid JSON object")
 
             payload = json.loads(json_blob)
-            return _coerce_analysis_result(payload)
+            ai_result = _coerce_analysis_result(payload)
+
+            # Keep strong governance signals from being dropped by model drift.
+            if not ai_result.relevant and heuristic_result and heuristic_result.confidence >= 0.9:
+                return heuristic_result
+
+            return ai_result
 
         except Exception as exc:
             exc_text = str(exc)
@@ -363,7 +402,82 @@ def analyze_article(
         category="other",
         confidence=0.0,
         reason="כשל בניתוח AI לאחר מספר ניסיונות.",
-    )
+    ) if not heuristic_result else heuristic_result
+
+
+def run_microcosm_tests(
+    api_key: Optional[str],
+    model_name: str,
+    max_ai_retries: int,
+    retry_base_seconds: float,
+) -> int:
+    test_articles = [
+        Article(
+            source="MICROCOSM",
+            title="רצח בעיר וללא מענה משטרתי שעות ארוכות",
+            link="https://example.local/test-1",
+            published=datetime.now(timezone.utc).isoformat(),
+            summary="דיווח על אלימות חמורה והיעדר אכיפה בשטח.",
+        ),
+        Article(
+            source="MICROCOSM",
+            title="חשד לשימוש בנשק לא חוקי וסדרת מקרי שוד",
+            link="https://www.ynet.co.il/news/article/s11kw1it11g#autoplay",
+            published=datetime.now(timezone.utc).isoformat(),
+            summary="אירועים מתמשכים עם תלונות על תגובה משטרתית חלקית.",
+        ),
+        Article(
+            source="MICROCOSM",
+            title="תחזית מזג אוויר לסוף השבוע",
+            link="https://example.local/test-3",
+            published=datetime.now(timezone.utc).isoformat(),
+            summary="ללא הקשר פלילי או משילותי.",
+        ),
+    ]
+
+    model: Optional[genai.GenerativeModel] = None
+    if api_key:
+        try:
+            genai.configure(api_key=api_key)
+            model = genai.GenerativeModel(model_name)
+        except Exception as exc:
+            logging.error("MICROCOSM_TEST failed to configure Gemini: %s", exc)
+            return 1
+
+    logging.info("MICROCOSM_TEST started with %d synthetic articles", len(test_articles))
+    for idx, article in enumerate(test_articles, start=1):
+        heuristic_result = heuristic_governance_classification(article)
+        logging.info(
+            "[%d] Heuristic => relevant=%s category=%s reason=%s | title=%s",
+            idx,
+            heuristic_result.relevant if heuristic_result else False,
+            heuristic_result.category if heuristic_result else "other",
+            heuristic_result.reason if heuristic_result else "No governance keywords matched.",
+            article.title,
+        )
+
+        if model:
+            try:
+                ai_result = analyze_article(
+                    model=model,
+                    article=article,
+                    max_retries=max_ai_retries,
+                    retry_base_seconds=retry_base_seconds,
+                )
+                logging.info(
+                    "[%d] Final => relevant=%s category=%s confidence=%.2f reason=%s",
+                    idx,
+                    ai_result.relevant,
+                    ai_result.category,
+                    ai_result.confidence,
+                    ai_result.reason,
+                )
+            except RuntimeError as exc:
+                logging.error("[%d] AI error: %s", idx, exc)
+                return 1
+
+    logging.info("MICROCOSM_TEST completed.")
+    return 0
 
 
 def build_email_content(relevant_items: List[Tuple[Article, AnalysisResult]]) -> Tuple[str, str, str]:
@@ -470,6 +584,20 @@ def main() -> int:
     setup_logging()
 
     combined = load_combined_secrets()
+
+    if is_truthy_env("MICROCOSM_TEST"):
+        api_key = os.getenv("GEMINI_API_KEY") or combined.get("GEMINI_API_KEY")
+        model_name = os.getenv("GEMINI_MODEL") or combined.get("GEMINI_MODEL") or "gemini-1.5-flash"
+        max_ai_retries = int(os.getenv("MAX_AI_RETRIES") or combined.get("MAX_AI_RETRIES") or "3")
+        retry_base_seconds = float(
+            os.getenv("AI_RETRY_BASE_SECONDS") or combined.get("AI_RETRY_BASE_SECONDS") or "2.0"
+        )
+        return run_microcosm_tests(
+            api_key=api_key,
+            model_name=model_name,
+            max_ai_retries=max_ai_retries,
+            retry_base_seconds=retry_base_seconds,
+        )
 
     if is_truthy_env("DRY_RUN"):
         logging.info("Running in DRY_RUN mode (no email will be sent).")
