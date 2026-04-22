@@ -81,10 +81,16 @@ class AnalysisResult:
 
 
 DEFAULT_MODEL_CANDIDATES: List[str] = [
-    "gemini-2.0-flash",
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
     "gemini-1.5-flash-latest",
     "gemini-1.5-flash-002",
+    "gemini-2.0-flash",
     "gemini-1.5-flash",
+]
+
+BLOCKED_MODEL_MARKERS: List[str] = [
+    "gemini-2.0-flash",
 ]
 
 
@@ -486,8 +492,17 @@ def build_gemini_model(api_key: str, preferred_model: str) -> genai.GenerativeMo
             seen.add(candidate)
             ordered_candidates.append(candidate)
 
+    # Skip models known to be blocked/deprecated for newer API keys.
+    filtered_candidates = [
+        candidate
+        for candidate in ordered_candidates
+        if not any(marker in candidate for marker in BLOCKED_MODEL_MARKERS)
+    ]
+    if not filtered_candidates:
+        filtered_candidates = ordered_candidates
+
     selected_model = None
-    for candidate in ordered_candidates:
+    for candidate in filtered_candidates:
         if candidate in available_set:
             selected_model = candidate
             break
