@@ -5,6 +5,7 @@ import smtplib
 import sys
 import time
 import calendar
+import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
@@ -13,6 +14,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import feedparser
 import google.generativeai as genai
+import requests
+from bs4 import BeautifulSoup
 
 
 FEEDS: List[Tuple[str, str]] = [
@@ -22,6 +25,25 @@ FEEDS: List[Tuple[str, str]] = [
 ]
 
 LOOKBACK_HOURS = 24
+SKIM_MAX_CHARS = 2500
+
+HEADLINE_CANDIDATE_KEYWORDS: List[str] = [
+    "חוסר משילות",
+    "משילות",
+    "ללא מענה משטרתי",
+    "אי אכיפה",
+    "היעדר אכיפה",
+    "משטרה",
+    "נשק לא חוקי",
+    "רצח",
+    "ירי",
+    "שוד",
+    "גניבה",
+    "פשיעה",
+    "אלימות",
+    "אנרכיה",
+    "פרוטקשן",
+]
 
 
 @dataclass
@@ -257,6 +279,61 @@ def collect_articles() -> List[Article]:
     unique_articles = deduplicate_articles(all_articles)
     logging.info("Total unique articles: %d", len(unique_articles))
     return unique_articles
+
+
+def headline_maybe_relevant(article: Article) -> bool:
+    title = article.title.lower()
+    return any(keyword in title for keyword in HEADLINE_CANDIDATE_KEYWORDS)
+
+
+def fetch_article_skim_text(url: str, max_chars: int = SKIM_MAX_CHARS) -> str:
+    try:
+        resp = requests.get(
+            url,
+            timeout=15,
+            headers={"User-Agent": "Mozilla/5.0 (GovernanceWatchdog/1.0)"},
+        )
+        resp.raise_for_status()
+    except Exception as exc:
+        logging.debug("Could not fetch article body for %s: %s", url, exc)
+        return ""
+
+    try:
+        soup = BeautifulSoup(resp.text, "html.parser")
+        article_tag = soup.find("article")
+        text_chunks: List[str] = []
+
+        if article_tag:
+            text_chunks = [p.get_text(" ", strip=True) for p in article_tag.find_all("p")]
+        if not text_chunks:
+            text_chunks = [p.get_text(" ", strip=True) for p in soup.find_all("p")]
+
+        joined = " ".join(chunk for chunk in text_chunks if chunk)
+        joined = re.sub(r"\s+", " ", joined).strip()
+        return joined[:max_chars]
+    except Exception as exc:
+        logging.debug("Could not parse article body for %s: %s", url, exc)
+        return ""
+
+
+def build_analysis_article(article: Article) -> Article:
+    skim_text = fetch_article_skim_text(article.link)
+    if not skim_text:
+        return article
+
+    enriched_summary = article.summary
+    if enriched_summary:
+        enriched_summary = f"{enriched_summary}\n\nתקציר מהיר מגוף הכתבה:\n{skim_text}"
+    else:
+        enriched_summary = f"תקציר מהיר מגוף הכתבה:\n{skim_text}"
+
+    return Article(
+        source=article.source,
+        title=article.title,
+        link=article.link,
+        published=article.published,
+        summary=enriched_summary,
+    )
 
 
 def build_ai_prompt(article: Article) -> str:
@@ -662,6 +739,8 @@ def main() -> int:
     if is_truthy_env("DRY_RUN"):
         logging.info("Running in DRY_RUN mode (no email will be sent).")
         all_articles = collect_articles()
+        candidate_articles = [article for article in all_articles if headline_maybe_relevant(article)]
+        logging.info("Stage 1 candidates by headline: %d/%d", len(candidate_articles), len(all_articles))
 
         api_key = os.getenv("GEMINI_API_KEY") or combined.get("GEMINI_API_KEY")
         if not api_key:
@@ -681,13 +760,14 @@ def main() -> int:
             logging.error("Dry run failed to configure Gemini client: %s", exc)
             return 1
 
-        sample_articles = all_articles[: max(0, dry_run_max_articles)]
+        sample_articles = candidate_articles[: max(0, dry_run_max_articles)]
         relevant_items: List[Tuple[Article, AnalysisResult]] = []
         try:
             for article in sample_articles:
+                analysis_article = build_analysis_article(article)
                 result = analyze_article(
                     model=model,
-                    article=article,
+                    article=analysis_article,
                     max_retries=max_ai_retries,
                     retry_base_seconds=ai_retry_base_seconds,
                 )
@@ -720,13 +800,16 @@ def main() -> int:
         return 1
 
     all_articles = collect_articles()
+    candidate_articles = [article for article in all_articles if headline_maybe_relevant(article)]
+    logging.info("Stage 1 candidates by headline: %d/%d", len(candidate_articles), len(all_articles))
 
     relevant_items: List[Tuple[Article, AnalysisResult]] = []
     try:
-        for article in all_articles:
+        for article in candidate_articles:
+            analysis_article = build_analysis_article(article)
             result = analyze_article(
                 model=model,
-                article=article,
+                article=analysis_article,
                 max_retries=config.max_ai_retries,
                 retry_base_seconds=config.ai_retry_base_seconds,
             )
