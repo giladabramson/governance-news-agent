@@ -4,8 +4,9 @@ import os
 import smtplib
 import sys
 import time
+import calendar
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
 from html import escape
 from typing import Any, Dict, List, Optional, Tuple
@@ -19,6 +20,8 @@ FEEDS: List[Tuple[str, str]] = [
     ("Ynet", "https://www.ynet.co.il/Integration/StoryRss2.xml"),
     ("Walla", "https://rss.walla.co.il/feed/1?type=main"),
 ]
+
+LOOKBACK_HOURS = 24
 
 
 @dataclass
@@ -135,8 +138,25 @@ def safe_get_entry_field(entry: Dict[str, Any], key: str, default: str = "") -> 
     return str(value).strip()
 
 
+def get_entry_datetime_utc(entry: Dict[str, Any]) -> Optional[datetime]:
+    for key in ("published_parsed", "updated_parsed", "created_parsed"):
+        parsed_time = entry.get(key)
+        if not parsed_time:
+            continue
+
+        try:
+            timestamp = calendar.timegm(parsed_time)
+            return datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        except Exception:
+            continue
+
+    return None
+
+
 def fetch_feed_articles(source: str, feed_url: str) -> List[Article]:
     articles: List[Article] = []
+    now_utc = datetime.now(timezone.utc)
+    oldest_allowed = now_utc - timedelta(hours=LOOKBACK_HOURS)
 
     try:
         parsed = feedparser.parse(feed_url)
@@ -164,10 +184,21 @@ def fetch_feed_articles(source: str, feed_url: str) -> List[Article]:
             link = safe_get_entry_field(entry, "link", "")
             published = safe_get_entry_field(entry, "published", "")
             summary = safe_get_entry_field(entry, "summary", safe_get_entry_field(entry, "description", ""))
+            published_dt = get_entry_datetime_utc(entry)
 
             if not link:
                 logging.debug("Skipping entry with missing link from %s: title=%s", source, title)
                 continue
+
+            if not published_dt:
+                logging.debug("Skipping %s entry without parseable timestamp: %s", source, title)
+                continue
+
+            if published_dt < oldest_allowed:
+                continue
+
+            if not published:
+                published = published_dt.isoformat()
 
             articles.append(
                 Article(

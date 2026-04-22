@@ -3,7 +3,6 @@ name: Governance Watchdog Daily Report
 on:
   schedule:
     - cron: '0 7 * * *'
-    - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,23 +23,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check Israel local time
-        id: localtime
-        run: |
-          hour=$(TZ=Asia/Jerusalem date +%H)
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "Manual trigger: running regardless of hour."
-            echo "run_report=true" >> "$GITHUB_OUTPUT"
-          elif [ "$hour" = "10" ]; then
-            echo "It is 10:00 in Israel, running report."
-            echo "run_report=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Not 10:00 in Israel (current hour: $hour). Skipping run."
-            echo "run_report=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Run daily watchdog report
-        if: steps.localtime.outputs.run_report == 'true'
         env:
           GEMINI_AND_EMAIL_SECRETS: ${{ secrets.GEMINI_AND_EMAIL_SECRETS }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
