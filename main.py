@@ -54,6 +54,14 @@ class AnalysisResult:
     reason: str
 
 
+DEFAULT_MODEL_CANDIDATES: List[str] = [
+    "gemini-2.0-flash",
+    "gemini-1.5-flash-latest",
+    "gemini-1.5-flash-002",
+    "gemini-1.5-flash",
+]
+
+
 HEURISTIC_KEYWORDS: List[Tuple[str, str]] = [
     ("ללא מענה משטרתי", "law_enforcement_failure"),
     ("חוסר משילות", "lack_of_governance"),
@@ -115,7 +123,7 @@ def load_config() -> Config:
 
     smtp_host = os.getenv("SMTP_HOST") or combined.get("SMTP_HOST") or "smtp.gmail.com"
     smtp_port_raw = os.getenv("SMTP_PORT") or combined.get("SMTP_PORT") or "587"
-    gemini_model = os.getenv("GEMINI_MODEL") or combined.get("GEMINI_MODEL") or "gemini-1.5-flash"
+    gemini_model = os.getenv("GEMINI_MODEL") or combined.get("GEMINI_MODEL") or "gemini-2.0-flash"
     max_ai_retries_raw = os.getenv("MAX_AI_RETRIES") or combined.get("MAX_AI_RETRIES") or "3"
     ai_retry_base_seconds_raw = (
         os.getenv("AI_RETRY_BASE_SECONDS") or combined.get("AI_RETRY_BASE_SECONDS") or "2.0"
@@ -350,6 +358,57 @@ def heuristic_governance_classification(article: Article) -> Optional[AnalysisRe
     )
 
 
+def _normalize_model_name(name: str) -> str:
+    n = name.strip()
+    if not n:
+        return ""
+    if n.startswith("models/"):
+        return n
+    return f"models/{n}"
+
+
+def build_gemini_model(api_key: str, preferred_model: str) -> genai.GenerativeModel:
+    genai.configure(api_key=api_key)
+
+    try:
+        available_models = [
+            model.name
+            for model in genai.list_models()
+            if "generateContent" in getattr(model, "supported_generation_methods", [])
+        ]
+    except Exception as exc:
+        raise RuntimeError(f"Failed to list Gemini models: {exc}") from exc
+
+    available_set = set(available_models)
+
+    candidates = [_normalize_model_name(preferred_model)] + [
+        _normalize_model_name(candidate) for candidate in DEFAULT_MODEL_CANDIDATES
+    ]
+
+    seen = set()
+    ordered_candidates = []
+    for candidate in candidates:
+        if candidate and candidate not in seen:
+            seen.add(candidate)
+            ordered_candidates.append(candidate)
+
+    selected_model = None
+    for candidate in ordered_candidates:
+        if candidate in available_set:
+            selected_model = candidate
+            break
+
+    if not selected_model:
+        preview = ", ".join(available_models[:10])
+        raise RuntimeError(
+            "No compatible Gemini model found for generateContent. "
+            f"Preferred='{preferred_model}'. Available sample: {preview}"
+        )
+
+    logging.info("Using Gemini model: %s", selected_model)
+    return genai.GenerativeModel(selected_model)
+
+
 def analyze_article(
     model: genai.GenerativeModel,
     article: Article,
@@ -386,6 +445,8 @@ def analyze_article(
             exc_text = str(exc)
             if "API_KEY_INVALID" in exc_text or "API key not valid" in exc_text:
                 raise RuntimeError("Gemini API key is invalid. Update GEMINI_API_KEY.") from exc
+            if "is not found for API version" in exc_text:
+                raise RuntimeError("Configured Gemini model is not available for this API key/version.") from exc
             logging.warning(
                 "AI analysis failed for '%s' (attempt %d/%d): %s",
                 article.title,
@@ -438,8 +499,7 @@ def run_microcosm_tests(
     model: Optional[genai.GenerativeModel] = None
     if api_key:
         try:
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel(model_name)
+            model = build_gemini_model(api_key=api_key, preferred_model=model_name)
         except Exception as exc:
             logging.error("MICROCOSM_TEST failed to configure Gemini: %s", exc)
             return 1
@@ -616,8 +676,7 @@ def main() -> int:
         dry_run_max_articles = int(os.getenv("DRY_RUN_MAX_ARTICLES") or "10")
 
         try:
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel(gemini_model)
+            model = build_gemini_model(api_key=api_key, preferred_model=gemini_model)
         except Exception as exc:
             logging.error("Dry run failed to configure Gemini client: %s", exc)
             return 1
@@ -655,8 +714,7 @@ def main() -> int:
         return 1
 
     try:
-        genai.configure(api_key=config.gemini_api_key)
-        model = genai.GenerativeModel(config.gemini_model)
+        model = build_gemini_model(api_key=config.gemini_api_key, preferred_model=config.gemini_model)
     except Exception as exc:
         logging.error("Failed to configure Gemini client: %s", exc)
         return 1
