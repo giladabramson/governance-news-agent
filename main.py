@@ -6,6 +6,7 @@ import sys
 import time
 import calendar
 import re
+from pathlib import Path
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from email.message import EmailMessage
@@ -718,6 +719,57 @@ def build_email_content(relevant_items: List[Tuple[Article, AnalysisResult]]) ->
     return subject, plain, html
 
 
+def build_report_markdown(relevant_items: List[Tuple[Article, AnalysisResult]]) -> str:
+    report_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    lines = [
+        f"# Governance Watchdog Report - {report_date}",
+        "",
+    ]
+
+    if not relevant_items:
+        lines.extend([
+            "No relevant articles found in the last 24 hours.",
+            "",
+        ])
+        return "\n".join(lines)
+
+    lines.append(f"Found {len(relevant_items)} relevant article(s):")
+    lines.append("")
+
+    for idx, (article, result) in enumerate(relevant_items, start=1):
+        lines.extend(
+            [
+                f"{idx}. {article.title}",
+                f"   Source: {article.source}",
+                f"   Category: {result.category}",
+                f"   Confidence: {result.confidence:.2f}",
+                f"   Reason: {result.reason}",
+                f"   Link: {article.link}",
+                "",
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+def write_report_artifacts(relevant_items: List[Tuple[Article, AnalysisResult]]) -> None:
+    markdown = build_report_markdown(relevant_items)
+    artifact_dir = Path(os.getenv("GITHUB_WORKSPACE", os.getcwd())) / "report_artifacts"
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+
+    report_file = artifact_dir / "daily_report.md"
+    report_file.write_text(markdown, encoding="utf-8")
+
+    summary_file = os.getenv("GITHUB_STEP_SUMMARY")
+    if summary_file:
+        try:
+            with open(summary_file, "a", encoding="utf-8") as handle:
+                handle.write(markdown)
+                handle.write("\n")
+        except Exception as exc:
+            logging.warning("Could not write to GitHub step summary: %s", exc)
+
+
 def send_email(
     smtp_host: str,
     smtp_port: int,
@@ -814,6 +866,7 @@ def main() -> int:
             len(relevant_items),
             len(sample_articles),
         )
+        write_report_artifacts(relevant_items)
         subject, plain_body, _ = build_email_content(relevant_items)
         logging.info("Dry run email subject: %s", subject)
         logging.info("Dry run email preview (first 500 chars): %s", plain_body[:500])
@@ -852,6 +905,8 @@ def main() -> int:
         return 1
 
     logging.info("Relevant articles found: %d", len(relevant_items))
+
+    write_report_artifacts(relevant_items)
 
     try:
         subject, plain_body, html_body = build_email_content(relevant_items)

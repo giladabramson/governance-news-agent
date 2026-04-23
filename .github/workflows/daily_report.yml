@@ -34,3 +34,11 @@ jobs:
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
         run: python main.py
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-report
+          path: report_artifacts/daily_report.md
+          if-no-files-found: warn
