@@ -56,7 +56,7 @@ class Config:
     gemini_api_key: str
     email_sender: str
     email_password: str
-    email_receiver: str
+    email_receivers: List[str]
     smtp_host: str
     smtp_port: int
     gemini_model: str
@@ -131,13 +131,33 @@ def load_combined_secrets() -> Dict[str, str]:
     if not isinstance(payload, dict):
         raise ValueError("GEMINI_AND_EMAIL_SECRETS must be a JSON object")
 
-    normalized: Dict[str, str] = {}
+    normalized: Dict[str, Any] = {}
     for key, value in payload.items():
         if value is None:
             continue
-        normalized[str(key).strip().upper()] = str(value).strip()
+        normalized_key = str(key).strip().upper()
+        if isinstance(value, list):
+            normalized[normalized_key] = [str(item).strip() for item in value if str(item).strip()]
+        elif isinstance(value, str):
+            normalized[normalized_key] = value.strip()
+        else:
+            normalized[normalized_key] = value
 
     return normalized
+
+
+def normalize_receivers(value: Any) -> List[str]:
+    if value is None:
+        return []
+
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+
+    text = str(value).strip()
+    if not text:
+        return []
+
+    return [part.strip() for part in text.split(",") if part.strip()]
 
 
 def load_config() -> Config:
@@ -169,11 +189,15 @@ def load_config() -> Config:
     except ValueError as exc:
         raise ValueError(f"Invalid numeric env var value: {exc}") from exc
 
+    email_receivers = normalize_receivers(required["EMAIL_RECEIVER"])
+    if not email_receivers:
+        raise ValueError("Missing required environment variables: EMAIL_RECEIVER")
+
     return Config(
         gemini_api_key=required["GEMINI_API_KEY"] or "",
         email_sender=required["EMAIL_SENDER"] or "",
         email_password=required["EMAIL_PASSWORD"] or "",
-        email_receiver=required["EMAIL_RECEIVER"] or "",
+        email_receivers=email_receivers,
         smtp_host=smtp_host,
         smtp_port=smtp_port,
         gemini_model=gemini_model,
@@ -775,14 +799,17 @@ def send_email(
     smtp_port: int,
     sender: str,
     password: str,
-    receiver: str,
+    receivers: List[str],
     subject: str,
     plain_body: str,
     html_body: str,
 ) -> None:
+    if not receivers:
+        raise ValueError("At least one receiver email is required")
+
     msg = EmailMessage()
     msg["From"] = sender
-    msg["To"] = receiver
+    msg["To"] = ", ".join(receivers)
     msg["Subject"] = subject
     msg.set_content(plain_body, subtype="plain", charset="utf-8")
     msg.add_alternative(html_body, subtype="html", charset="utf-8")
@@ -793,8 +820,8 @@ def send_email(
             smtp.starttls()
             smtp.ehlo()
             smtp.login(sender, password)
-            smtp.send_message(msg)
-        logging.info("Email sent successfully to %s", receiver)
+            smtp.send_message(msg, to_addrs=receivers)
+        logging.info("Email sent successfully to %s", ", ".join(receivers))
     except smtplib.SMTPException as exc:
         raise RuntimeError(f"SMTP error while sending email: {exc}") from exc
     except Exception as exc:
@@ -915,7 +942,7 @@ def main() -> int:
             smtp_port=config.smtp_port,
             sender=config.email_sender,
             password=config.email_password,
-            receiver=config.email_receiver,
+            receivers=config.email_receivers,
             subject=subject,
             plain_body=plain_body,
             html_body=html_body,
