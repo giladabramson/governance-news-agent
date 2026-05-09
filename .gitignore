@@ -1,5 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Credentials and tokens
+credentials.json
+token.json
+
+# IDE
+.vscode/
+venv/
 __pycache__/
 *.py[cod]
 *.egg-info/
 .venv/
 .env
+
+# Claude Code local-only settings
+.claude/settings.local.json
+
+# Local run artifacts
+report_artifacts/
+logs_*/
+**/report_artifacts/

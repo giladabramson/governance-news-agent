@@ -27,6 +27,11 @@ FEEDS: List[Tuple[str, str]] = [
 
 LOOKBACK_HOURS = 24
 SKIM_MAX_CHARS = 2500
+# Calibrated against char-trigram tokenization on Itay's flagged duplicates:
+# true dupes Jaccard ~0.18-0.20, distinct events sharing topical vocab (gangs, violence,
+# police) ~0.15. Word-Jaccard would need ~0.5 but fails on Hebrew morphology
+# (פריצה/הפריצה/פריצת). Threshold sits between these bands.
+EVENT_DEDUP_JACCARD_THRESHOLD = 0.17
 
 KNOWN_RELEVANT_LINK_MARKERS: List[str] = [
     "ynet.co.il/news/article/s11kw1it11g",
@@ -304,6 +309,82 @@ def deduplicate_articles(articles: List[Article]) -> List[Article]:
     return unique
 
 
+def _tokenize_for_dedup(text: str) -> set:
+    # Character trigrams over Hebrew/Latin tokens. Word-level Jaccard fails on Hebrew
+    # because morphological variants (פריצה / הפריצה / פריצת) tokenize as different
+    # words; trigrams overlap on the root. Tokens shorter than 3 chars are skipped.
+    cleaned = re.sub(r"[^֐-׿a-zA-Z0-9\s]", " ", text.lower())
+    grams: set = set()
+    for token in cleaned.split():
+        if len(token) < 3:
+            continue
+        for i in range(len(token) - 2):
+            grams.add(token[i : i + 3])
+    return grams
+
+
+def deduplicate_relevant_by_event(
+    items: List[Tuple[Article, AnalysisResult]],
+    threshold: float = EVENT_DEDUP_JACCARD_THRESHOLD,
+) -> List[Tuple[Article, AnalysisResult]]:
+    # Reviewer feedback: multiple articles about the same incident keep landing in the
+    # same digest (e.g. Petah Tikva murder, Apr 28; Haredi break-in, Apr 29). The basic
+    # (link, title) dedup misses these because outlets reword headlines. Cluster on
+    # title+summary token-Jaccard and keep the highest-confidence representative.
+    if len(items) <= 1:
+        return items
+
+    token_sets = [
+        _tokenize_for_dedup(f"{article.title} {article.summary[:300]}")
+        for article, _ in items
+    ]
+    n = len(items)
+
+    parent = list(range(n))
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i: int, j: int) -> None:
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[ri] = rj
+
+    for i in range(n):
+        if not token_sets[i]:
+            continue
+        for j in range(i + 1, n):
+            if not token_sets[j]:
+                continue
+            inter = len(token_sets[i] & token_sets[j])
+            uni = len(token_sets[i] | token_sets[j])
+            if uni and inter / uni >= threshold:
+                union(i, j)
+
+    clusters: Dict[int, List[int]] = {}
+    for i in range(n):
+        clusters.setdefault(find(i), []).append(i)
+
+    keep: set = set()
+    for cluster in clusters.values():
+        best = max(cluster, key=lambda k: (items[k][1].confidence, -k))
+        keep.add(best)
+        if len(cluster) > 1:
+            dropped = [items[k][0].title for k in cluster if k != best]
+            logging.info(
+                "Event-dedup kept '%s' (conf=%.2f); dropped %d duplicate(s): %s",
+                items[best][0].title,
+                items[best][1].confidence,
+                len(cluster) - 1,
+                " | ".join(dropped),
+            )
+
+    return [items[i] for i in range(n) if i in keep]
+
+
 def collect_articles() -> List[Article]:
     all_articles: List[Article] = []
     for source, url in FEEDS:
@@ -398,6 +479,8 @@ def build_ai_prompt(article: Article) -> str:
 - החזר relevant=true רק אם יש אינדיקציה ברורה לנושא המשילות/האכיפה.
 - אם לא ברור או שאין קשר ישיר לאכיפה/משילות, החזר relevant=false.
 - יש להתחשב גם בדיווחי חדשות הדומים לדוגמה: https://www.ynet.co.il/news/article/s11kw1it11g#autoplay
+- העדף דיווחים על אירועים ספציפיים (אירוע מסוים, מעצר, רצח, ירי, פריצה, חקירה ספציפית) או על כשלים פרוצדורליים מוגדרים של אכיפת החוק (לדוגמה "אין נוהל מסודר לטיפול ב-X", "פער ספציפי בנתוני המשטרה לגבי Y").
+- סמן relevant=false למאמרי דעה, טורי פרשנות, ניתוחים רחבים, כתבות "אווירה" או "תופעה" כלליות, ו"מגמות" סטטיסטיות, גם אם הן עוסקות בנושאי משילות/אכיפה. ההעדפה היא לאירוע קונקרטי או לכשל מערכתי קונקרטי, ולא לכתבות המתארות מצב כללי.
 - השב אך ורק ב-JSON תקין בפורמט:
   {{
     "relevant": true/false,
@@ -893,6 +976,8 @@ def main() -> int:
             len(relevant_items),
             len(sample_articles),
         )
+        relevant_items = deduplicate_relevant_by_event(relevant_items)
+        logging.info("After event-dedup: %d relevant articles.", len(relevant_items))
         write_report_artifacts(relevant_items)
         subject, plain_body, _ = build_email_content(relevant_items)
         logging.info("Dry run email subject: %s", subject)
@@ -932,6 +1017,9 @@ def main() -> int:
         return 1
 
     logging.info("Relevant articles found: %d", len(relevant_items))
+
+    relevant_items = deduplicate_relevant_by_event(relevant_items)
+    logging.info("After event-dedup: %d relevant articles.", len(relevant_items))
 
     write_report_artifacts(relevant_items)
 
