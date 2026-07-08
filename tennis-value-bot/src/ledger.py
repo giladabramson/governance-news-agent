@@ -30,23 +30,32 @@ create table if not exists decisions (
     id integer primary key autoincrement,
     ts real, poly_slug text, side text, player text,
     fair real, ask real, gross_edge real, net_edge real, stake real,
-    action text, reason text
+    action text, reason text, arm text default 'base'
 );
 create table if not exists orders (
     id integer primary key autoincrement,
     ts real, poly_slug text, side text, player text,
     limit_price real, stake_usd real, status text,   -- resting|filled|cancelled
-    fill_price real, fill_ts real, fill_kind text    -- maker|taker
+    fill_price real, fill_ts real, fill_kind text,   -- maker|taker
+    arm text default 'base'
 );
 create table if not exists positions (
     id integer primary key autoincrement,
     poly_slug text, side text, player text, tournament_key text,
     entry_price real, shares real, stake_usd real, opened_ts real,
     closing_fair real, clv real,
-    result text, pnl real, settled_ts real            -- result: won|lost|void
+    result text, pnl real, settled_ts real,           -- result: won|lost|void
+    arm text default 'base'
 );
 create table if not exists meta (key text primary key, value text);
 """
+
+# pre-arms ledgers lack the arm column; ALTER is idempotent via the check
+_MIGRATIONS = [
+    ("decisions", "arm", "alter table decisions add column arm text default 'base'"),
+    ("orders", "arm", "alter table orders add column arm text default 'base'"),
+    ("positions", "arm", "alter table positions add column arm text default 'base'"),
+]
 
 
 class Ledger:
@@ -54,6 +63,10 @@ class Ledger:
         self.con = sqlite3.connect(path)
         self.con.row_factory = sqlite3.Row
         self.con.executescript(_SCHEMA)
+        for table, column, ddl in _MIGRATIONS:
+            cols = {r[1] for r in self.con.execute(f"pragma table_info({table})")}
+            if column not in cols:
+                self.con.execute(ddl)
         self.con.commit()
 
     def upsert_event(self, poly_slug, ref_event_id, tournament_key, pa, pb, start_iso):
@@ -86,24 +99,27 @@ class Ledger:
              bk.bid_size, bk.ask_size, bk.depth_2c_usd))
         self.con.commit()
 
-    def add_decision(self, poly_slug, sig):
+    def add_decision(self, poly_slug, sig, arm="base"):
         self.con.execute(
             "insert into decisions (ts, poly_slug, side, player, fair, ask, gross_edge, "
-            "net_edge, stake, action, reason) values (?,?,?,?,?,?,?,?,?,?,?)",
+            "net_edge, stake, action, reason, arm) values (?,?,?,?,?,?,?,?,?,?,?,?)",
             (time.time(), poly_slug, sig.side, sig.player, sig.fair, sig.ask,
-             sig.gross_edge, sig.net_edge, sig.stake, sig.action, sig.reason))
+             sig.gross_edge, sig.net_edge, sig.stake, sig.action, sig.reason, arm))
         self.con.commit()
 
-    def add_order(self, poly_slug, sig) -> int:
+    def add_order(self, poly_slug, sig, arm="base") -> int:
         cur = self.con.execute(
             "insert into orders (ts, poly_slug, side, player, limit_price, stake_usd, "
-            "status) values (?,?,?,?,?,?, 'resting')",
-            (time.time(), poly_slug, sig.side, sig.player, sig.limit_price, sig.stake))
+            "status, arm) values (?,?,?,?,?,?, 'resting', ?)",
+            (time.time(), poly_slug, sig.side, sig.player, sig.limit_price, sig.stake, arm))
         self.con.commit()
         return cur.lastrowid
 
-    def resting_orders(self):
-        return self.con.execute("select * from orders where status='resting'").fetchall()
+    def resting_orders(self, arm=None):
+        if arm is None:
+            return self.con.execute("select * from orders where status='resting'").fetchall()
+        return self.con.execute(
+            "select * from orders where status='resting' and arm=?", (arm,)).fetchall()
 
     def fill_order(self, order_id, fill_price, fill_kind):
         self.con.execute(
@@ -115,20 +131,26 @@ class Ledger:
         self.con.execute("update orders set status='cancelled' where id=?", (order_id,))
         self.con.commit()
 
-    def open_position(self, poly_slug, side, player, tournament_key, entry_price, stake):
+    def open_position(self, poly_slug, side, player, tournament_key, entry_price, stake,
+                      arm="base"):
         self.con.execute(
             "insert into positions (poly_slug, side, player, tournament_key, entry_price, "
-            "shares, stake_usd, opened_ts) values (?,?,?,?,?,?,?,?)",
+            "shares, stake_usd, opened_ts, arm) values (?,?,?,?,?,?,?,?,?)",
             (poly_slug, side, player, tournament_key, entry_price,
-             stake / entry_price, stake, time.time()))
+             stake / entry_price, stake, time.time(), arm))
         self.con.commit()
 
     def open_positions(self):
         return self.con.execute("select * from positions where settled_ts is null").fetchall()
 
-    def has_position(self, poly_slug) -> bool:
+    def has_position(self, poly_slug, arm=None) -> bool:
+        if arm is None:
+            return self.con.execute(
+                "select 1 from positions where poly_slug=? limit 1",
+                (poly_slug,)).fetchone() is not None
         return self.con.execute(
-            "select 1 from positions where poly_slug=? limit 1", (poly_slug,)).fetchone() is not None
+            "select 1 from positions where poly_slug=? and arm=? limit 1",
+            (poly_slug, arm)).fetchone() is not None
 
     def set_closing_fair(self, poly_slug, side, closing_fair):
         self.con.execute(
@@ -162,26 +184,27 @@ class Ledger:
         return {r["poly_slug"] for r in
                 self.con.execute("select distinct poly_slug from quotes").fetchall()}
 
-    # --- risk queries ---
-    def open_exposure(self) -> float:
+    # --- risk queries --- (per arm: each arm runs its own paper book)
+    def open_exposure(self, arm="base") -> float:
         r = self.con.execute(
-            "select coalesce(sum(stake_usd),0) s from positions where settled_ts is null").fetchone()
+            "select coalesce(sum(stake_usd),0) s from positions "
+            "where settled_ts is null and arm=?", (arm,)).fetchone()
         return r["s"]
 
-    def daily_new_exposure(self) -> float:
+    def daily_new_exposure(self, arm="base") -> float:
         r = self.con.execute(
-            "select coalesce(sum(stake_usd),0) s from positions where opened_ts > ?",
-            (time.time() - 86400,)).fetchone()
+            "select coalesce(sum(stake_usd),0) s from positions where opened_ts > ? and arm=?",
+            (time.time() - 86400, arm)).fetchone()
         return r["s"]
 
-    def daily_realized_pnl(self) -> float:
+    def daily_realized_pnl(self, arm="base") -> float:
         r = self.con.execute(
-            "select coalesce(sum(pnl),0) s from positions where settled_ts > ?",
-            (time.time() - 86400,)).fetchone()
+            "select coalesce(sum(pnl),0) s from positions where settled_ts > ? and arm=?",
+            (time.time() - 86400, arm)).fetchone()
         return r["s"]
 
-    def tournament_positions_today(self, tournament_key) -> int:
+    def tournament_positions_today(self, tournament_key, arm="base") -> int:
         r = self.con.execute(
-            "select count(*) c from positions where tournament_key=? and opened_ts > ?",
-            (tournament_key, time.time() - 86400)).fetchone()
+            "select count(*) c from positions where tournament_key=? and opened_ts > ? and arm=?",
+            (tournament_key, time.time() - 86400, arm)).fetchone()
         return r["c"]

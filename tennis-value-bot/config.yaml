@@ -16,6 +16,15 @@ consecutive_adverse_halt: 5
 
 min_volume_usd: 5000
 min_minutes_to_start: 10
+
+# Experiment arms: each arm is an independent paper book (own bankroll,
+# exposure caps, orders, positions) evaluated against the SAME market data
+# and odds pulls, so comparing arms costs zero extra API credits. Values
+# override the top-level config for that arm only.
+arms:
+  base: {}                     # control: config exactly as above
+  loose:
+    min_volume_usd: 500        # does the $5k liquidity floor cost us real edges?
 price_band: [0.10, 0.90]       # skip outside this ask range
 depth_multiple: 3              # book depth within 2c of ask >= 3x stake
 max_quote_age_sec: 7200        # reference quote must be fresher than this

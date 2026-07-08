@@ -18,7 +18,7 @@ import time
 from datetime import datetime, timezone
 
 from . import markets
-from .config import ALIAS_PATH, DB_PATH, halted, load_config
+from .config import ALIAS_PATH, DB_PATH, arm_configs, halted, load_config
 from .edge_engine import evaluate
 from .executor import PaperExecutor
 from .fair_value import devig_two_way, quote_ok
@@ -33,23 +33,32 @@ def run(once: bool = False) -> None:
     cfg = load_config()
     ledger = Ledger(DB_PATH)
     provider = make_provider(cfg)
-    executor = PaperExecutor(ledger, cfg)
+    arms = arm_configs(cfg)
+    executors = {name: PaperExecutor(ledger, acfg, arm=name)
+                 for name, acfg in arms.items()}
     aliases = load_aliases(ALIAS_PATH)
 
     while True:
         if halted():
             log.warning("BOT_HALT=1 — exiting")
             return
-        if ledger.daily_realized_pnl() <= -cfg["daily_loss_halt"]:
-            log.error("daily loss circuit breaker hit (%.2f) — halting",
-                      ledger.daily_realized_pnl())
+        # per-arm circuit breaker: a tripped arm stops betting, others continue
+        live_arms = {}
+        for name, acfg in arms.items():
+            pnl = ledger.daily_realized_pnl(arm=name)
+            if pnl <= -acfg["daily_loss_halt"]:
+                log.error("[%s] daily loss circuit breaker hit (%.2f) — arm halted", name, pnl)
+            else:
+                live_arms[name] = acfg
+        if not live_arms:
+            log.error("all arms halted — exiting")
             return
         cycle_start = time.time()
         # odds timing lives in the ledger so scheduled one-shot runs (GitHub
         # Actions) don't re-pull odds every run and burn the monthly credits
         last_odds_pull = float(ledger.get_meta("last_odds_pull") or 0.0)
         try:
-            _cycle(cfg, ledger, provider, executor, aliases,
+            _cycle(cfg, ledger, provider, executors, live_arms, aliases,
                    odds_due=(time.time() - last_odds_pull >= cfg["odds_poll_interval_sec"]))
         except Exception:
             log.exception("cycle failed; continuing")
@@ -58,7 +67,7 @@ def run(once: bool = False) -> None:
         time.sleep(max(1.0, cfg["market_poll_interval_sec"] - (time.time() - cycle_start)))
 
 
-def _cycle(cfg, ledger, provider, executor, aliases, odds_due: bool) -> None:
+def _cycle(cfg, ledger, provider, executors, live_arms, aliases, odds_due: bool) -> None:
     now = datetime.now(timezone.utc)
 
     # 1. Polymarket side (free): discovery + books
@@ -79,9 +88,10 @@ def _cycle(cfg, ledger, provider, executor, aliases, odds_due: bool) -> None:
             for side in ("a", "b"):
                 ledger.add_book(m.slug, side, books_by_slug[m.slug][side])
 
-    executor.check_resting(books_by_slug)
-    executor.cancel_near_start({m.slug: m for m in all_matches})
-    executor.settle_resolved(markets.refresh_resolution)
+    for ex in executors.values():
+        ex.check_resting(books_by_slug)
+        ex.cancel_near_start({m.slug: m for m in all_matches})
+    next(iter(executors.values())).settle_resolved(markets.refresh_resolution)  # all arms
 
     # 2. reference odds (spends credits) — regular pull, or forced closing pull
     need_closing = [m for m in upcoming
@@ -131,20 +141,22 @@ def _cycle(cfg, ledger, provider, executor, aliases, odds_due: bool) -> None:
         for side, player, fair in (("a", mkt.player_a, fv.fair_a),
                                    ("b", mkt.player_b, fv.fair_b)):
             bk = books[side]
-            sig = evaluate(
-                side=side, player=player, fair=fair, asks=bk.asks,
-                depth_2c_usd=bk.depth_2c_usd, market_volume_usd=mkt.volume_usd,
-                minutes_to_start=mins_to_start,
-                has_position=ledger.has_position(mkt.slug),
-                daily_new_exposure=ledger.daily_new_exposure(),
-                open_exposure=ledger.open_exposure(),
-                tournament_positions_today=ledger.tournament_positions_today(q.tournament_key),
-                cfg=cfg)
-            ledger.add_decision(mkt.slug, sig)
-            if sig.action == "bet":
-                log.info("SIGNAL %s %s fair %.3f ask %.3f net_edge %+.3f stake $%.2f",
-                         mkt.slug, player, fair, sig.ask, sig.net_edge, sig.stake)
-                executor.submit(mkt, sig)
+            for arm, acfg in live_arms.items():
+                sig = evaluate(
+                    side=side, player=player, fair=fair, asks=bk.asks,
+                    depth_2c_usd=bk.depth_2c_usd, market_volume_usd=mkt.volume_usd,
+                    minutes_to_start=mins_to_start,
+                    has_position=ledger.has_position(mkt.slug, arm=arm),
+                    daily_new_exposure=ledger.daily_new_exposure(arm=arm),
+                    open_exposure=ledger.open_exposure(arm=arm),
+                    tournament_positions_today=ledger.tournament_positions_today(
+                        q.tournament_key, arm=arm),
+                    cfg=acfg)
+                ledger.add_decision(mkt.slug, sig, arm=arm)
+                if sig.action == "bet":
+                    log.info("[%s] SIGNAL %s %s fair %.3f ask %.3f net_edge %+.3f stake $%.2f",
+                             arm, mkt.slug, player, fair, sig.ask, sig.net_edge, sig.stake)
+                    executors[arm].submit(mkt, sig)
 
 
 def main(argv=None):

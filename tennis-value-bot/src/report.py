@@ -1,4 +1,4 @@
-"""CLV / P&L report (spec §8): python -m src.report"""
+"""CLV / P&L report per experiment arm (spec §8): python -m src.report"""
 from __future__ import annotations
 
 import sqlite3
@@ -6,27 +6,29 @@ import sqlite3
 from .config import DB_PATH
 
 
-def main():
-    con = sqlite3.connect(DB_PATH)
-    con.row_factory = sqlite3.Row
+def _arm_report(con, arm: str) -> None:
+    print(f"\n================ arm: {arm} ================")
 
-    dec = con.execute("select action, count(*) c from decisions group by action").fetchall()
+    dec = con.execute(
+        "select action, count(*) c from decisions where arm=? group by action",
+        (arm,)).fetchall()
     print("=== decisions ===")
     for r in dec:
         print(f"  {r['action']}: {r['c']}")
     top_skips = con.execute(
-        "select reason, count(*) c from decisions where action='skip' "
-        "group by reason order by c desc limit 8").fetchall()
+        "select reason, count(*) c from decisions where action='skip' and arm=? "
+        "group by reason order by c desc limit 8", (arm,)).fetchall()
     for r in top_skips:
         print(f"    skip[{r['c']}]: {r['reason']}")
 
     orders = con.execute(
-        "select status, count(*) c from orders group by status").fetchall()
+        "select status, count(*) c from orders where arm=? group by status",
+        (arm,)).fetchall()
     print("=== orders ===")
     for r in orders:
         print(f"  {r['status']}: {r['c']}")
 
-    pos = con.execute("select * from positions").fetchall()
+    pos = con.execute("select * from positions where arm=?", (arm,)).fetchall()
     settled = [p for p in pos if p["settled_ts"]]
     with_clv = [p for p in pos if p["clv"] is not None]
     print(f"=== positions === {len(pos)} opened, {len(settled)} settled")
@@ -51,8 +53,27 @@ def main():
                 bp = sum(p["pnl"] for p in b)
                 print(f"    [{lo},{hi}): n={len(b)} pnl ${bp:+.2f}")
 
+
+def main():
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+
+    arms = [r["arm"] for r in con.execute(
+        "select distinct arm from decisions order by arm")] or ["base"]
+    for arm in arms:
+        _arm_report(con, arm)
+
+    # what the loose arm sees that base filters out — the experiment's question
+    extra = con.execute(
+        "select count(distinct poly_slug) c from decisions "
+        "where arm != 'base' and poly_slug not in "
+        "(select poly_slug from decisions where arm='base' and reason not like 'volume%')"
+    ).fetchone()
+    if len(arms) > 1:
+        print(f"\nmarkets only reachable past the volume gate: {extra['c']}")
+
     q = con.execute("select count(*) c, sum(is_closing) cl from quotes").fetchone()
-    print(f"=== quotes === {q['c']} stored ({q['cl'] or 0} closing)")
+    print(f"\n=== quotes === {q['c']} stored ({q['cl'] or 0} closing)")
 
 
 if __name__ == "__main__":

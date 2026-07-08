@@ -30,5 +30,16 @@ def load_config() -> dict:
     return cfg
 
 
+def arm_configs(cfg: dict) -> dict[str, dict]:
+    """Expand the `arms` section into full per-arm configs.
+
+    Each arm inherits the top-level config with its overrides applied. A
+    config without an `arms` section behaves as a single 'base' arm, so
+    pre-arms ledgers and configs keep working unchanged.
+    """
+    arms = cfg.get("arms") or {"base": {}}
+    return {name: {**cfg, **(overrides or {})} for name, overrides in arms.items()}
+
+
 def halted() -> bool:
     return os.environ.get("BOT_HALT") == "1"

@@ -33,9 +33,21 @@ credits/month) and set `ODDS_API_KEY` in `.env`. Polymarket data is keyless.
 ```powershell
 python -m src.main --once    # single cycle (sanity check)
 python -m src.main           # polling loop; Ctrl-C or BOT_HALT=1 to stop
-python -m src.report         # decisions, fills, CLV, P&L
+python -m src.report         # decisions, fills, CLV, P&L — broken down per arm
 pytest tests/                # devig / Kelly / filter math (21 tests)
 ```
+
+## Experiment arms
+
+`config.yaml` defines `arms:` — parallel paper books evaluated against the
+same market data and the same odds pulls (zero extra API credits). Each arm
+inherits the top-level config plus its overrides, and keeps its own bankroll,
+orders, positions, exposure caps, and daily-loss circuit breaker; ledger rows
+are tagged with an `arm` column. Current experiment: `base` (control,
+`min_volume_usd: 5000`) vs `loose` (`min_volume_usd: 500`) — measuring
+whether the liquidity floor filters out real edges or only stale-quote
+mirages. Judge `loose` primarily on CLV, not paper P&L: thin books make
+simulated fills optimistic, closing-line value doesn't lie.
 
 ## Budget & polling (differs from the spec — here's why)
 

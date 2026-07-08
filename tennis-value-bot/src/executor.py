@@ -21,27 +21,28 @@ log = logging.getLogger(__name__)
 
 
 class PaperExecutor:
-    def __init__(self, ledger, cfg: dict):
+    def __init__(self, ledger, cfg: dict, arm: str = "base"):
         self.ledger = ledger
         self.cfg = cfg
+        self.arm = arm
 
     def submit(self, mkt, sig: Signal) -> None:
         """Place a simulated GTC limit buy for `sig` on market `mkt`."""
-        order_id = self.ledger.add_order(mkt.slug, sig)
+        order_id = self.ledger.add_order(mkt.slug, sig, arm=self.arm)
         if sig.ask <= sig.limit_price:  # crosses immediately -> taker fill
             fee = taker_fee_per_share(sig.ask, self.cfg)
             entry = sig.ask + fee + self.cfg["gas_cost_usd"] / sig.stake
             self.ledger.fill_order(order_id, entry, "taker")
             self._open(mkt, sig, entry)
-            log.info("TAKER fill %s %s @ %.3f (eff %.3f) $%.2f",
-                     mkt.slug, sig.player, sig.ask, entry, sig.stake)
+            log.info("[%s] TAKER fill %s %s @ %.3f (eff %.3f) $%.2f",
+                     self.arm, mkt.slug, sig.player, sig.ask, entry, sig.stake)
         else:
-            log.info("resting order %s %s limit %.3f $%.2f",
-                     mkt.slug, sig.player, sig.limit_price, sig.stake)
+            log.info("[%s] resting order %s %s limit %.3f $%.2f",
+                     self.arm, mkt.slug, sig.player, sig.limit_price, sig.stake)
 
     def check_resting(self, books_by_slug: dict) -> None:
         """Fill or keep resting orders based on fresh book snapshots."""
-        for od in self.ledger.resting_orders():
+        for od in self.ledger.resting_orders(arm=self.arm):
             books = books_by_slug.get(od["poly_slug"])
             if not books:
                 continue
@@ -52,12 +53,12 @@ class PaperExecutor:
                 sig = Signal(od["side"], od["player"], 0, 0, 0, 0,
                              od["stake_usd"], od["limit_price"], "bet", "maker fill")
                 self._open(mkt, sig, od["limit_price"])
-                log.info("MAKER fill %s %s @ %.3f", od["poly_slug"], od["player"],
-                         od["limit_price"])
+                log.info("[%s] MAKER fill %s %s @ %.3f", self.arm, od["poly_slug"],
+                         od["player"], od["limit_price"])
 
     def cancel_near_start(self, markets_by_slug: dict) -> None:
         now = datetime.now(timezone.utc)
-        for od in self.ledger.resting_orders():
+        for od in self.ledger.resting_orders(arm=self.arm):
             mkt = markets_by_slug.get(od["poly_slug"])
             if mkt is None:
                 self.ledger.cancel_order(od["id"])
@@ -70,10 +71,11 @@ class PaperExecutor:
     def _open(self, mkt, sig: Signal, entry_price: float) -> None:
         self.ledger.open_position(mkt.slug, sig.side, sig.player,
                                   getattr(mkt, "tournament_key", mkt.tour),
-                                  entry_price, sig.stake)
+                                  entry_price, sig.stake, arm=self.arm)
 
     def settle_resolved(self, refresh_fn) -> None:
-        """Settle open positions whose markets have resolved."""
+        """Settle open positions whose markets have resolved (all arms —
+        settlement is arm-independent, so call this on one executor only)."""
         for pos in self.ledger.open_positions():
             mkt = refresh_fn(pos["poly_slug"])
             if mkt is None or not mkt.resolved:
@@ -84,5 +86,5 @@ class PaperExecutor:
             won = (mkt.winner == pos["side"])
             pnl = pos["shares"] * 1.0 - pos["stake_usd"] if won else -pos["stake_usd"]
             self.ledger.settle(pos["id"], "won" if won else "lost", pnl)
-            log.info("settled %s %s: %s pnl $%.2f", pos["poly_slug"], pos["player"],
-                     "WON" if won else "lost", pnl)
+            log.info("[%s] settled %s %s: %s pnl $%.2f", pos["arm"], pos["poly_slug"],
+                     pos["player"], "WON" if won else "lost", pnl)
