@@ -1,0 +1,37 @@
+# Tennis Value Bot — paper-trading configuration (spec §10, adapted)
+mode: paper                    # only "paper" is implemented in this build
+i_confirm_legal_access: false  # required true for live mode (not implemented)
+
+bankroll_usd: 200
+min_edge: 0.03                 # net edge threshold, probability points
+buffer: 0.01                   # adverse-selection haircut
+kelly_fraction: 0.25
+min_stake: 2
+max_stake: 10
+max_total_exposure: 100
+max_daily_new_exposure: 50
+max_positions_per_tournament_per_day: 5
+daily_loss_halt: 25
+consecutive_adverse_halt: 5
+
+min_volume_usd: 5000
+min_minutes_to_start: 10
+price_band: [0.10, 0.90]       # skip outside this ask range
+depth_multiple: 3              # book depth within 2c of ask >= 3x stake
+max_quote_age_sec: 7200        # reference quote must be fresher than this
+max_overround: 1.08
+max_prob_jump: 0.08            # reject quote if implied prob moved more since last pull
+
+# Polling. The Odds API free tier = 500 credits/month; each odds pull for one
+# tournament key costs 1 credit (h2h x eu). Polymarket endpoints are free.
+market_poll_interval_sec: 60     # Polymarket books / fills / settlement
+odds_poll_interval_sec: 12600    # Pinnacle refresh every 3.5h (~14 credits/day @ 2 keys, fits 500/mo)
+closing_pull_minutes: 12         # extra odds pull just before match start (for CLV)
+min_credits_reserve: 50          # stop polling odds when monthly credits drop below this
+
+# Polymarket cost model
+gas_cost_usd: 0.02             # flat per taker order (Polygon)
+taker_fee_rate: 0.03           # sports fee: rate * p * (1-p) per share (taker only)
+
+odds_provider: the_odds_api
+tournament_allowlist: []       # e.g. [tennis_atp_wimbledon]; empty = all active tennis keys

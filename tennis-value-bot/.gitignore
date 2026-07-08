@@ -1,0 +1,6 @@
+data/*
+!data/ledger.db
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
