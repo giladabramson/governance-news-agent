@@ -40,6 +40,35 @@ def log_loss(preds: list[tuple[float, int]]) -> float:
                 for p, y in preds) / len(preds)
 
 
+def fit_platt(preds: list[tuple[float, int]]) -> tuple[float, float]:
+    """Fit p_cal = sigmoid(a*logit(p) + b) on (p, y) pairs by Newton-Raphson.
+
+    (a, b) = (1, 0) is the identity, so the fitted values read directly as
+    a diagnosis: a < 1 means the raw model was overconfident.
+    """
+    import numpy as np
+    x = np.array([math.log(p / (1 - p)) for p, _ in preds])
+    y = np.array([y for _, y in preds], dtype=float)
+    a, b = 1.0, 0.0
+    for _ in range(25):
+        z = a * x + b
+        q = 1.0 / (1.0 + np.exp(-z))
+        g = np.array([((q - y) * x).sum(), (q - y).sum()])          # gradient
+        w = q * (1 - q)
+        h = np.array([[(w * x * x).sum(), (w * x).sum()],
+                      [(w * x).sum(), w.sum()]])                    # Hessian
+        step = np.linalg.solve(h, g)
+        a, b = a - step[0], b - step[1]
+        if abs(step[0]) + abs(step[1]) < 1e-10:
+            break
+    return float(a), float(b)
+
+
+def apply_platt(p: float, a: float, b: float) -> float:
+    z = a * math.log(p / (1 - p)) + b
+    return 1.0 / (1.0 + math.exp(-z))
+
+
 def load_matches(con, tiers: set[str] | None):
     q = """select m.match_id, m.start_time, m.radiant_team_id, m.dire_team_id,
                   m.radiant_win, coalesce(l.tier, 'unknown') tier
@@ -80,6 +109,7 @@ def main():
     ratings: dict[int, float] = defaultdict(lambda: ELO_START)
     games: dict[int, int] = defaultdict(int)
     preds: list[tuple[float, int]] = []          # (p_radiant, radiant_win) on test
+    train_preds: list[tuple[float, int]] = []    # same, on train — calibration fit data
     fav_hits = base_hits = scored = skipped_history = 0
 
     for i, m in enumerate(rows):
@@ -87,16 +117,18 @@ def main():
         p = elo_expected(ra, rd, side_offset)
         y = m["radiant_win"]
 
-        in_test = i >= split
-        if in_test:
-            if (games[m["radiant_team_id"]] >= args.min_history
-                    and games[m["dire_team_id"]] >= args.min_history):
+        enough_history = (games[m["radiant_team_id"]] >= args.min_history
+                          and games[m["dire_team_id"]] >= args.min_history)
+        if i >= split:
+            if enough_history:
                 preds.append((p, y))
                 scored += 1
                 fav_hits += int((p >= 0.5) == bool(y))
                 base_hits += int(y)  # B0 predicts radiant every time
             else:
                 skipped_history += 1
+        elif enough_history:
+            train_preds.append((p, y))
 
         # update AFTER predicting
         delta = ELO_K * (y - p)
@@ -114,24 +146,36 @@ def main():
     print()
     print(f"B0 always-radiant accuracy:     {base_hits/scored:.3f}")
     print(f"B1 Elo-favorite accuracy:       {fav_hits/scored:.3f}")
-    print(f"Elo probability Brier:          {brier(preds):.4f}")
-    const = [(radiant_rate, y) for _, y in preds]
-    print(f"  vs constant-rate Brier:       {brier(const):.4f}  (must be lower)")
-    print(f"Elo probability log-loss:       {log_loss(preds):.4f}")
 
-    # calibration table + plot
-    bins = defaultdict(list)
-    for p, y in preds:
-        bins[min(int(p * 10), 9)].append((p, y))
-    print("\ncalibration (test):")
-    print("  bin        n    mean_pred  actual")
-    xs, ys, ns = [], [], []
-    for b in sorted(bins):
-        chunk = bins[b]
-        mp = sum(p for p, _ in chunk) / len(chunk)
-        ay = sum(y for _, y in chunk) / len(chunk)
-        xs.append(mp); ys.append(ay); ns.append(len(chunk))
-        print(f"  [{b/10:.1f},{b/10+.1:.1f})  {len(chunk):5d}   {mp:.3f}      {ay:.3f}")
+    # Platt scaling fit on TRAIN predictions only, applied to test
+    a, b = fit_platt(train_preds)
+    cal = [(apply_platt(p, a, b), y) for p, y in preds]
+    print(f"\nPlatt fit on {len(train_preds)} train predictions: "
+          f"a={a:.3f} b={b:+.3f}  (a<1 = raw model was overconfident)")
+    const = [(radiant_rate, y) for _, y in preds]
+    print(f"{'':24s}  {'raw Elo':>9s}  {'calibrated':>10s}")
+    print(f"{'Brier':24s}  {brier(preds):9.4f}  {brier(cal):10.4f}   "
+          f"(constant-rate ref {brier(const):.4f})")
+    print(f"{'log-loss':24s}  {log_loss(preds):9.4f}  {log_loss(cal):10.4f}   "
+          f"(coin-flip ref 0.6931)")
+
+    def table(pairs, label):
+        bins = defaultdict(list)
+        for p, y in pairs:
+            bins[min(int(p * 10), 9)].append((p, y))
+        print(f"\ncalibration on test — {label}:")
+        print("  bin        n    mean_pred  actual    gap")
+        xs, ys, ns = [], [], []
+        for bi in sorted(bins):
+            chunk = bins[bi]
+            mp = sum(p for p, _ in chunk) / len(chunk)
+            ay = sum(y for _, y in chunk) / len(chunk)
+            xs.append(mp); ys.append(ay); ns.append(len(chunk))
+            print(f"  [{bi/10:.1f},{bi/10+.1:.1f})  {len(chunk):5d}   {mp:.3f}      {ay:.3f}   {ay-mp:+.3f}")
+        return xs, ys, ns
+
+    table(preds, "RAW Elo")
+    xs, ys, ns = table(cal, "CALIBRATED (Platt)")
 
     try:
         import matplotlib
@@ -139,10 +183,16 @@ def main():
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots(figsize=(6, 6))
         ax.plot([0, 1], [0, 1], "--", color="grey", label="perfect")
-        ax.scatter(xs, ys, s=[max(10, n / max(ns) * 200) for n in ns], zorder=3)
+        raw_bins = defaultdict(list)
+        for p, y in preds:
+            raw_bins[min(int(p * 10), 9)].append((p, y))
+        rx = [sum(p for p, _ in c) / len(c) for c in (raw_bins[b] for b in sorted(raw_bins))]
+        ry = [sum(y for _, y in c) / len(c) for c in (raw_bins[b] for b in sorted(raw_bins))]
+        ax.plot(rx, ry, "o-", color="#d97706", alpha=0.7, label=f"raw Elo (Brier {brier(preds):.4f})")
+        ax.plot(xs, ys, "o-", color="#2563eb", label=f"Platt-calibrated (Brier {brier(cal):.4f})")
         ax.set_xlabel("predicted P(radiant win)")
         ax.set_ylabel("actual radiant win rate")
-        ax.set_title(f"Elo calibration — test n={scored}, Brier={brier(preds):.4f}")
+        ax.set_title(f"Calibration — test n={scored}")
         ax.legend()
         fig.tight_layout()
         fig.savefig(Path(__file__).parent / args.plot, dpi=120)
