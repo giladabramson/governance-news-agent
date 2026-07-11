@@ -51,6 +51,17 @@ python evaluate.py                  # chronological Elo baseline + calibration
 
 - [x] Phase 1a: OpenDota ingest (matches + league tiers) → SQLite
 - [x] Phase 1b: chronological Elo + baselines + calibration report
-- [ ] REVIEW CHECKPOINT — inspect calibration before phase 2
-- [ ] Phase 2: Polymarket historical price backtest
-- [ ] Phase 3: paper trading vs CLOB asks
+- [x] Calibration layer (Platt, a=0.520 — raw Elo was ~2x overconfident)
+- [x] Phase 2: backtest vs 1,144 historical Polymarket pre-match prices
+- [ ] REVIEW CHECKPOINT — phase-2 verdict (2026-07-11):
+
+**Phase-2 result: the market beats the model.** Market Brier 0.2047 vs
+model 0.2165; market accuracy 68.4% vs 65.1%. The thin market is also
+decently calibrated (bins within ~5pts, mild favorite-longshot bias — 
+longshots overpriced, heavy favorites slightly underpriced). The paper
+edge rule (|gap|>=5pts, 2c slippage) made 762 bets for **-0.4% ROI**, with
+no monotonic gap->profit relationship — i.e. the model's disagreements
+with the market are model error, not market error. Elo-only has NO edge
+here. Any continuation must first close a ~1.2-Brier-point gap to the
+market (features: form, rust, lineups) before the edge rule is worth
+re-testing.
