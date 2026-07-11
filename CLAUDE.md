@@ -11,6 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | [watchdog/](watchdog/) | Governance Watchdog — Hebrew-language news classifier and daily email digest. The user's primary project. | Yes — [watchdog/CLAUDE.md](watchdog/CLAUDE.md) |
 | [tagah_physics/](tagah_physics/) | TAGAH physics — physics problem-set generator. Greenfield, no implementation yet. | Yes — [tagah_physics/CLAUDE.md](tagah_physics/CLAUDE.md) |
 | [gmail_mcp_server.py](gmail_mcp_server.py) + [.mcp.json](.mcp.json) | Read-only Gmail MCP server registered with Claude Code via project-scope `.mcp.json`. Pure tooling — gives Claude `search_messages`, `get_message`, `get_profile`, `list_labels` against the user's Gmail. | No — see this file |
+| [esports-edge/](esports-edge/) | Dota 2 probability model for Polymarket tier-2 markets. Research phase: pipeline + calibrated baseline only, NO trading code until each phase passes human review (build order in its README). | No — see [esports-edge/README.md](esports-edge/README.md) |
 
 When the user asks about "the watchdog" or "the bot," they mean the project under `watchdog/`. When they ask about Gmail tools or `mcp__gmail-readonly__*`, they mean the MCP server at the root.
 
