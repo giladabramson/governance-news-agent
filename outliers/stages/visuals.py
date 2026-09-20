@@ -64,6 +64,35 @@ def run(out: Path, cfg: dict):
     ua = cfg["commons"]["user_agent"]
     imgdir = out / "images"; imgdir.mkdir(exist_ok=True)
     paths, credits, seen = [], [], set()
+
+    # Cues download FIRST and claim their images — otherwise a cue whose photo
+    # also matches a pool query gets deduped away and silently never fires.
+    cue_downloads = []
+    for ci, cue in enumerate(facts.get("image_cues", [])):
+        queries = cue["query"] if isinstance(cue["query"], list) else [cue["query"]]
+        crop = cue.get("crop")
+        cue_paths = []
+        for q in queries:
+            for hit in commons_search(q, ua):
+                key = " ".join("".join(c for c in hit["page"] if not c.isdigit()).split()) + (crop or "")
+                if key in seen:
+                    continue
+                p = imgdir / f"cue_{ci:02d}_{len(cue_paths)}.jpg"
+                p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
+                if crop:
+                    img = Image.open(p); W0, H0 = img.size
+                    box = ((0.25, 0.06, 0.75, 0.60) if crop == "tight"
+                           else (0.14, 0.03, 0.86, 0.80))
+                    img.crop((int(W0*box[0]), int(H0*box[1]),
+                              int(W0*box[2]), int(H0*box[3]))).save(p)
+                cue_paths.append(str(p)); credits.append(hit); seen.add(key)
+                # also claim the un-cropped identity so the pool skips it
+                seen.add(" ".join("".join(c for c in hit["page"] if not c.isdigit()).split()))
+                break
+            if len(cue_paths) >= cue.get("max", 2):
+                break
+        cue_downloads.append((cue, cue_paths))
+
     for q in facts["image_queries"]:
         per_q = 0  # cap per query so no single photo series dominates the pool
         for hit in commons_search(q, ua, n=6):
@@ -71,7 +100,8 @@ def run(out: Path, cfg: dict):
                 break
             # Archives upload burst shots seconds apart whose titles differ only
             # in a serial number — digit-stripped title dedupes those sessions.
-            key = "".join(c for c in hit["page"] if not c.isdigit())
+            # (whitespace collapsed too: "backhand 2" must equal "backhand")
+            key = " ".join("".join(c for c in hit["page"] if not c.isdigit()).split())
             if key in seen:
                 continue
             p = imgdir / f"{len(paths):02d}.jpg"
@@ -107,29 +137,9 @@ def run(out: Path, cfg: dict):
     fixed = []
     if cfg["video"].get("number_card", False):
         fixed.append({"file": str(card), "start": card_start, "end": card_end, "static": True})
-    for ci, cue in enumerate(facts.get("image_cues", [])):
-        queries = cue["query"] if isinstance(cue["query"], list) else [cue["query"]]
-        crop = cue.get("crop")  # "tight"/"medium": reframe the source so one
-        cue_paths = []          # photo can appear as visually distinct shots
-        for q in queries:
-            for hit in commons_search(q, ua):
-                key = "".join(c for c in hit["page"] if not c.isdigit()) + (crop or "")
-                if key in seen:
-                    continue
-                p = imgdir / f"cue_{ci:02d}_{len(cue_paths)}.jpg"
-                p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
-                if crop:
-                    img = Image.open(p); W0, H0 = img.size
-                    box = ((0.25, 0.06, 0.75, 0.60) if crop == "tight"
-                           else (0.14, 0.03, 0.86, 0.80))
-                    img.crop((int(W0*box[0]), int(H0*box[1]),
-                              int(W0*box[2]), int(H0*box[3]))).save(p)
-                cue_paths.append(str(p)); credits.append(hit); seen.add(key)
-                break  # one image per query — variety over depth
-            if len(cue_paths) >= cue.get("max", 2):
-                break
+    for cue, cue_paths in cue_downloads:
         if not cue_paths:
-            print(f"visuals: cue {queries[0]!r} — no Commons hits, skipped"); continue
+            print(f"visuals: cue {cue['match']} — no Commons hits, skipped"); continue
         placed, last_t = 0, -9.0
         for w in words:
             if placed >= cue.get("max", 2):

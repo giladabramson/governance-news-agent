@@ -95,8 +95,12 @@
   "image_queries": [
     "Esther Vergeer",
     "Vergeer wheelchair",
-    "wheelchair tennis",
-    "Paralympic tennis"
+    "wheelchair tennis Paralympic Games",
+    "tennis wheelchair match",
+    "wheelchair tennis US Open",
+    "wheelchair tennis Roland Garros",
+    "Paralympic tennis",
+    "wheelchair tennis"
   ],
   "image_cues": [
     {"match": ["beijing", "point"], "query": "080908 Esther Vergeer serves", "max": 1},
