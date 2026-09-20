@@ -1,0 +1,13 @@
+video:
+  width: 1080
+  height: 1920
+  fps: 30
+  music_volume_db: -18
+  caption_font: assets/fonts/Inter-Bold.ttf
+tts:
+  model_id: eleven_multilingual_v2
+  stability: 0.55
+  similarity_boost: 0.75
+  speed: 0.95
+commons:
+  user_agent: "OutliersShorts/0.1 (contact: gilad.a@treetoscope.com)"

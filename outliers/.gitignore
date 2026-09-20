@@ -1,0 +1,18 @@
+.env
+__pycache__/
+*.pyc
+
+# Personal permission settings, not team config
+.claude/settings.local.json
+
+# Rendered artefacts — regenerable, and voice.mp3 costs credits but is large
+content/*/voice.mp3
+content/*/final.mp4
+content/*/images/
+content/*/words.json
+content/*/captions.ass
+content/*/duration.txt
+content/*/shots.json
+
+# Music beds are downloaded, not authored here
+assets/music/*.mp3
