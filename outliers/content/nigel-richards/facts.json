@@ -59,7 +59,14 @@
       "number": "14",
       "source_url": "https://www.espn.com/espn/story/_/id/25776082/nigel-richards-scrabble-legend-words-say-plenty-play",
       "confidence": "high",
-      "note": "Texture fact; use if word budget allows."
+      "note": "Texture fact. Gilad cut it from the script as irrelevant - keep for long-form."
+    },
+    {
+      "claim": "after winning everything in English he took up French Scrabble as a new challenge in 2015",
+      "number": "2015",
+      "source_url": "https://qz.com/459634/a-non-french-speaker-just-won-the-french-scrabble-championship",
+      "confidence": "high",
+      "note": "QZ/CBC framing: 'took up the challenge' of the French championship. Fagerlund on his method: 'he doesn't even study the pages word by word. He can look at a page full of words and absorb them all.'"
     },
     {
       "claim": "world champion in three languages - English, French, Spanish - and speaks one of them",
