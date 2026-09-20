@@ -26,7 +26,10 @@ def _kb(src, dur, W, H, fps, move="zin"):
     shorter shots than the classic slow drift — stills should feel filmed."""
     frames = max(1, int(dur * fps))
     cx, cy = "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"
-    if move == "zout":
+    if move == "zin_soft":
+        # for text cards: perceptible drift, gentle enough to keep type crisp
+        z, x, y = f"1+0.05*on/{frames}", cx, cy
+    elif move == "zout":
         z, x, y = f"1.22-0.22*on/{frames}", cx, cy
     elif move == "panr":
         z, x, y = "1.18", f"(iw-iw/zoom)*on/{frames}", cy
@@ -60,8 +63,10 @@ def run(out: Path, cfg: dict):
     for i, s in enumerate(shots):
         dur = s["end"] - s["start"]
         if s.get("static"):
-            inputs += ["-loop", "1", "-t", f"{dur:.3f}", "-i", s["file"]]
-            filters.append(f"[{i}:v]scale={W}:{H},setsar=1,fps={fps}[v{i}]")
+            # "static" now means caption-repositioning only — the card itself
+            # still drifts (Gilad: fully still frames look bad)
+            inputs += ["-i", s["file"]]
+            filters.append(_kb(f"{i}:v", dur, W, H, fps, "zin_soft") + f"[v{i}]")
         else:
             # Single-frame input: zoompan's d=<frames> generates the whole clip
             # from one frame. Looping the input first would make zoompan expand
