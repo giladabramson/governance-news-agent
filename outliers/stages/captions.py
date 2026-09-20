@@ -41,11 +41,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     if grp:
         groups.append(grp)
 
+    # Spoken-word captions carry no punctuation — a period on screen reads as
+    # text, not speech. Grouping above still uses the raw words for boundaries.
+    def _disp(w: str) -> str:
+        return w.strip().strip('.,;:!?"“”«»')
+
     lines = []
     for grp in groups:
         for j, cur in enumerate(grp):
             txt = " ".join(
-                (r"{\c&H00FFFF&}" + g["w"] + r"{\c&HFFFFFF&}") if k == j else g["w"]
+                (r"{\c&H00FFFF&}" + _disp(g["w"]) + r"{\c&HFFFFFF&}") if k == j else _disp(g["w"])
                 for k, g in enumerate(grp))
             lines.append(f"Dialogue: 0,{_ts(cur['s'])},{_ts(cur['e'])},Cap,,0,0,0,,{txt}")
     (out / "captions.ass").write_text(header + "\n".join(lines), encoding="utf-8")

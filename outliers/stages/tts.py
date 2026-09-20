@@ -12,10 +12,15 @@ def run(out: Path, cfg: dict):
     load_dotenv()
     sd = json.loads(script.read_text(encoding="utf-8"))
     if all(k in sd for k in ("hook", "story", "number", "closer")):
-        # Audible pauses between sections: long after the hook so it lands,
-        # shorter elsewhere. ElevenLabs renders <break time="Xs" /> as silence,
-        # so Whisper's word timings stay aligned with the script text.
-        text = (f'{sd["hook"]} <break time="0.25s" /> {sd["story"]} '
+        # Audible pauses between sections. ElevenLabs renders <break /> as
+        # silence, so Whisper's word timings stay aligned with the script text.
+        # Inside the hook, a beat before its final sentence makes the punch
+        # land ("...every six years. (beat) In checkers.").
+        import re
+        hook_sents = re.split(r"(?<=[.!?])\s+", sd["hook"].strip())
+        hook = ' <break time="0.4s" /> '.join(
+            [" ".join(hook_sents[:-1]), hook_sents[-1]]) if len(hook_sents) > 1 else sd["hook"]
+        text = (f'{hook} <break time="0.25s" /> {sd["story"]} '
                 f'<break time="0.15s" /> {sd["number"]} '
                 f'<break time="0.2s" /> {sd["closer"]}')
     else:
