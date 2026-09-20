@@ -11,6 +11,10 @@ def commons_search(q: str, ua: str, n: int = 4) -> list[dict]:
         "action": "query", "generator": "search", "gsrsearch": q, "gsrnamespace": 6,
         "gsrlimit": n, "prop": "imageinfo", "iiprop": "url|extmetadata",
         "iiurlwidth": 1600, "format": "json"}, timeout=30).json()
+    # Commons full-text search matches file descriptions too, which drags in
+    # unrelated images (a darts trophy for "Scrabble tournament"). Require the
+    # TITLE to share at least one real word with the query.
+    qtok = [t for t in re.findall(r"[a-z0-9]+", q.lower()) if len(t) > 3]
     hits = []
     for p in r.get("query", {}).get("pages", {}).values():
         info = p["imageinfo"][0]
@@ -19,7 +23,9 @@ def commons_search(q: str, ua: str, n: int = 4) -> list[dict]:
         # Filter on the source file's extension, not the thumb URL — thumburls carry
         # utm query params, and Commons happily thumbnails PDFs/TIFs we don't want.
         title = p.get("title", "").lower()
-        if url and title.endswith((".jpg", ".jpeg", ".png")) and any(k in lic for k in OK_LICENSES):
+        if (url and title.endswith((".jpg", ".jpeg", ".png"))
+                and any(k in lic for k in OK_LICENSES)
+                and (not qtok or any(t in title for t in qtok))):
             hits.append({"url": url, "license": lic, "page": p.get("title", "")})
     return hits
 

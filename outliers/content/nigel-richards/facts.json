@@ -1,0 +1,93 @@
+{
+  "name": "Nigel Richards",
+  "slug": "nigel-richards",
+  "field": "Scrabble",
+  "one_line": "World Scrabble champion in three languages, exactly one of which he speaks.",
+  "comparison_type": "uniqueness",
+  "facts": [
+    {
+      "claim": "won the French-language World Scrabble Championship in 2015 and again in 2018 without speaking French",
+      "number": "2",
+      "source_url": "https://en.wikipedia.org/wiki/Nigel_Richards_(Scrabble_player)",
+      "confidence": "high",
+      "note": "Confirmed by every outlet covering it (CBC, NPR, Euronews). At the 2015 ceremony in Louvain he received a standing ovation and needed a translator to say thank you."
+    },
+    {
+      "claim": "memorized the French Scrabble dictionary - roughly 400,000 words - in nine weeks",
+      "number": "400,000",
+      "source_url": "https://www.espn.com/espn/story/_/id/25776082/nigel-richards-scrabble-legend-words-say-plenty-play",
+      "confidence": "medium",
+      "note": "ESPN: 'mastered the French scrabble dictionary or roughly 400,000 words in nine weeks' time.' Wikipedia says 'two months of studying the French lexicon' - same window, phrase as 'nine weeks' or 'about two months'. Liz Fagerlund (ex-president, NZ Scrabble Association): 'He doesn't speak French at all, he just learnt the words.'"
+    },
+    {
+      "claim": "English-language world champion five times: 2007, 2011, 2013, 2018, 2019",
+      "number": "5",
+      "source_url": "https://en.wikipedia.org/wiki/Nigel_Richards_(Scrabble_player)",
+      "confidence": "high",
+      "note": "Plus 5x US National, 10x UK Open, 12x Singapore Open, 15x King's Cup (Bangkok). ESPN (written 2018) says four world titles because the fifth came in 2019."
+    },
+    {
+      "claim": "won the Spanish-language world championship in 2024, his first Spanish competition, taking 23 of 24 games - without speaking Spanish",
+      "number": "23",
+      "source_url": "https://en.wikipedia.org/wiki/Nigel_Richards_(Scrabble_player)",
+      "confidence": "high",
+      "note": "Also confirmed by VOA and Euronews (which says he studied Spanish word lists for about a year for this one). Born 1967, so 57 years old at the 2024 win."
+    },
+    {
+      "claim": "compiled the first two perfect scores ever recorded at the Spanish world championship",
+      "number": "2",
+      "source_url": "https://en.wikipedia.org/wiki/Nigel_Richards_(Scrabble_player)",
+      "confidence": "high",
+      "note": "In a language he does not speak, in his first attempt."
+    },
+    {
+      "claim": "introduced to Scrabble by his mother at age 28; she reportedly told him he would not be good at it because he could not spell",
+      "number": "28",
+      "source_url": "https://www.espn.com/espn/story/_/id/25776082/nigel-richards-scrabble-legend-words-say-plenty-play",
+      "confidence": "medium",
+      "note": "ESPN confirms the introduction at 28. The mother's line ('you won't do good in this game... you can't spell very well') is widely reported but secondhand - use reported speech, never a direct quote. Her name: Adrienne Fischer."
+    },
+    {
+      "claim": "refuses interviews - turns down requests with a smile and walks away; has essentially never explained his method",
+      "number": "",
+      "source_url": "https://www.espn.com/espn/story/_/id/25776082/nigel-richards-scrabble-legend-words-say-plenty-play",
+      "confidence": "high",
+      "note": "ESPN verbatim: 'He turns down interview requests with a crack of a smile and walks away.'"
+    },
+    {
+      "claim": "cycled 14 hours from Dunedin to Christchurch through bad weather to his first national championship in 1998 - then cycled back",
+      "number": "14",
+      "source_url": "https://www.espn.com/espn/story/_/id/25776082/nigel-richards-scrabble-legend-words-say-plenty-play",
+      "confidence": "high",
+      "note": "Texture fact; use if word budget allows."
+    },
+    {
+      "claim": "world champion in three languages - English, French, Spanish - and speaks one of them",
+      "number": "3",
+      "source_url": "https://en.wikipedia.org/wiki/Nigel_Richards_(Scrabble_player)",
+      "confidence": "high",
+      "note": "Derived directly from the title list. Do NOT claim 'nobody else has won two' - plausible but unsourced."
+    }
+  ],
+  "comparison": {
+    "their_number": "3",
+    "their_label": "languages, world champion",
+    "second_best": "",
+    "second_label": "",
+    "gap_description": "World champion\nin 3 languages.\nSpeaks 1 of them."
+  },
+  "story_beat": "His mother taught him Scrabble at 28, reportedly telling him he wouldn't be any good because he couldn't spell. He went on to memorize the French dictionary - about 400,000 words - in nine weeks, win the French world title, and thank the audience through a translator.",
+  "story_beat_source": "https://www.espn.com/espn/story/_/id/25776082/nigel-richards-scrabble-legend-words-say-plenty-play",
+  "image_queries": [
+    "Nigel Richards Scrabble",
+    "Scrabble tournament",
+    "Scrabble world championship",
+    "Scrabble game",
+    "Scrabble tiles",
+    "ScrabbleDuplicat"
+  ],
+  "image_cues": [
+    {"match": ["dictionary"], "query": ["Le Petit Robert langue", "Old dictionary in French"], "max": 2},
+    {"match": ["spanish"], "query": "Scrabble game in final stages", "max": 1}
+  ]
+}
