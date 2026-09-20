@@ -190,5 +190,6 @@ def run(out: Path, cfg: dict):
             idx += 1
     shots.sort(key=lambda s: s["start"])
     (out / "shots.json").write_text(json.dumps(shots, indent=1), encoding="utf-8")
-    ncues = len(fixed) - 1
-    print(f"visuals: {len(paths)} pool + {ncues} cue shots + card, {len(shots)} total")
+    ncards = sum(1 for f in fixed if f.get("static"))
+    print(f"visuals: {len(paths)} pool + {len(fixed)-ncards} cue shots"
+          + (" + card" if ncards else "") + f", {len(shots)} total")

@@ -25,6 +25,26 @@ def run(out: Path, cfg: dict):
                 f'<break time="0.2s" /> {sd["closer"]}')
     else:
         text = sd["full_text"]
+    if cfg.get("_draft"):
+        # Free preview voice via Windows SAPI — no credits, real word timings
+        # for captions/visuals. Swapped for ElevenLabs on the final render.
+        import re, subprocess, tempfile
+        plain = re.sub(r"<break[^>]*/>", " . ", text)
+        tf = Path(tempfile.gettempdir()) / "outliers_draft_text.txt"
+        tf.write_text(plain, encoding="utf-8-sig")
+        wav = mp3.with_suffix(".draft.wav")
+        ps = ("Add-Type -AssemblyName System.Speech; "
+              "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; "
+              "$s.Rate = 2; "
+              f"$s.SetOutputToWaveFile('{wav}'); "
+              f"$s.Speak([IO.File]::ReadAllText('{tf}')); $s.Dispose()")
+        subprocess.run(["powershell", "-NoProfile", "-Command", ps], check=True)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(wav),
+                        "-c:a", "libmp3lame", "-q:a", "4", str(mp3)], check=True)
+        wav.unlink(missing_ok=True)
+        print(f"tts: DRAFT voice (Windows SAPI, free) -> {mp3}")
+        return
+
     t = cfg["tts"]
     client = ElevenLabs(api_key=os.environ["ELEVENLABS_API_KEY"])
     audio = client.text_to_speech.convert(

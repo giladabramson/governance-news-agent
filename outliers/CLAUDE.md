@@ -10,8 +10,12 @@ YouTube Shorts about people who dominated their field to a statistically absurd 
    **GATE 2: Gilad reviews the script in chat (enumerated: hook/story/number/closer). Iterate. Do not render.**
 3. Download the image pool + cues and show Gilad EVERY picture (contact sheet).
    **GATE 3: he vetoes/keeps images in chat; adjust queries and re-show until approved.**
-4. Only after gate 3: `python render.py <slug> --voice` (spends credits) → verify
-   (transcript match, zero repeats, frame extraction) → `/meta` → Gilad uploads.
+4. `python render.py <slug> --draft` → free preview cut with the Windows SAPI voice
+   standing in for ElevenLabs. Gilad watches the draft (images in context, captions,
+   cuts). Iterate visuals here — drafts cost nothing.
+5. Only after draft approval: `python render.py <slug> --voice --redo tts captions visuals assemble`
+   (spends credits) → verify (transcript match, zero repeats, frame extraction) →
+   `/meta` → Gilad uploads.
    Versions are never overwritten (`v<N>.mp4`); `--redo assemble` forces the next one.
 
 ## Hard rules
