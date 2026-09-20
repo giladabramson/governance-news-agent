@@ -68,7 +68,7 @@ def run(out: Path, cfg: dict):
             p = imgdir / f"{len(paths):02d}.jpg"
             p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
             paths.append(str(p)); credits.append(hit); seen.add(key)
-            if len(paths) >= 16: break
+            if len(paths) >= 24: break
         if len(paths) >= 16: break
     if not paths:
         raise SystemExit("no usable Commons images — add image_queries in facts.json")
@@ -125,32 +125,30 @@ def run(out: Path, cfg: dict):
     fixed.sort(key=lambda s: s["start"])
 
     # Fill the gaps with the pool: ~2.1s cuts, alternating camera moves.
+    # Never repeat an image: if the pool can't cover every 2.1s slot, ration —
+    # fewer, slightly longer cuts per gap instead of a second showing.
     MOVES = ["zin", "panr", "zout", "panl"]
-    shots, idx = [], 0
+    gaps, t = [], 0.0
+    for f in fixed:
+        if f["start"] - t >= 0.25:
+            gaps.append((t, f["start"]))
+        t = f["end"]
+    if duration - t >= 0.25:
+        gaps.append((t, duration))
 
-    def add_span(t0, t1):
-        nonlocal idx
-        if t1 - t0 < 0.25:
-            # tiny sliver — stretch the previous shot instead of flashing one
-            if shots and abs(shots[-1]["end"] - t0) < 0.01:
-                shots[-1]["end"] = t1
-            return
-        n = max(1, round((t1 - t0) / 2.1))
+    shots, idx = [dict(f) for f in fixed], 0
+    for gi, (t0, t1) in enumerate(gaps):
+        remaining_gaps = len(gaps) - gi - 1          # keep >=1 image per later gap
+        avail = len(paths) - idx - remaining_gaps
+        n = max(1, min(round((t1 - t0) / 2.1) or 1, max(avail, 1)))
+        if idx + n > len(paths):
+            print("visuals: pool exhausted — images will repeat; add image_queries")
         seg = (t1 - t0) / n
         for k in range(n):
-            if idx == len(paths):
-                print("visuals: pool exhausted — images will repeat; add image_queries")
             shots.append({"file": paths[idx % len(paths)],
                           "start": t0 + k * seg, "end": t0 + (k + 1) * seg,
                           "move": MOVES[idx % len(MOVES)]})
             idx += 1
-
-    t = 0.0
-    for f in fixed:
-        add_span(t, f["start"])
-        shots.append(f)
-        t = f["end"]
-    add_span(t, duration)
     shots.sort(key=lambda s: s["start"])
     (out / "shots.json").write_text(json.dumps(shots, indent=1), encoding="utf-8")
     ncues = len(fixed) - 1

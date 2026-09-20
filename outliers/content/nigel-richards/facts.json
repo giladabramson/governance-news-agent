@@ -69,6 +69,20 @@
       "note": "QZ/CBC framing: 'took up the challenge' of the French championship. Fagerlund on his method: 'he doesn't even study the pages word by word. He can look at a page full of words and absorb them all.'"
     },
     {
+      "claim": "analysts ran 919 of his endgame moves (more than nine hundred, across 588 games) through Quackle, the standard Scrabble analysis engine: Richards made 11 errors (1.2% error rate); the computer made four times as many errors and lost seven times as many points",
+      "number": "4",
+      "source_url": "https://defector.com/scrabbles-best-player-knows-no-limits",
+      "confidence": "high",
+      "note": "Analysis by Francis Desjardins and Gilles Blanchette. Defector verbatim: 'Quackle made four times as many errors and lost seven times as many points as Nigel.' Phrase the engine as 'a top Scrabble computer' - Quackle is the best-known analyzer, not provably the strongest."
+    },
+    {
+      "claim": "outscores opponents by 72 points per game; the world's second-best player, David Eldar (2023 world champion), outscores his by 49",
+      "number": "72",
+      "source_url": "https://defector.com/scrabbles-best-player-knows-no-limits",
+      "confidence": "high",
+      "note": "Defector: 'Eldar has outscored his opponents by a whopping 49 points per game. Nigel has outscored his opponents by 72 points per game.'"
+    },
+    {
       "claim": "world champion in three languages - English, French, Spanish - and speaks one of them",
       "number": "3",
       "source_url": "https://en.wikipedia.org/wiki/Nigel_Richards_(Scrabble_player)",
@@ -89,8 +103,14 @@
     "Nigel Richards Scrabble",
     "Scrabble tournament",
     "Scrabble world championship",
+    "playing Scrabble",
     "Scrabble game",
+    "Scrabble club",
+    "Scrabble board",
     "Scrabble tiles",
+    "Scrabble pieces",
+    "joueur de scrabble",
+    "championnat de scrabble",
     "ScrabbleDuplicat"
   ],
   "image_cues": [
