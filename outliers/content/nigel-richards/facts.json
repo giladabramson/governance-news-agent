@@ -114,6 +114,7 @@
     "ScrabbleDuplicat"
   ],
   "image_cues": [
+    {"match": ["interviews"], "query": "Nigel Richards Scrabble", "crop": "medium", "max": 1},
     {"match": ["dictionary"], "query": ["Le Petit Robert langue", "Old dictionary in French"], "max": 2},
     {"match": ["spanish"], "query": "Scrabble game in final stages", "max": 1}
   ]

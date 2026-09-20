@@ -96,14 +96,21 @@ def run(out: Path, cfg: dict):
     fixed = [{"file": str(card), "start": card_start, "end": card_end, "static": True}]
     for ci, cue in enumerate(facts.get("image_cues", [])):
         queries = cue["query"] if isinstance(cue["query"], list) else [cue["query"]]
-        cue_paths = []
+        crop = cue.get("crop")  # "tight"/"medium": reframe the source so one
+        cue_paths = []          # photo can appear as visually distinct shots
         for q in queries:
             for hit in commons_search(q, ua):
-                key = "".join(c for c in hit["page"] if not c.isdigit())
+                key = "".join(c for c in hit["page"] if not c.isdigit()) + (crop or "")
                 if key in seen:
                     continue
                 p = imgdir / f"cue_{ci:02d}_{len(cue_paths)}.jpg"
                 p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
+                if crop:
+                    img = Image.open(p); W0, H0 = img.size
+                    box = ((0.25, 0.06, 0.75, 0.60) if crop == "tight"
+                           else (0.14, 0.03, 0.86, 0.80))
+                    img.crop((int(W0*box[0]), int(H0*box[1]),
+                              int(W0*box[2]), int(H0*box[3]))).save(p)
                 cue_paths.append(str(p)); credits.append(hit); seen.add(key)
                 break  # one image per query — variety over depth
             if len(cue_paths) >= cue.get("max", 2):
@@ -116,7 +123,16 @@ def run(out: Path, cfg: dict):
                 break
             if _n(w["w"]) in cue["match"] and w["s"] - last_t > 4.0:
                 t0, t1 = max(0.0, w["s"] - 0.15), min(max(0.0, w["s"] - 0.15) + 2.2, duration)
-                if all(t1 <= f["start"] or t0 >= f["end"] for f in fixed):
+                # Clip against already-fixed shots (card, earlier cues) instead
+                # of rejecting on any overlap — a cue 0.1s inside the card
+                # should start at the card's edge, not vanish.
+                for f in sorted(fixed, key=lambda x: x["start"]):
+                    if t0 < f["end"] and t1 > f["start"]:
+                        if f["start"] - t0 >= t1 - f["end"]:
+                            t1 = f["start"]
+                        else:
+                            t0 = f["end"]
+                if t1 - t0 >= 1.2:
                     # rotate the cue's images so no file shows twice
                     fixed.append({"file": cue_paths[placed % len(cue_paths)],
                                   "start": t0, "end": t1, "move": "zin"})
