@@ -1,4 +1,4 @@
-import json, requests
+import json, re, requests
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -67,14 +67,35 @@ def run(out: Path, cfg: dict):
     duration = float((out / "duration.txt").read_text(encoding="utf-8"))
     words = json.loads((out / "words.json").read_text(encoding="utf-8"))
     script = json.loads((out / "script.json").read_text(encoding="utf-8"))
-    n_before = len((script["hook"] + " " + script["story"]).split())
-    card_start = words[min(n_before, len(words) - 1)]["s"]
-    card_end = words[min(n_before + len(script["number"].split()), len(words) - 1)]["e"]
 
-    shots, t, seg = [], 0.0, card_start / len(paths)
-    for p in paths:
-        shots.append({"file": p, "start": t, "end": t + seg}); t += seg
+    # The card shows only while the stat itself is spoken — the last sentence
+    # of the number section — not the whole section. A 12s static card reads
+    # like a slide; ~4s reads like a beat.
+    n_before = len((script["hook"] + " " + script["story"]).split())
+    num_words = script["number"].split()
+    sents = re.split(r"(?<=[.!?])\s+", script["number"].strip())
+    lead = len(num_words) - len(sents[-1].split()) if sents else 0
+    card_start = words[min(n_before + lead, len(words) - 1)]["s"]
+    sent_end = words[min(n_before + len(num_words) - 1, len(words) - 1)]["e"]
+    card_end = min(max(sent_end, card_start + 3.5), duration)
+
+    # Photo shots: ~2.1s cuts, cycling the pool with alternating camera moves.
+    MOVES = ["zin", "panr", "zout", "panl"]
+    shots, idx = [], 0
+
+    def add_span(t0, t1):
+        nonlocal idx
+        n = max(1, round((t1 - t0) / 2.1))
+        seg = (t1 - t0) / n
+        for k in range(n):
+            shots.append({"file": paths[idx % len(paths)],
+                          "start": t0 + k * seg, "end": t0 + (k + 1) * seg,
+                          "move": MOVES[idx % len(MOVES)]})
+            idx += 1
+
+    add_span(0.0, card_start)
     shots.append({"file": str(card), "start": card_start, "end": card_end, "static": True})
-    shots.append({"file": paths[0], "start": card_end, "end": duration})
+    if duration - card_end > 0.05:
+        add_span(card_end, duration)
     (out / "shots.json").write_text(json.dumps(shots, indent=1), encoding="utf-8")
-    print(f"visuals: {len(paths)} images + card, {len(shots)} shots")
+    print(f"visuals: {len(paths)} images + card, {len(shots)} shots, card {card_end-card_start:.1f}s")

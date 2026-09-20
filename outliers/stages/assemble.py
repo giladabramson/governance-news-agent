@@ -21,12 +21,22 @@ def _filter_path(p: Path) -> str:
         return p.as_posix().replace(":", r"\:")
 
 
-def _kb(src, dur, W, H, fps, zoom_in=True):
-    frames = int(dur * fps)
-    z = f"1+0.12*on/{frames}" if zoom_in else f"1.12-0.12*on/{frames}"
+def _kb(src, dur, W, H, fps, move="zin"):
+    """Ken Burns variants: push-in, pull-out, pan left/right. Deeper zoom and
+    shorter shots than the classic slow drift — stills should feel filmed."""
+    frames = max(1, int(dur * fps))
+    cx, cy = "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"
+    if move == "zout":
+        z, x, y = f"1.22-0.22*on/{frames}", cx, cy
+    elif move == "panr":
+        z, x, y = "1.18", f"(iw-iw/zoom)*on/{frames}", cy
+    elif move == "panl":
+        z, x, y = "1.18", f"(iw-iw/zoom)*(1-on/{frames})", cy
+    else:  # zin
+        z, x, y = f"1+0.22*on/{frames}", cx, cy
     return (f"[{src}]scale={W*2}:{H*2}:force_original_aspect_ratio=increase,"
             f"crop={W*2}:{H*2},zoompan=z='{z}':d={frames}:s={W}x{H}:fps={fps}"
-            f":x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)',setsar=1")
+            f":x='{x}':y='{y}',setsar=1")
 
 
 def run(out: Path, cfg: dict):
@@ -57,7 +67,8 @@ def run(out: Path, cfg: dict):
             # from one frame. Looping the input first would make zoompan expand
             # EVERY input frame by d, ballooning the stream to hours.
             inputs += ["-i", s["file"]]
-            filters.append(_kb(f"{i}:v", dur, W, H, fps, zoom_in=(i % 2 == 0)) + f"[v{i}]")
+            move = s.get("move", "zin" if i % 2 == 0 else "zout")
+            filters.append(_kb(f"{i}:v", dur, W, H, fps, move) + f"[v{i}]")
         labels.append(f"[v{i}]")
     n = len(shots)
 
@@ -85,7 +96,9 @@ def run(out: Path, cfg: dict):
     ass = _filter_path(ass_use)
     fontsdir = _filter_path(Path(v["caption_font"]).parent)
     filters.append("".join(labels) + f"concat=n={n}:v=1:a=0[vc]")
-    filters.append(f"[vc]ass={ass}:fontsdir={fontsdir}[vout]")
+    # Film grain + vignette under the captions: stills stop reading as slides.
+    filters.append("[vc]noise=alls=6:allf=t,vignette=angle=PI/5[vg]")
+    filters.append(f"[vg]ass={ass}:fontsdir={fontsdir}[vout]")
 
     # Audio inputs after the stills: voice at [n], then optional music / hook SFX.
     audio_in, ai = [], n + 1

@@ -8,6 +8,6 @@ tts:
   model_id: eleven_multilingual_v2
   stability: 0.55
   similarity_boost: 0.75
-  speed: 1.05
+  speed: 1.15
 commons:
   user_agent: "OutliersShorts/0.1 (contact: gilad.a@treetoscope.com)"

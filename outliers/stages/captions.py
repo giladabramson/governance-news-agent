@@ -31,9 +31,18 @@ Style: Cap,Inter,88,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
+    # Group up to 3 words, but never across a sentence boundary — a group like
+    # "draws. He quit" reads as nonsense on screen.
+    groups, grp = [], []
+    for w in words:
+        grp.append(w)
+        if len(grp) == 3 or w["w"].rstrip('"\'').endswith((".", "!", "?")):
+            groups.append(grp); grp = []
+    if grp:
+        groups.append(grp)
+
     lines = []
-    for i in range(0, len(words), 3):
-        grp = words[i:i + 3]
+    for grp in groups:
         for j, cur in enumerate(grp):
             txt = " ".join(
                 (r"{\c&H00FFFF&}" + g["w"] + r"{\c&HFFFFFF&}") if k == j else g["w"]

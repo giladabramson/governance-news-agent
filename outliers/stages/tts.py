@@ -15,9 +15,9 @@ def run(out: Path, cfg: dict):
         # Audible pauses between sections: long after the hook so it lands,
         # shorter elsewhere. ElevenLabs renders <break time="Xs" /> as silence,
         # so Whisper's word timings stay aligned with the script text.
-        text = (f'{sd["hook"]} <break time="0.45s" /> {sd["story"]} '
-                f'<break time="0.3s" /> {sd["number"]} '
-                f'<break time="0.35s" /> {sd["closer"]}')
+        text = (f'{sd["hook"]} <break time="0.25s" /> {sd["story"]} '
+                f'<break time="0.15s" /> {sd["number"]} '
+                f'<break time="0.2s" /> {sd["closer"]}')
     else:
         text = sd["full_text"]
     t = cfg["tts"]
