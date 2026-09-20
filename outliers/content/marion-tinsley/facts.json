@@ -1,0 +1,87 @@
+{
+  "name": "Marion Tinsley",
+  "slug": "marion-tinsley",
+  "field": "checkers",
+  "one_line": "Over forty-five years and thousands of games, the best checkers player who ever lived lost seven of them.",
+  "comparison_type": "streak",
+  "facts": [
+    {
+      "claim": "lost seven games in the forty-five years from 1950 until his death in 1995, across thousands of tournament, championship, match, exhibition and casual games",
+      "number": "7",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "medium",
+      "note": "DISPUTED. Jonathan Schaeffer, Chinook's lead programmer, writes in Games of No Chance (MSRI Vol 29, 1996): 'Over the last forty-five years of his life ... Tinsley lost the unbelievable number of seven games.' Wikipedia agrees at seven. But the New York Times obituary of 8 April 1995 says he 'had lost only nine checkers games since first winning the world championship in 1955' - a HIGHER count over a SHORTER window, so the two cannot be reconciled as different measuring periods. Schaeffer's 2015 blog post hedges to 'lost less than 10'. Script must attribute: 'by most counts' or 'per the Chinook team'."
+    },
+    {
+      "claim": "the count runs from an accidental loss in the 1950 U.S. Championship; after that he finished undivided first in every tournament he entered except his last",
+      "number": "1950",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "The exception is the 1994 U.S. Championship, where he tied for first with Chinook and Don Lafferty."
+    },
+    {
+      "claim": "contested nine World Championship matches and won every one, never losing a world championship match",
+      "number": "9",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "Schaeffer: 'He contested nine World Championship matches, winning each usually by an embarrassingly large margin.' Wikipedia independently confirms he never lost a world championship match."
+    },
+    {
+      "claim": "world champion 1955-1958 and again 1975-1991",
+      "number": "",
+      "source_url": "https://en.wikipedia.org/wiki/Marion_Tinsley",
+      "confidence": "high",
+      "note": "The gap is not a decline - he retired from the game for twelve years for lack of competition, per Schaeffer."
+    },
+    {
+      "claim": "beat the Chinook program 4 wins to 2 with 33 draws in the 1992 London Man-Machine match; those two were only his sixth and seventh losses since 1950",
+      "number": "4-2",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "August 1992, London, sponsored by Silicon Graphics, 40 games. Schaeffer: 'These were only the sixth and and seventh losses by Tinsley since 1950.' Note this was NOT the sanctioned World Championship - the ACF and EDA refused to sanction a computer challenger, so Tinsley resigned the title in 1992 in order to play, and was given the title World Champion Emeritus."
+    },
+    {
+      "claim": "in the earlier 1990 exhibition he beat Chinook over fourteen games, winning 1-0 with thirteen draws",
+      "number": "1-0",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "This is the match containing the 'you're going to regret that' game. It is a fourteen-game exhibition in 1990, NOT the 1992 London championship - sources routinely conflate the two."
+    },
+    {
+      "claim": "Chinook would have needed to search sixty moves deep to see that its tenth move in that game was already lost",
+      "number": "60",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "medium",
+      "note": "DISPUTED. Schaeffer's own paper says sixty: 'Chinook needed to look ahead sixty moves to know that its tenth move was a loser.' Wikipedia says Tinsley saw 'the win 64 moves into the future'. Prefer Schaeffer's sixty - he wrote the program and the paper - and attribute if used."
+    },
+    {
+      "claim": "withdrew from the 1994 Man-Machine title match after six straight draws citing health; diagnosed with cancer a week later and died seven months after that, on 3 April 1995, aged 68",
+      "number": "6",
+      "source_url": "https://en.wikipedia.org/wiki/Marion_Tinsley",
+      "confidence": "high",
+      "note": "Schaeffer confirms the sequence. Wikipedia specifies pancreatic cancer. He was a mathematics professor with a doctorate in combinatorial analysis from Ohio State."
+    },
+    {
+      "claim": "no comparable figure exists in competitive mind games; the closest is Emanuel Lasker, chess world champion for over twenty years",
+      "number": "20",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "Schaeffer: 'Being the best over a 45-year period is unprecedented.' This is why comparison_type is streak and not gap - there is no clean numeric second-best in checkers to put on a card."
+    }
+  ],
+  "comparison": {
+    "their_number": "7",
+    "their_label": "losses in 45 years",
+    "second_best": "",
+    "second_label": "",
+    "gap_description": "Seven losses across forty-five years and thousands of games, from 1950 until his death."
+  },
+  "story_beat": "In 1990, playing the tenth game of a fourteen-game exhibition against the Chinook program, its programmer Jonathan Schaeffer reached out and played Chinook's tenth move; Tinsley looked up in surprise and said 'You're going to regret that.' Schaeffer sat there thinking his program was searching twenty moves deep and reporting an advantage - but Chinook's assessment slid from winning to equal to lost, and it eventually resigned.",
+  "story_beat_source": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+  "image_queries": [
+    "Marion Tinsley checkers",
+    "draughts tournament",
+    "English draughts",
+    "Jonathan Schaeffer"
+  ]
+}
