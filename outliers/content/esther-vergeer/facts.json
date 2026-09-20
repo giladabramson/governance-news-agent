@@ -27,6 +27,13 @@
       "note": "470 matches = ~950 sets played; she dropped 18."
     },
     {
+      "claim": "at least 452 of the 470 streak wins were in straight sets - she lost only 18 sets total, and each dropped set can account for at most one three-set match",
+      "number": "452",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "DERIVED: 470 matches minus at most 18 that could have reached a deciding set. Phrase as 'never even reached a deciding set'."
+    },
+    {
       "claim": "faced exactly one match point in the entire ten-year streak - Korie Homan, in the 2008 Beijing Paralympic final - and saved it",
       "number": "1",
       "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
