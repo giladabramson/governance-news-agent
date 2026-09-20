@@ -1,4 +1,4 @@
-import json
+import difflib, json, re
 from pathlib import Path
 from faster_whisper import WhisperModel
 
@@ -31,12 +31,26 @@ Style: Cap,Inter,88,&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,-1,0,0,0,100,100
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
-    # Group up to 3 words, but never across a sentence boundary — a group like
-    # "draws. He quit" reads as nonsense on screen.
+    # Group up to 3 words, never across a sentence boundary. Whisper's own
+    # punctuation is unreliable (it heard the beat after "In checkers." as a
+    # comma), so sentence ends come from the SCRIPT: align heard words to
+    # script words and carry the script's boundary flags over.
+    _n = lambda t: re.sub(r"[^a-z0-9']", "", t.lower())
+    sw = json.loads((out / "script.json").read_text(encoding="utf-8"))["full_text"].split()
+    ends = [bool(re.search(r"[.!?][\"']?$", x)) for x in sw]
+    sm = difflib.SequenceMatcher(None, [_n(x) for x in sw],
+                                 [_n(x["w"]) for x in words], autojunk=False)
+    flag = [w["w"].rstrip('"\'').endswith((".", "!", "?")) for w in words]
+    for op, i1, i2, j1, j2 in sm.get_opcodes():
+        if op in ("equal", "replace"):
+            for d in range(min(i2 - i1, j2 - j1)):
+                if ends[i1 + d]:
+                    flag[j1 + d] = True
+
     groups, grp = [], []
-    for w in words:
+    for i, w in enumerate(words):
         grp.append(w)
-        if len(grp) == 3 or w["w"].rstrip('"\'').endswith((".", "!", "?")):
+        if len(grp) == 3 or flag[i]:
             groups.append(grp); grp = []
     if grp:
         groups.append(grp)

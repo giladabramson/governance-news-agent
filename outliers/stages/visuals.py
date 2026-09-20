@@ -79,12 +79,40 @@ def run(out: Path, cfg: dict):
     sent_end = words[min(n_before + len(num_words) - 1, len(words) - 1)]["e"]
     card_end = min(max(sent_end, card_start + 3.5), duration)
 
-    # Photo shots: ~2.1s cuts, cycling the pool with alternating camera moves.
+    # Cue images: when the narration says the word, show the thing.
+    # facts.json: image_cues = [{match: [words], query: str, max: int}]
+    _n = lambda t: "".join(c for c in t.lower() if c.isalnum())
+    fixed = [{"file": str(card), "start": card_start, "end": card_end, "static": True}]
+    for ci, cue in enumerate(facts.get("image_cues", [])):
+        hits = commons_search(cue["query"], ua)
+        if not hits:
+            print(f"visuals: cue {cue['query']!r} — no Commons hits, skipped"); continue
+        p = imgdir / f"cue_{ci:02d}.jpg"
+        p.write_bytes(requests.get(hits[0]["url"], headers={"User-Agent": ua}, timeout=60).content)
+        credits.append(hits[0])
+        placed, last_t = 0, -9.0
+        for w in words:
+            if placed >= cue.get("max", 2):
+                break
+            if _n(w["w"]) in cue["match"] and w["s"] - last_t > 4.0:
+                t0, t1 = max(0.0, w["s"] - 0.15), min(max(0.0, w["s"] - 0.15) + 2.2, duration)
+                if all(t1 <= f["start"] or t0 >= f["end"] for f in fixed):
+                    fixed.append({"file": str(p), "start": t0, "end": t1, "move": "zin"})
+                    placed += 1; last_t = w["s"]
+    (out / "credits.json").write_text(json.dumps(credits, indent=1), encoding="utf-8")
+    fixed.sort(key=lambda s: s["start"])
+
+    # Fill the gaps with the pool: ~2.1s cuts, alternating camera moves.
     MOVES = ["zin", "panr", "zout", "panl"]
     shots, idx = [], 0
 
     def add_span(t0, t1):
         nonlocal idx
+        if t1 - t0 < 0.25:
+            # tiny sliver — stretch the previous shot instead of flashing one
+            if shots and abs(shots[-1]["end"] - t0) < 0.01:
+                shots[-1]["end"] = t1
+            return
         n = max(1, round((t1 - t0) / 2.1))
         seg = (t1 - t0) / n
         for k in range(n):
@@ -93,9 +121,13 @@ def run(out: Path, cfg: dict):
                           "move": MOVES[idx % len(MOVES)]})
             idx += 1
 
-    add_span(0.0, card_start)
-    shots.append({"file": str(card), "start": card_start, "end": card_end, "static": True})
-    if duration - card_end > 0.05:
-        add_span(card_end, duration)
+    t = 0.0
+    for f in fixed:
+        add_span(t, f["start"])
+        shots.append(f)
+        t = f["end"]
+    add_span(t, duration)
+    shots.sort(key=lambda s: s["start"])
     (out / "shots.json").write_text(json.dumps(shots, indent=1), encoding="utf-8")
-    print(f"visuals: {len(paths)} images + card, {len(shots)} shots, card {card_end-card_start:.1f}s")
+    ncues = len(fixed) - 1
+    print(f"visuals: {len(paths)} pool + {ncues} cue shots + card, {len(shots)} total")

@@ -108,7 +108,11 @@
   "story_beat_source": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
   "image_queries": [
     "Marion Tinsley checkers",
-    "draughts tournament",
-    "Jonathan Schaeffer"
+    "draughts tournament"
+  ],
+  "image_cues": [
+    {"match": ["checkers", "checker"], "query": "checkers board", "max": 2},
+    {"match": ["computer", "machine", "chinook"], "query": "mainframe computer 1990", "max": 3},
+    {"match": ["programmer"], "query": "Jonathan Schaeffer", "max": 1}
   ]
 }
