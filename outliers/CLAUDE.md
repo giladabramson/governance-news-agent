@@ -6,7 +6,8 @@ YouTube Shorts about people who dominated their field to a statistically absurd 
 ## Workflow per video
 1. `/research "Full Name"` → writes `content/<slug>/facts.json`. I review and may edit.
 2. `/script` (run inside that folder context) → writes `script.json`. I edit the hook by hand.
-3. `python render.py <slug> --voice` → voice, captions, visuals, final.mp4.
+3. `python render.py <slug> --voice` → voice, captions, visuals, and a new cut `v<N>.mp4`
+   (versions are never overwritten; `--redo assemble` forces the next one).
 4. `/meta` → `meta.json` (title, description with sources, tags). I upload manually.
 
 ## Hard rules

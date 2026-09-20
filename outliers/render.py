@@ -16,10 +16,13 @@ def main():
     assert (out / "script.json").exists(), "run /script first"
 
     outputs = {"tts": ["voice.mp3"], "captions": ["captions.ass", "words.json", "duration.txt"],
-               "visuals": ["shots.json", "credits.json"], "assemble": ["final.mp4"]}
+               "visuals": ["shots.json", "credits.json"], "assemble": []}
     for st in a.redo:
         for f in outputs[st]:
             (out / f).unlink(missing_ok=True)
+    # Old cuts (vN.mp4) are never deleted — --redo assemble just forces a new one.
+    if "assemble" in a.redo:
+        cfg["_force_assemble"] = True
 
     if not a.voice and not (out / "voice.mp3").exists():
         sys.exit("voice.mp3 missing — rerun with --voice to spend credits")

@@ -1,5 +1,15 @@
-import json, subprocess, random
+import json, re, subprocess, random
 from pathlib import Path
+
+
+def _versions(out: Path):
+    """Existing cuts, sorted: [(1, v1.mp4), (2, v2.mp4), ...]"""
+    vers = []
+    for p in out.glob("v*.mp4"):
+        m = re.fullmatch(r"v(\d+)", p.stem)
+        if m:
+            vers.append((int(m.group(1)), p))
+    return sorted(vers)
 
 # ffmpeg's filtergraph parser treats ':' as an option separator, so a Windows
 # absolute path ("C:/...") breaks the ass= filter. Everything we reference lives
@@ -20,8 +30,16 @@ def _kb(src, dur, W, H, fps, zoom_in=True):
 
 
 def run(out: Path, cfg: dict):
-    if (out / "final.mp4").exists():
-        return
+    # Versioned output: each render that follows changed inputs (or --redo
+    # assemble) writes the next vN.mp4; earlier cuts are never overwritten.
+    vers = _versions(out)
+    deps = [out / f for f in ("voice.mp3", "captions.ass", "shots.json", "script.json")]
+    deps += [p for p in [Path("assets/sfx/hook.mp3")] if p.exists()]
+    if vers and not cfg.get("_force_assemble"):
+        newest_dep = max(d.stat().st_mtime for d in deps if d.exists())
+        if vers[-1][1].stat().st_mtime >= newest_dep:
+            return
+    target = out / f"v{vers[-1][0] + 1 if vers else 1}.mp4"
     v = cfg["video"]; W, H, fps = v["width"], v["height"], v["fps"]
     shots = json.loads((out / "shots.json").read_text(encoding="utf-8"))
     # Music is optional: an empty assets/music renders voice-only rather than failing.
@@ -42,7 +60,29 @@ def run(out: Path, cfg: dict):
             filters.append(_kb(f"{i}:v", dur, W, H, fps, zoom_in=(i % 2 == 0)) + f"[v{i}]")
         labels.append(f"[v{i}]")
     n = len(shots)
-    ass = _filter_path(out / "captions.ass")
+
+    # Captions sit mid-screen, which collides with the number card's text.
+    # While the card is up, push caption lines to the lower third ({\an2} +
+    # MarginV) so the card owns the center. Derived file; original untouched.
+    ass_use = out / "captions.ass"
+    card = next((s for s in shots if s.get("static")), None)
+    if card:
+        def _sec(ts):
+            h, m, sec = ts.split(":")
+            return int(h) * 3600 + int(m) * 60 + float(sec)
+        fixed = []
+        for ln in (out / "captions.ass").read_text(encoding="utf-8").splitlines():
+            if ln.startswith("Dialogue:"):
+                parts = ln.split(",", 9)
+                if card["start"] - 0.05 <= _sec(parts[1]) < card["end"]:
+                    parts[7] = "380"
+                    parts[9] = r"{\an2}" + parts[9]
+                    ln = ",".join(parts)
+            fixed.append(ln)
+        ass_use = out / "captions_burn.ass"
+        ass_use.write_text("\n".join(fixed), encoding="utf-8")
+
+    ass = _filter_path(ass_use)
     fontsdir = _filter_path(Path(v["caption_font"]).parent)
     filters.append("".join(labels) + f"concat=n={n}:v=1:a=0[vc]")
     filters.append(f"[vc]ass={ass}:fontsdir={fontsdir}[vout]")
@@ -85,6 +125,6 @@ def run(out: Path, cfg: dict):
            "-filter_complex", ";".join(filters),
            "-map", "[vout]", "-map", "[aout]", "-shortest",
            "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-           "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(out / "final.mp4")]
+           "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(target)]
     subprocess.run(cmd, check=True)
-    print(f"done -> {out/'final.mp4'}")
+    print(f"done -> {target}")

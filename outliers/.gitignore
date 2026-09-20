@@ -7,10 +7,11 @@ __pycache__/
 
 # Rendered artefacts — regenerable, and voice.mp3 costs credits but is large
 content/*/voice.mp3
-content/*/final.mp4
+content/*/v*.mp4
 content/*/images/
 content/*/words.json
 content/*/captions.ass
+content/*/captions_burn.ass
 content/*/duration.txt
 content/*/shots.json
 
