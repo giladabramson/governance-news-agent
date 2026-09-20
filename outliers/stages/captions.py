@@ -11,7 +11,7 @@ def _ts(sec: float) -> str:
 def run(out: Path, cfg: dict):
     if (out / "captions.ass").exists():
         return
-    model = WhisperModel("small", compute_type="int8")
+    model = WhisperModel("small", device="cpu", compute_type="int8")
     segments, _ = model.transcribe(str(out / "voice.mp3"), word_timestamps=True)
     words = [{"w": w.word.strip(), "s": w.start, "e": w.end}
              for seg in segments for w in seg.words]

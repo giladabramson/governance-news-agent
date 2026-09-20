@@ -31,10 +31,14 @@ def run(out: Path, cfg: dict):
     inputs, filters, labels = [], [], []
     for i, s in enumerate(shots):
         dur = s["end"] - s["start"]
-        inputs += ["-loop", "1", "-t", f"{dur:.3f}", "-i", s["file"]]
         if s.get("static"):
+            inputs += ["-loop", "1", "-t", f"{dur:.3f}", "-i", s["file"]]
             filters.append(f"[{i}:v]scale={W}:{H},setsar=1,fps={fps}[v{i}]")
         else:
+            # Single-frame input: zoompan's d=<frames> generates the whole clip
+            # from one frame. Looping the input first would make zoompan expand
+            # EVERY input frame by d, ballooning the stream to hours.
+            inputs += ["-i", s["file"]]
             filters.append(_kb(f"{i}:v", dur, W, H, fps, zoom_in=(i % 2 == 0)) + f"[v{i}]")
         labels.append(f"[v{i}]")
     n = len(shots)
