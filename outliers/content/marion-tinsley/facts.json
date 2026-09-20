@@ -62,6 +62,13 @@
       "note": "Schaeffer confirms the sequence. Wikipedia specifies pancreatic cancer. He was a mathematics professor with a doctorate in combinatorial analysis from Ohio State."
     },
     {
+      "claim": "his loss rate works out to roughly one game every six years (7 losses / 45 years = one per ~6.4 years)",
+      "number": "6",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "DERIVED, not quoted: straight arithmetic on Schaeffer's two sourced numbers (seven losses, forty-five years). Script should hedge with 'roughly' since 45/7 = 6.4."
+    },
+    {
       "claim": "no comparable figure exists in competitive mind games; the closest is Emanuel Lasker, chess world champion for over twenty years",
       "number": "20",
       "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
