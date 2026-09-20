@@ -55,6 +55,27 @@
       "note": "DISPUTED. Schaeffer's own paper says sixty: 'Chinook needed to look ahead sixty moves to know that its tenth move was a loser.' Wikipedia says Tinsley saw 'the win 64 moves into the future'. Prefer Schaeffer's sixty - he wrote the program and the paper - and attribute if used."
     },
     {
+      "claim": "at that moment Chinook was searching twenty moves deep and reporting it had the advantage",
+      "number": "20",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "Schaeffer, firsthand: 'I sat there silent, thinking: What do you know? My program is searching twenty moves deep and says it has an advantage.'"
+    },
+    {
+      "claim": "Tinsley had seen to the end of the game and knew he had won at move eleven - one move after Chinook's mistake",
+      "number": "11",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "Schaeffer: 'In his notes to the game, Tinsley revealed that he had seen to the end of the game and knew he was going to win on move 11, one move after our mistake.'"
+    },
+    {
+      "claim": "opponents simply stopped playing him to win - for forty-five years most played only for the draw",
+      "number": "",
+      "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
+      "confidence": "high",
+      "note": "Schaeffer: 'For forty-five years, most of his opponents would play for the draw; going for a win was unthinkable.'"
+    },
+    {
       "claim": "withdrew from the 1994 Man-Machine title match after six straight draws citing health; diagnosed with cancer a week later and died seven months after that, on 3 April 1995, aged 68",
       "number": "6",
       "source_url": "https://en.wikipedia.org/wiki/Marion_Tinsley",
