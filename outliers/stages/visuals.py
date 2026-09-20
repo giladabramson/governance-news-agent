@@ -12,20 +12,26 @@ def commons_search(q: str, ua: str, n: int = 4) -> list[dict]:
         "gsrlimit": n, "prop": "imageinfo", "iiprop": "url|extmetadata",
         "iiurlwidth": 1600, "format": "json"}, timeout=30).json()
     # Commons full-text search matches file descriptions too, which drags in
-    # unrelated images (a darts trophy for "Scrabble tournament"). Require the
-    # TITLE to share at least one real word with the query.
+    # unrelated images (a darts trophy for "Scrabble tournament"; a social-club
+    # BUILDING for "Scrabble club"). Two gates: the title must share a word
+    # with the query, and the query's FIRST word — by convention the topic
+    # noun ("Scrabble ...", "draughts ...", "mainframe ...") — must appear in
+    # the title or the file's Commons categories.
     qtok = [t for t in re.findall(r"[a-z0-9]+", q.lower()) if len(t) > 3]
     hits = []
     for p in r.get("query", {}).get("pages", {}).values():
         info = p["imageinfo"][0]
         url = info.get("thumburl", "")
-        lic = info.get("extmetadata", {}).get("LicenseShortName", {}).get("value", "").lower()
+        md = info.get("extmetadata", {})
+        lic = md.get("LicenseShortName", {}).get("value", "").lower()
+        cats = md.get("Categories", {}).get("value", "").lower()
         # Filter on the source file's extension, not the thumb URL — thumburls carry
         # utm query params, and Commons happily thumbnails PDFs/TIFs we don't want.
         title = p.get("title", "").lower()
         if (url and title.endswith((".jpg", ".jpeg", ".png"))
                 and any(k in lic for k in OK_LICENSES)
-                and (not qtok or any(t in title for t in qtok))):
+                and (not qtok or any(t in title for t in qtok))
+                and (not qtok or qtok[0] in title + " " + cats)):
             hits.append({"url": url, "license": lic, "page": p.get("title", "")})
     return hits
 
@@ -59,7 +65,10 @@ def run(out: Path, cfg: dict):
     imgdir = out / "images"; imgdir.mkdir(exist_ok=True)
     paths, credits, seen = [], [], set()
     for q in facts["image_queries"]:
+        per_q = 0  # cap per query so no single photo series dominates the pool
         for hit in commons_search(q, ua, n=6):
+            if per_q >= 2:
+                break
             # Archives upload burst shots seconds apart whose titles differ only
             # in a serial number — digit-stripped title dedupes those sessions.
             key = "".join(c for c in hit["page"] if not c.isdigit())
@@ -67,9 +76,9 @@ def run(out: Path, cfg: dict):
                 continue
             p = imgdir / f"{len(paths):02d}.jpg"
             p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
-            paths.append(str(p)); credits.append(hit); seen.add(key)
+            paths.append(str(p)); credits.append(hit); seen.add(key); per_q += 1
             if len(paths) >= 24: break
-        if len(paths) >= 16: break
+        if len(paths) >= 24: break
     if not paths:
         raise SystemExit("no usable Commons images — add image_queries in facts.json")
     (out / "credits.json").write_text(json.dumps(credits, indent=1), encoding="utf-8")
@@ -93,7 +102,11 @@ def run(out: Path, cfg: dict):
     # Cue images: when the narration says the word, show the thing.
     # facts.json: image_cues = [{match: [words], query: str, max: int}]
     _n = lambda t: "".join(c for c in t.lower() if c.isalnum())
-    fixed = [{"file": str(card), "start": card_start, "end": card_end, "static": True}]
+    # Number card is opt-in (config video.number_card) — Gilad cut it: a text
+    # slide, even drifting, reads as a frozen frame. Verdicts live in narration.
+    fixed = []
+    if cfg["video"].get("number_card", False):
+        fixed.append({"file": str(card), "start": card_start, "end": card_end, "static": True})
     for ci, cue in enumerate(facts.get("image_cues", [])):
         queries = cue["query"] if isinstance(cue["query"], list) else [cue["query"]]
         crop = cue.get("crop")  # "tight"/"medium": reframe the source so one

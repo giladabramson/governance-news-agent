@@ -103,15 +103,12 @@
     "Nigel Richards Scrabble",
     "Scrabble tournament",
     "Scrabble world championship",
-    "playing Scrabble",
-    "Scrabble game",
-    "Scrabble club",
     "Scrabble board",
     "Scrabble tiles",
+    "Scrabble game",
     "Scrabble pieces",
-    "joueur de scrabble",
-    "championnat de scrabble",
-    "ScrabbleDuplicat"
+    "ScrabbleDuplicat",
+    "joueur de scrabble"
   ],
   "image_cues": [
     {"match": ["interviews"], "query": "Nigel Richards Scrabble", "crop": "medium", "max": 1},
