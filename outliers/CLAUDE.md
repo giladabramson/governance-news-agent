@@ -3,12 +3,16 @@
 YouTube Shorts about people who dominated their field to a statistically absurd degree
 (Nigel Richards, Marion Tinsley, Don Bradman). Tone: calm, dry, matter-of-fact. Numbers do the work.
 
-## Workflow per video
-1. `/research "Full Name"` → writes `content/<slug>/facts.json`. I review and may edit.
-2. `/script` (run inside that folder context) → writes `script.json`. I edit the hook by hand.
-3. `python render.py <slug> --voice` → voice, captions, visuals, and a new cut `v<N>.mp4`
-   (versions are never overwritten; `--redo assemble` forces the next one).
-4. `/meta` → `meta.json` (title, description with sources, tags). I upload manually.
+## Workflow per video — three human gates, then hands-off
+1. `/research "Full Name"` → `content/<slug>/facts.json`.
+   **GATE 1: Gilad reviews the facts in chat. Iterate until he approves. Do not proceed.**
+2. `/script` → `script.json`.
+   **GATE 2: Gilad reviews the script in chat (enumerated: hook/story/number/closer). Iterate. Do not render.**
+3. Download the image pool + cues and show Gilad EVERY picture (contact sheet).
+   **GATE 3: he vetoes/keeps images in chat; adjust queries and re-show until approved.**
+4. Only after gate 3: `python render.py <slug> --voice` (spends credits) → verify
+   (transcript match, zero repeats, frame extraction) → `/meta` → Gilad uploads.
+   Versions are never overwritten (`v<N>.mp4`); `--redo assemble` forces the next one.
 
 ## Hard rules
 - Never put a number in a script that is not in facts.json with a source_url.

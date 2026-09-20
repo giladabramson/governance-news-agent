@@ -1,0 +1,98 @@
+{
+  "name": "Esther Vergeer",
+  "slug": "esther-vergeer",
+  "field": "wheelchair tennis",
+  "one_line": "Won her last 470 matches in a row across ten years and retired at 31 without being beaten again.",
+  "comparison_type": "streak",
+  "facts": [
+    {
+      "claim": "won 470 consecutive singles matches; the streak ran from early 2003 until her retirement in February 2013 - ten straight years unbeaten",
+      "number": "470",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "The streak ended by RETIREMENT, not defeat. Nobody ever beat her again."
+    },
+    {
+      "claim": "her last defeat was on 30 January 2003, to Daniela di Toro at the Sydney International",
+      "number": "2003",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "Useful framing: name the LAST HUMAN to beat her, then the date, then silence."
+    },
+    {
+      "claim": "lost only 18 sets in the 470-match streak",
+      "number": "18",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "470 matches = ~950 sets played; she dropped 18."
+    },
+    {
+      "claim": "faced exactly one match point in the entire ten-year streak - Korie Homan, in the 2008 Beijing Paralympic final - and saved it",
+      "number": "1",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "THE story beat. One point from losing, once in a decade, in a Paralympic final - then unbeaten for four more years after it. Commons has a photo of her SERVING at Beijing 2008 (File:080908 - Esther Vergeer serves)."
+    },
+    {
+      "claim": "world No. 1 for 668 weeks, relinquished 21 January 2013 only because she retired",
+      "number": "668",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "668 weeks is nearly 13 years."
+    },
+    {
+      "claim": "seven Paralympic gold medals (four singles: Sydney 2000, Athens 2004, Beijing 2008, London 2012; three doubles), plus one silver",
+      "number": "7",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "43 Grand Slam titles: 21 singles, 22 doubles",
+      "number": "43",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "paralyzed at age 8: a swimming accident at 6 revealed a vascular condition around her spinal cord; a nine-hour operation on 15 January 1990 left her unable to move her legs",
+      "number": "9",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "Born 18 July 1981, so the operation came at age 8. She learned tennis in rehabilitation."
+    },
+    {
+      "claim": "retired in February 2013, aged 31, with the streak intact",
+      "number": "31",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "Announced after the London 2012 Paralympics."
+    },
+    {
+      "claim": "the longest winning streak in able-bodied professional tennis is Martina Navratilova's 74 straight matches (1984)",
+      "number": "74",
+      "source_url": "https://en.wikipedia.org/wiki/Martina_Navratilova",
+      "confidence": "high",
+      "note": "Wikipedia: 'a record for a professional'. The gap framing: the best tennis streak ever recorded on two feet is 74; hers is 470. Do NOT claim hers is the longest streak in all of sport (Jahangir Khan's squash run is longer)."
+    }
+  ],
+  "comparison": {
+    "their_number": "470",
+    "their_label": "consecutive match wins",
+    "second_best": "74",
+    "second_label": "the able-bodied tennis record",
+    "gap_description": "470 straight wins over ten years; the best anyone has done on two feet is 74."
+  },
+  "story_beat": "In ten years and 470 matches, she faced exactly one match point - in the 2008 Beijing Paralympic final, against Korie Homan. She saved it, won the final, and was never beaten again for the rest of her career.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+  "image_queries": [
+    "Esther Vergeer",
+    "Vergeer wheelchair",
+    "wheelchair tennis",
+    "Paralympic tennis"
+  ],
+  "image_cues": [
+    {"match": ["beijing", "point"], "query": "080908 Esther Vergeer serves", "max": 1},
+    {"match": ["retired", "retirement"], "query": "Esther Vergeer packs up her gear", "max": 1}
+  ]
+}
