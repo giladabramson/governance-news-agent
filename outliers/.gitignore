@@ -16,3 +16,6 @@ content/*/shots.json
 
 # Music beds are downloaded, not authored here
 assets/music/*.mp3
+
+# Throwaway voice/model auditions
+_auditions/
