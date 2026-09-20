@@ -1,13 +1,13 @@
 {
   "hook": "Between 1950 and 1995, Marion Tinsley lost seven games of checkers. Total.",
-  "story": "He was a mathematics professor with a doctorate in combinatorial analysis, and he was so far ahead of everyone else that he once quit the game for twelve years out of boredom. In 1990 he agreed to play a computer program called Chinook. Ten moves into the tenth game, Chinook's programmer made his move, and Tinsley looked up and said, \"You're going to regret that.\" The programmer thought his machine was winning; by his own account it needed sixty moves of lookahead to see it had already lost.",
-  "number": "By most counts that's seven losses in forty-five years, across thousands of games. The New York Times said nine; either way, nobody in any mind sport has been that good for that long.",
-  "closer": "Two of the seven were to the computer.",
-  "full_text": "Between 1950 and 1995, Marion Tinsley lost seven games of checkers. Total. He was a mathematics professor with a doctorate in combinatorial analysis, and he was so far ahead of everyone else that he once quit the game for twelve years out of boredom. In 1990 he agreed to play a computer program called Chinook. Ten moves into the tenth game, Chinook's programmer made his move, and Tinsley looked up and said, \"You're going to regret that.\" The programmer thought his machine was winning; by his own account it needed sixty moves of lookahead to see it had already lost. By most counts that's seven losses in forty-five years, across thousands of games. The New York Times said nine; either way, nobody in any mind sport has been that good for that long. Two of the seven were to the computer.",
+  "story": "He won his first world title in 1955, then found so little competition that he quit for twelve years out of boredom. He came back and won it again. Then in 1990 they sat him across from a computer program called Chinook. Ten moves into the tenth game, its programmer reached out and made his move, and Tinsley looked up and said, \"You're going to regret that.\"",
+  "number": "Chinook would have needed to search sixty moves ahead to know he was right. Seven losses in forty-five years, by most counts; the closest anyone has come in any mind sport is twenty years atop chess.",
+  "closer": "The computer took his title in 1994, without winning a single game of the match.",
+  "full_text": "Between 1950 and 1995, Marion Tinsley lost seven games of checkers. Total. He won his first world title in 1955, then found so little competition that he quit for twelve years out of boredom. He came back and won it again. Then in 1990 they sat him across from a computer program called Chinook. Ten moves into the tenth game, its programmer reached out and made his move, and Tinsley looked up and said, \"You're going to regret that.\" Chinook would have needed to search sixty moves ahead to know he was right. Seven losses in forty-five years, by most counts; the closest anyone has come in any mind sport is twenty years atop chess. The computer took his title in 1994, without winning a single game of the match.",
   "hook_alternatives": [
     "Between 1950 and 1995, Marion Tinsley lost seven games of checkers. Total.",
     "Marion Tinsley played competitive checkers for forty-five years and lost seven games.",
     "Two of the seven games Marion Tinsley lost in his life were to a computer."
   ],
-  "word_count": 141
+  "word_count": 130
 }
