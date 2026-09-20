@@ -108,11 +108,17 @@
   "story_beat_source": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
   "image_queries": [
     "Marion Tinsley checkers",
-    "draughts tournament"
+    "draughts tournament",
+    "dammen simultaan",
+    "damkampioenschap",
+    "Samuel Reshevsky versus the World",
+    "checkers playing men"
   ],
   "image_cues": [
     {"match": ["checkers", "checker"], "query": "checkers board", "max": 2},
-    {"match": ["computer", "machine", "chinook"], "query": "mainframe computer 1990", "max": 3},
+    {"match": ["computer", "machine", "chinook"],
+     "query": ["mainframe computer 1990", "Silicon Graphics computers and IBM RS6000", "Silicon Graphics Indy"],
+     "max": 3},
     {"match": ["programmer"], "query": "Jonathan Schaeffer", "max": 1}
   ]
 }

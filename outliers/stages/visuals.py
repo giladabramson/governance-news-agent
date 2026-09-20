@@ -51,14 +51,19 @@ def run(out: Path, cfg: dict):
     facts = json.loads((out / "facts.json").read_text(encoding="utf-8"))
     ua = cfg["commons"]["user_agent"]
     imgdir = out / "images"; imgdir.mkdir(exist_ok=True)
-    paths, credits = [], []
+    paths, credits, seen = [], [], set()
     for q in facts["image_queries"]:
-        for hit in commons_search(q, ua):
+        for hit in commons_search(q, ua, n=6):
+            # Archives upload burst shots seconds apart whose titles differ only
+            # in a serial number — digit-stripped title dedupes those sessions.
+            key = "".join(c for c in hit["page"] if not c.isdigit())
+            if key in seen:
+                continue
             p = imgdir / f"{len(paths):02d}.jpg"
             p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
-            paths.append(str(p)); credits.append(hit)
-            if len(paths) >= 6: break
-        if len(paths) >= 6: break
+            paths.append(str(p)); credits.append(hit); seen.add(key)
+            if len(paths) >= 16: break
+        if len(paths) >= 16: break
     if not paths:
         raise SystemExit("no usable Commons images — add image_queries in facts.json")
     (out / "credits.json").write_text(json.dumps(credits, indent=1), encoding="utf-8")
@@ -84,12 +89,21 @@ def run(out: Path, cfg: dict):
     _n = lambda t: "".join(c for c in t.lower() if c.isalnum())
     fixed = [{"file": str(card), "start": card_start, "end": card_end, "static": True}]
     for ci, cue in enumerate(facts.get("image_cues", [])):
-        hits = commons_search(cue["query"], ua)
-        if not hits:
-            print(f"visuals: cue {cue['query']!r} — no Commons hits, skipped"); continue
-        p = imgdir / f"cue_{ci:02d}.jpg"
-        p.write_bytes(requests.get(hits[0]["url"], headers={"User-Agent": ua}, timeout=60).content)
-        credits.append(hits[0])
+        queries = cue["query"] if isinstance(cue["query"], list) else [cue["query"]]
+        cue_paths = []
+        for q in queries:
+            for hit in commons_search(q, ua):
+                key = "".join(c for c in hit["page"] if not c.isdigit())
+                if key in seen:
+                    continue
+                p = imgdir / f"cue_{ci:02d}_{len(cue_paths)}.jpg"
+                p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
+                cue_paths.append(str(p)); credits.append(hit); seen.add(key)
+                break  # one image per query — variety over depth
+            if len(cue_paths) >= cue.get("max", 2):
+                break
+        if not cue_paths:
+            print(f"visuals: cue {queries[0]!r} — no Commons hits, skipped"); continue
         placed, last_t = 0, -9.0
         for w in words:
             if placed >= cue.get("max", 2):
@@ -97,7 +111,9 @@ def run(out: Path, cfg: dict):
             if _n(w["w"]) in cue["match"] and w["s"] - last_t > 4.0:
                 t0, t1 = max(0.0, w["s"] - 0.15), min(max(0.0, w["s"] - 0.15) + 2.2, duration)
                 if all(t1 <= f["start"] or t0 >= f["end"] for f in fixed):
-                    fixed.append({"file": str(p), "start": t0, "end": t1, "move": "zin"})
+                    # rotate the cue's images so no file shows twice
+                    fixed.append({"file": cue_paths[placed % len(cue_paths)],
+                                  "start": t0, "end": t1, "move": "zin"})
                     placed += 1; last_t = w["s"]
     (out / "credits.json").write_text(json.dumps(credits, indent=1), encoding="utf-8")
     fixed.sort(key=lambda s: s["start"])
@@ -116,6 +132,8 @@ def run(out: Path, cfg: dict):
         n = max(1, round((t1 - t0) / 2.1))
         seg = (t1 - t0) / n
         for k in range(n):
+            if idx == len(paths):
+                print("visuals: pool exhausted — images will repeat; add image_queries")
             shots.append({"file": paths[idx % len(paths)],
                           "start": t0 + k * seg, "end": t0 + (k + 1) * seg,
                           "move": MOVES[idx % len(MOVES)]})
