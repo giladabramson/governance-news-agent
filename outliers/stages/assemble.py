@@ -46,16 +46,40 @@ def run(out: Path, cfg: dict):
     fontsdir = _filter_path(Path(v["caption_font"]).parent)
     filters.append("".join(labels) + f"concat=n={n}:v=1:a=0[vc]")
     filters.append(f"[vc]ass={ass}:fontsdir={fontsdir}[vout]")
+
+    # Audio inputs after the stills: voice at [n], then optional music / hook SFX.
+    audio_in, ai = [], n + 1
+    music_idx = sfx_idx = None
     if music:
-        filters.append(f"[{n}:a]aformat=channel_layouts=stereo[voice]")
-        filters.append(f"[{n+1}:a]volume={v['music_volume_db']}dB,aformat=channel_layouts=stereo[mus]")
-        filters.append("[mus][voice]sidechaincompress=threshold=0.05:ratio=6:attack=20:release=400[musd]")
-        filters.append("[voice][musd]amix=inputs=2:duration=first:dropout_transition=2[aout]")
-        audio_in = ["-stream_loop", "-1", "-i", str(music)]
+        audio_in += ["-stream_loop", "-1", "-i", str(music)]
+        music_idx = ai; ai += 1
     else:
-        filters.append(f"[{n}:a]aformat=channel_layouts=stereo[aout]")
-        audio_in = []
         print("assemble: no music in assets/music — rendering voice-only")
+    sfx, hook_end = Path("assets/sfx/hook.mp3"), None
+    if sfx.exists():
+        try:
+            script = json.loads((out / "script.json").read_text(encoding="utf-8"))
+            words = json.loads((out / "words.json").read_text(encoding="utf-8"))
+            hook_end = words[min(len(script["hook"].split()), len(words)) - 1]["e"]
+        except Exception:
+            pass
+    if hook_end is not None:
+        audio_in += ["-i", str(sfx)]
+        sfx_idx = ai; ai += 1
+
+    filters.append(f"[{n}:a]aformat=channel_layouts=stereo[voice]")
+    vsrc = "voice"
+    if sfx_idx is not None:
+        ms = int(hook_end * 1000)
+        filters.append(f"[{sfx_idx}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo,volume=-8dB[sfx]")
+        filters.append("[voice][sfx]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[vmix]")
+        vsrc = "vmix"
+    if music_idx is not None:
+        filters.append(f"[{music_idx}:a]volume={v['music_volume_db']}dB,aformat=channel_layouts=stereo[mus]")
+        filters.append(f"[mus][{vsrc}]sidechaincompress=threshold=0.05:ratio=6:attack=20:release=400[musd]")
+        filters.append(f"[{vsrc}][musd]amix=inputs=2:duration=first:dropout_transition=2[aout]")
+    else:
+        filters.append(f"[{vsrc}]anull[aout]")
 
     cmd = ["ffmpeg", "-y", *inputs, "-i", str(out / "voice.mp3"), *audio_in,
            "-filter_complex", ";".join(filters),

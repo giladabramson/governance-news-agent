@@ -10,7 +10,16 @@ def run(out: Path, cfg: dict):
     if mp3.exists() and mp3.stat().st_mtime >= script.stat().st_mtime:
         return
     load_dotenv()
-    text = json.loads(script.read_text(encoding="utf-8"))["full_text"]
+    sd = json.loads(script.read_text(encoding="utf-8"))
+    if all(k in sd for k in ("hook", "story", "number", "closer")):
+        # Audible pauses between sections: long after the hook so it lands,
+        # shorter elsewhere. ElevenLabs renders <break time="Xs" /> as silence,
+        # so Whisper's word timings stay aligned with the script text.
+        text = (f'{sd["hook"]} <break time="0.8s" /> {sd["story"]} '
+                f'<break time="0.5s" /> {sd["number"]} '
+                f'<break time="0.6s" /> {sd["closer"]}')
+    else:
+        text = sd["full_text"]
     t = cfg["tts"]
     client = ElevenLabs(api_key=os.environ["ELEVENLABS_API_KEY"])
     audio = client.text_to_speech.convert(
