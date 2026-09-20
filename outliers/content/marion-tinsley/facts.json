@@ -90,6 +90,13 @@
       "note": "DERIVED, not quoted: straight arithmetic on Schaeffer's two sourced numbers (seven losses, forty-five years). Script should hedge with 'roughly' since 45/7 = 6.4."
     },
     {
+      "claim": "the greatest checkers player who ever lived, and arguably the most dominant champion in any competitive sport",
+      "number": "",
+      "source_url": "http://jonathanschaeffer.blogspot.com/2015/04/marion-tinsley-20-years-later.html",
+      "confidence": "high",
+      "note": "Schaeffer's words verbatim. NYT obituary independently: 'widely regarded as the game's best player ever.' Safe to state plainly in the script."
+    },
+    {
       "claim": "no comparable figure exists in competitive mind games; the closest is Emanuel Lasker, chess world champion for over twenty years",
       "number": "20",
       "source_url": "https://library.slmath.org/books/Book29/files/tinsley.pdf",
