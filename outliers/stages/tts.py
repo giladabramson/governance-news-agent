@@ -1,8 +1,21 @@
-import json, os
+import json, os, subprocess
 from pathlib import Path
 from dotenv import load_dotenv
 from elevenlabs.client import ElevenLabs
 from elevenlabs import VoiceSettings
+
+
+def _trim_lead(mp3: Path):
+    """Tighten silences without touching the voice: cut the leading dead air
+    (pure hook lag) and clamp any internal pause to <=0.5s. Runs before
+    captions, so Whisper times against the edited audio — nothing desyncs.
+    Pause complaints are an ffmpeg edit, never a paid re-generation."""
+    t = mp3.with_suffix(".trim.mp3")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(mp3), "-af",
+                    "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08"
+                    ":stop_periods=-1:stop_threshold=-40dB:stop_duration=0.5",
+                    "-c:a", "libmp3lame", "-q:a", "2", str(t)], check=True)
+    t.replace(mp3)
 
 
 def run(out: Path, cfg: dict):
@@ -18,7 +31,7 @@ def run(out: Path, cfg: dict):
         # land ("...every six years. (beat) In checkers.").
         import re
         hook_sents = re.split(r"(?<=[.!?])\s+", sd["hook"].strip())
-        hook = ' <break time="0.4s" /> '.join(
+        hook = ' <break time="0.25s" /> '.join(
             [" ".join(hook_sents[:-1]), hook_sents[-1]]) if len(hook_sents) > 1 else sd["hook"]
         text = (f'{hook} <break time="0.25s" /> {sd["story"]} '
                 f'<break time="0.15s" /> {sd["number"]} '
@@ -42,6 +55,7 @@ def run(out: Path, cfg: dict):
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(wav),
                         "-c:a", "libmp3lame", "-q:a", "4", str(mp3)], check=True)
         wav.unlink(missing_ok=True)
+        _trim_lead(mp3)
         print(f"tts: DRAFT voice (Windows SAPI, free) -> {mp3}")
         return
 
@@ -59,4 +73,5 @@ def run(out: Path, cfg: dict):
     with open(mp3, "wb") as f:
         for chunk in audio:
             f.write(chunk)
+    _trim_lead(mp3)
     print(f"tts: {len(text)} chars -> {mp3}")
