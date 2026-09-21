@@ -38,7 +38,7 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
     GRAYBAR = (92, 91, 85)
     bw, gap = W * 0.20, W * 0.10
     lx0, rx0 = W / 2 - gap / 2 - bw, W / 2 + gap / 2
-    ybase, bar_top = H * 0.72, H * 0.44
+    ybase, bar_top = H * 0.74, H * 0.48    # chart area sits clear of the title block
     ymax = target * 1.08
     hgt = lambda v: (ybase - bar_top) * (v / ymax)
     n = int(dur * fps)
@@ -58,10 +58,12 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             d.line([(W * 0.08, gy), (W * 0.92, gy)], fill=(30, 30, 29), width=2)
 
         # counter + label up top
-        d.text((W / 2, H * 0.28), f"{int(round(val))}", font=big, fill=GOLD, anchor="mm")
-        d.text((W / 2, H * 0.37), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
+        d.text((W / 2, H * 0.245), f"{int(round(val))}", font=big, fill=GOLD, anchor="mm")
+        d.text((W / 2, H * 0.335), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
 
-        # milestone lines (e.g. "107 consecutive finals") flash as crossed
+        # milestone lines (e.g. "107 consecutive finals") — labels drawn after
+        # the bars so the rising bar never punches through the text
+        m_labels = []
         for m in milestones:
             my = ybase - (ybase - bar_top) * (float(m["value"]) / ymax)
             x = W * 0.08
@@ -69,8 +71,10 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
                 d.line([(x, my), (min(x + 18, W * 0.92), my)], fill=(64, 63, 58), width=2)
                 x += 30
             near = val >= float(m["value"]) and (val - float(m["value"])) < target * 0.10
-            d.text((W * 0.92, my - 34), m.get("label", str(m["value"])),
-                   font=sml, fill=WHITE if near else GRAY, anchor="rm")
+            ly = my + 34 if my - 40 < bar_top + 10 else my - 34
+            # left side of the chart, where nothing rises into it
+            m_labels.append(((W * 0.08 + 6, ly), m.get("label", str(m["value"])),
+                             WHITE if near else GRAY))
 
         if rec:
             if cross_frame is None and val >= rec:
@@ -84,8 +88,11 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
         d.rounded_rectangle([rx0, ybase - max(hgt(val), 8), rx0 + bw, ybase],
                             radius=14, fill=GOLD)
 
+        for pos, txt, col in m_labels:
+            d.text(pos, txt, font=sml, fill=col, anchor="lm")
+
         if rec and c.get("second_label"):
-            d.text((W / 2, ybase + 52), f"{int(rec)} = {c['second_label']}",
+            d.text((W / 2, ybase + 44), f"{int(rec)} = {c['second_label']}",
                    font=sml, fill=GRAY, anchor="mm")
 
         img.save(tmp / f"f{i:04d}.png")

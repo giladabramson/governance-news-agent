@@ -96,7 +96,7 @@ def run(out: Path, cfg: dict):
                 parts = ln.split(",", 9)
                 t = _sec(parts[1])
                 if any(sp["start"] - 0.05 <= t < sp["end"] for sp in specials):
-                    parts[7] = "380"
+                    parts[7] = "290"   # low enough to clear chart under-labels
                     parts[9] = r"{\an2}" + parts[9]
                     ln = ",".join(parts)
             fixed.append(ln)
