@@ -23,7 +23,7 @@ def run(out: Path, cfg: dict):
     merged = []
     for w in words:
         t = w["w"].strip()
-        if (merged and re.fullmatch(r"[.,]\d+[.,]?", t)
+        if (merged and re.fullmatch(r"[.,\-]\d+[.,]?", t)
                 and merged[-1]["w"].strip().rstrip(".,").isdigit()):
             merged[-1]["w"] = merged[-1]["w"].strip() + t
             merged[-1]["e"] = w["e"]
