@@ -65,6 +65,13 @@ def run(out: Path, cfg: dict):
     imgdir = out / "images"; imgdir.mkdir(exist_ok=True)
     paths, credits, seen = [], [], set()
 
+    # Animated stat chart (stages/chart.py output): if present, it plays over
+    # the hook's final sentence — the counter climbs while the stat is spoken.
+    chart_fixed = None
+    if (out / "chart.mp4").exists():
+        chart_fixed = float(json.loads((out / "chart.json").read_text())["dur"]) \
+            if (out / "chart.json").exists() else 3.5
+
     # Cues download FIRST and claim their images — otherwise a cue whose photo
     # also matches a pool query gets deduped away and silently never fires.
     cue_downloads = []
@@ -93,8 +100,14 @@ def run(out: Path, cfg: dict):
                 break
         cue_downloads.append((cue, cue_paths))
 
+    # Push-ins are reserved for the subject: a zoom onto a face reads as "this
+    # is who we're talking about". Images from queries naming the subject get
+    # zin; everything else pans or pulls back.
+    subj_tokens = {t for t in re.findall(r"[a-z]+", facts["name"].lower()) if len(t) > 3}
+    subj_flags = []
     for q in facts["image_queries"]:
         per_q = 0  # cap per query so no single photo series dominates the pool
+        q_subj = any(t in q.lower() for t in subj_tokens)
         for hit in commons_search(q, ua, n=6):
             if per_q >= 2:
                 break
@@ -107,6 +120,7 @@ def run(out: Path, cfg: dict):
             p = imgdir / f"{len(paths):02d}.jpg"
             p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
             paths.append(str(p)); credits.append(hit); seen.add(key); per_q += 1
+            subj_flags.append(q_subj)
             if len(paths) >= 24: break
         if len(paths) >= 24: break
     if not paths:
@@ -137,6 +151,13 @@ def run(out: Path, cfg: dict):
     fixed = []
     if cfg["video"].get("number_card", False):
         fixed.append({"file": str(card), "start": card_start, "end": card_end, "static": True})
+    if chart_fixed:
+        hook_words = script["hook"].split()
+        sents = re.split(r"(?<=[.!?])\s+", script["hook"].strip())
+        lead = len(hook_words) - len(sents[-1].split()) if len(sents) > 1 else 0
+        t0 = max(0.0, words[min(lead, len(words) - 1)]["s"] - 0.1)
+        fixed.append({"file": str(out / "chart.mp4"), "start": t0,
+                      "end": min(t0 + chart_fixed, duration), "video": True})
     for cue, cue_paths in cue_downloads:
         if not cue_paths:
             print(f"visuals: cue {cue['match']} — no Commons hits, skipped"); continue
@@ -166,7 +187,8 @@ def run(out: Path, cfg: dict):
     # Fill the gaps with the pool: ~2.1s cuts, alternating camera moves.
     # Never repeat an image: if the pool can't cover every 2.1s slot, ration —
     # fewer, slightly longer cuts per gap instead of a second showing.
-    MOVES = ["zin", "panr", "zout", "panl"]
+    SUBJ_MOVES = ["zin", "panr"]
+    NEUTRAL_MOVES = ["panr", "zout", "panl"]
     gaps, t = [], 0.0
     for f in fixed:
         if f["start"] - t >= 0.25:
@@ -184,9 +206,12 @@ def run(out: Path, cfg: dict):
             print("visuals: pool exhausted — images will repeat; add image_queries")
         seg = (t1 - t0) / n
         for k in range(n):
-            shots.append({"file": paths[idx % len(paths)],
+            j = idx % len(paths)
+            subj = subj_flags[j] if j < len(subj_flags) else False
+            move = (SUBJ_MOVES if subj else NEUTRAL_MOVES)[idx % (2 if subj else 3)]
+            shots.append({"file": paths[j],
                           "start": t0 + k * seg, "end": t0 + (k + 1) * seg,
-                          "move": MOVES[idx % len(MOVES)]})
+                          "move": move})
             idx += 1
     shots.sort(key=lambda s: s["start"])
     (out / "shots.json").write_text(json.dumps(shots, indent=1), encoding="utf-8")

@@ -76,6 +76,27 @@
       "note": "Announced after the London 2012 Paralympics."
     },
     {
+      "claim": "first reached world No. 1 on 6 April 1999, aged 17",
+      "number": "17",
+      "source_url": "https://en.wikipedia.org/wiki/Esther_Vergeer",
+      "confidence": "high",
+      "note": "DERIVED age: born 18 July 1981, ranking date 6 April 1999 = 17. Bridges the origin to the 2003 loss - she was already No. 1 when di Toro beat her."
+    },
+    {
+      "claim": "won 120 successive tournaments in her final decade",
+      "number": "120",
+      "source_url": "https://www.paralympic.org/feature/no-6-esther-vergeer-retires-remains-involved",
+      "confidence": "high",
+      "note": "IPC verbatim: 'she won 120 successive tournaments in the final decade.' Note: IPC counts 44 Grand Slam titles vs Wikipedia's 43 - stick with 43 (Wikipedia's itemized count) or say 'more than forty'."
+    },
+    {
+      "claim": "called, by the International Paralympic Committee, arguably the greatest individual ever to have played the game",
+      "number": "",
+      "source_url": "https://www.paralympic.org/feature/no-6-esther-vergeer-retires-remains-involved",
+      "confidence": "high",
+      "note": "Backs the question-hook 'is she the most dominant athlete of all time?' - the video poses the question, the IPC quote and the numbers answer it."
+    },
+    {
       "claim": "the longest winning streak in able-bodied professional tennis is Martina Navratilova's 74 straight matches (1984)",
       "number": "74",
       "source_url": "https://en.wikipedia.org/wiki/Martina_Navratilova",
@@ -99,8 +120,7 @@
     "tennis wheelchair match",
     "wheelchair tennis US Open",
     "wheelchair tennis Roland Garros",
-    "Paralympic tennis",
-    "wheelchair tennis"
+    "Paralympic tennis"
   ],
   "image_cues": [
     {"match": ["beijing", "point"], "query": "080908 Esther Vergeer serves", "max": 1},

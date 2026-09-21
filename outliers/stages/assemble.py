@@ -62,7 +62,11 @@ def run(out: Path, cfg: dict):
     inputs, filters, labels = [], [], []
     for i, s in enumerate(shots):
         dur = s["end"] - s["start"]
-        if s.get("static"):
+        if s.get("video"):
+            # pre-rendered clip (animated chart) — pass through at native motion
+            inputs += ["-t", f"{dur:.3f}", "-i", s["file"]]
+            filters.append(f"[{i}:v]scale={W}:{H},setsar=1,fps={fps}[v{i}]")
+        elif s.get("static"):
             # "static" now means caption-repositioning only — the card itself
             # still drifts (Gilad: fully still frames look bad)
             inputs += ["-i", s["file"]]
