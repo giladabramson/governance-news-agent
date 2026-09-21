@@ -72,9 +72,9 @@
   "comparison": {
     "their_number": "122",
     "their_label": "consecutive race wins",
-    "second_best": "",
-    "second_label": "",
-    "gap_description": "122 straight wins across 9 years, 9 months and 9 days."
+    "second_best": "10",
+    "second_label": "his second-best streak, started the week after",
+    "gap_description": "122 straight wins; his own next streak, 10, is the closest anyone has come."
   },
   "story_beat": "Before March 1976 he had run exactly one 400m hurdles race; four months later he was Olympic champion. His college had no track, so the man who would dominate the event for a decade trained at public high school facilities while finishing a physics degree.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Edwin_Moses",
@@ -87,11 +87,44 @@
     "Olympic Games Running 13c 1976",
     "Norman Park athletics track starting blocks"
   ],
-  "chart_match": ["122"],
+  "chart_match": [
+    "122"
+  ],
   "image_cues": [
-    {"match": ["hurdles", "hurdle"], "query": "F. M. Taylor winning 400 meter hurdles", "max": 1},
-    {"match": ["classes"], "query": "Morehouse College courtyard entrance", "max": 1},
-    {"match": ["montreal"], "query": "Montreal - Olympic Park panorama", "max": 1},
-    {"match": ["angeles"], "query": "400 meter track at the 1984 Summer Olympics", "max": 1}
+    {
+      "match": [
+        "hurdles",
+        "hurdle"
+      ],
+      "query": "F. M. Taylor winning 400 meter hurdles",
+      "max": 1
+    },
+    {
+      "match": [
+        "classes"
+      ],
+      "query": "Morehouse College courtyard entrance",
+      "max": 1
+    },
+    {
+      "match": [
+        "montreal"
+      ],
+      "query": "Montreal - Olympic Park panorama",
+      "max": 1
+    },
+    {
+      "match": [
+        "angeles"
+      ],
+      "query": "400 meter track at the 1984 Summer Olympics",
+      "max": 1
+    }
+  ],
+  "chart_milestones": [
+    {
+      "value": 107,
+      "label": "107 consecutive finals"
+    }
   ]
 }

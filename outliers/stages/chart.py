@@ -44,6 +44,7 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
     n = int(dur * fps)
     cross_frame = None
 
+    milestones = facts.get("chart_milestones", [])
     tmp = Path(tempfile.mkdtemp(prefix="chart_"))
     for i in range(n):
         val = target * _ease(min(1.0, (i / max(n - 1, 1)) / 0.85))
@@ -51,9 +52,25 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
         img = Image.new("RGB", (W, H), BG)
         d = ImageDraw.Draw(img)
 
+        # faint gridlines so the canvas reads as a chart, not a void
+        for gfrac in (0.25, 0.5, 0.75, 1.0):
+            gy = ybase - (ybase - bar_top) * gfrac
+            d.line([(W * 0.08, gy), (W * 0.92, gy)], fill=(30, 30, 29), width=2)
+
         # counter + label up top
         d.text((W / 2, H * 0.28), f"{int(round(val))}", font=big, fill=GOLD, anchor="mm")
         d.text((W / 2, H * 0.37), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
+
+        # milestone lines (e.g. "107 consecutive finals") flash as crossed
+        for m in milestones:
+            my = ybase - (ybase - bar_top) * (float(m["value"]) / ymax)
+            x = W * 0.08
+            while x < W * 0.92:
+                d.line([(x, my), (min(x + 18, W * 0.92), my)], fill=(64, 63, 58), width=2)
+                x += 30
+            near = val >= float(m["value"]) and (val - float(m["value"])) < target * 0.10
+            d.text((W * 0.92, my - 34), m.get("label", str(m["value"])),
+                   font=sml, fill=WHITE if near else GRAY, anchor="rm")
 
         if rec:
             if cross_frame is None and val >= rec:
