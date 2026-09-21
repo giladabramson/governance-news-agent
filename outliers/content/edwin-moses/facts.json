@@ -79,15 +79,19 @@
   "story_beat": "Before March 1976 he had run exactly one 400m hurdles race; four months later he was Olympic champion. His college had no track, so the man who would dominate the event for a decade trained at public high school facilities while finishing a physics degree.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Edwin_Moses",
   "image_queries": [
-    "Edwin Moses",
-    "Edwin Moses hurdles",
-    "400 meter track at the 1984 Summer Olympics",
-    "400 metres hurdles",
-    "hurdles race athletics"
+    "2017-BG Ed Moses",
+    "Edwin Moses 2008",
+    "Men 800m final 1976 Olympics",
+    "1912 Athletics men's 110 metre hurdles",
+    "Athletics tracks finish line",
+    "Olympic Games Running 13c 1976",
+    "Norman Park athletics track starting blocks"
   ],
   "chart_match": ["122"],
   "image_cues": [
     {"match": ["hurdles", "hurdle"], "query": "F. M. Taylor winning 400 meter hurdles", "max": 1},
-    {"match": ["olympic", "montreal"], "query": "400 meter track at the 1984 Summer Olympics", "max": 1}
+    {"match": ["classes"], "query": "Morehouse College courtyard entrance", "max": 1},
+    {"match": ["montreal"], "query": "Montreal - Olympic Park panorama", "max": 1},
+    {"match": ["angeles"], "query": "400 meter track at the 1984 Summer Olympics", "max": 1}
   ]
 }

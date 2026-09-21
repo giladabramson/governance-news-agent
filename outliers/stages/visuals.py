@@ -1,6 +1,23 @@
-import json, re, requests
+import difflib, json, re, requests
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+
+
+def _sentence_ends(full_text: str, words: list) -> list:
+    """Times where script sentences end, aligned onto heard words (script is
+    the authority on punctuation, same approach as captions.py)."""
+    _n = lambda t: re.sub(r"[^a-z0-9']", "", t.lower())
+    sw = full_text.split()
+    ends = [bool(re.search(r"[.!?][\"']?$", x)) for x in sw]
+    sm = difflib.SequenceMatcher(None, [_n(x) for x in sw],
+                                 [_n(x["w"]) for x in words], autojunk=False)
+    flag = [w["w"].rstrip('"\'').endswith((".", "!", "?")) for w in words]
+    for op, i1, i2, j1, j2 in sm.get_opcodes():
+        if op in ("equal", "replace"):
+            for d in range(min(i2 - i1, j2 - j1)):
+                if ends[i1 + d]:
+                    flag[j1 + d] = True
+    return [w["e"] for w, f in zip(words, flag) if f]
 
 COMMONS = "https://commons.wikimedia.org/w/api.php"
 OK_LICENSES = ("pd", "cc0", "cc-by", "cc by", "public domain")
@@ -204,6 +221,7 @@ def run(out: Path, cfg: dict):
     # fewer, slightly longer cuts per gap instead of a second showing.
     SUBJ_MOVES = ["zin", "panr"]
     NEUTRAL_MOVES = ["panr", "zout", "panl"]
+    sent_ends = _sentence_ends(script["full_text"], words)
     gaps, t = [], 0.0
     for f in fixed:
         if f["start"] - t >= 0.25:
@@ -212,20 +230,48 @@ def run(out: Path, cfg: dict):
     if duration - t >= 0.25:
         gaps.append((t, duration))
 
+    # Allocate images to gaps PROPORTIONALLY — sequential greed starves the
+    # final gap into one endless shot at the video's climax.
+    wants = [max(1, round((t1 - t0) / 2.1)) for t0, t1 in gaps]
+    if sum(wants) > len(paths) and gaps:
+        scale = len(paths) / sum(wants)
+        alloc = [max(1, int(w * scale)) for w in wants]
+        rema = sorted(range(len(wants)), key=lambda i: wants[i] * scale - int(wants[i] * scale), reverse=True)
+        k = 0
+        while sum(alloc) < len(paths) and k < len(rema):
+            alloc[rema[k]] += 1; k += 1
+        while sum(alloc) > len(paths):
+            j = max(range(len(alloc)), key=lambda i: alloc[i] / max(wants[i], 1))
+            if alloc[j] <= 1: break
+            alloc[j] -= 1
+    else:
+        alloc = wants
+
     shots, idx = [dict(f) for f in fixed], 0
     for gi, (t0, t1) in enumerate(gaps):
-        remaining_gaps = len(gaps) - gi - 1          # keep >=1 image per later gap
-        avail = len(paths) - idx - remaining_gaps
-        n = max(1, min(round((t1 - t0) / 2.1) or 1, max(avail, 1)))
+        n = alloc[gi]
         if idx + n > len(paths):
             print("visuals: pool exhausted — images will repeat; add image_queries")
+        # Cut on sentence ends when possible: snap each uniform cut point to
+        # the nearest sentence boundary within 0.8s (keeping shots >= 1.0s).
         seg = (t1 - t0) / n
+        bounds = [t0]
+        for k in range(1, n):
+            ideal = t0 + k * seg
+            b = ideal
+            if sent_ends:
+                snap = min(sent_ends, key=lambda s: abs(s - ideal)) + 0.05
+                if (abs(snap - ideal) <= 0.85 and snap - bounds[-1] >= 1.0
+                        and t1 - snap >= 1.0):
+                    b = snap
+            bounds.append(b)
+        bounds.append(t1)
         for k in range(n):
             j = idx % len(paths)
             subj = subj_flags[j] if j < len(subj_flags) else False
             move = (SUBJ_MOVES if subj else NEUTRAL_MOVES)[idx % (2 if subj else 3)]
             shots.append({"file": paths[j],
-                          "start": t0 + k * seg, "end": t0 + (k + 1) * seg,
+                          "start": bounds[k], "end": bounds[k + 1],
                           "move": move})
             idx += 1
     shots.sort(key=lambda s: s["start"])
