@@ -60,13 +60,23 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     def _disp(w: str) -> str:
         return w.strip().strip('.,;:!?"“”«»')
 
+    # Each line extends to the NEXT word's start — a pause mid-group must not
+    # blank the caption and re-show the same text (flicker Gilad spotted).
+    # Across group boundaries, hold up to 0.8s into the pause.
     lines = []
-    for grp in groups:
+    for gi, grp in enumerate(groups):
+        nxt_start = groups[gi + 1][0]["s"] if gi + 1 < len(groups) else None
         for j, cur in enumerate(grp):
+            if j + 1 < len(grp):
+                end = max(cur["e"], grp[j + 1]["s"])
+            elif nxt_start is not None:
+                end = max(cur["e"], min(nxt_start, cur["e"] + 0.8))
+            else:
+                end = cur["e"]
             txt = " ".join(
                 (r"{\c&H00FFFF&}" + _disp(g["w"]) + r"{\c&HFFFFFF&}") if k == j else _disp(g["w"])
                 for k, g in enumerate(grp))
-            lines.append(f"Dialogue: 0,{_ts(cur['s'])},{_ts(cur['e'])},Cap,,0,0,0,,{txt}")
+            lines.append(f"Dialogue: 0,{_ts(cur['s'])},{_ts(end)},Cap,,0,0,0,,{txt}")
     (out / "captions.ass").write_text(header + "\n".join(lines), encoding="utf-8")
     (out / "duration.txt").write_text(str(words[-1]["e"] + 0.8), encoding="utf-8")
     print(f"captions: {len(words)} words, {words[-1]['e']:.1f}s")

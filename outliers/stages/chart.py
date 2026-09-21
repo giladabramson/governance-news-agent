@@ -34,52 +34,42 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
     mid = ImageFont.truetype(v["caption_font"], 58)
     sml = ImageFont.truetype(v["caption_font"], 40)
 
-    x0, x1 = W * 0.10, W * 0.90
-    ybase, ytop = H * 0.80, H * 0.50
-    ymax = target * 1.06
+    # histogram: runner-up bar (gray, left) vs subject bar (gold, right) rising
+    GRAYBAR = (92, 91, 85)
+    bw, gap = W * 0.20, W * 0.10
+    lx0, rx0 = W / 2 - gap / 2 - bw, W / 2 + gap / 2
+    ybase, bar_top = H * 0.72, H * 0.44
+    ymax = target * 1.08
+    hgt = lambda v: (ybase - bar_top) * (v / ymax)
     n = int(dur * fps)
-    climb_end = 0.80          # fraction of clip spent climbing; rest holds
     cross_frame = None
 
     tmp = Path(tempfile.mkdtemp(prefix="chart_"))
     for i in range(n):
-        p = _ease(min(1.0, (i / max(n - 1, 1)) / climb_end))
-        val = target * p
+        val = target * _ease(min(1.0, (i / max(n - 1, 1)) / 0.85))
+        rec_val = (rec or 0) * min(1.0, i / max(n * 0.22, 1))
         img = Image.new("RGB", (W, H), BG)
         d = ImageDraw.Draw(img)
 
-        # runner-up record: dashed gray floor line (label drawn last, on top)
-        ry = None
+        # counter + label up top
+        d.text((W / 2, H * 0.28), f"{int(round(val))}", font=big, fill=GOLD, anchor="mm")
+        d.text((W / 2, H * 0.37), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
+
         if rec:
-            ry = ybase - (ybase - ytop) * (rec / ymax)
-            x = x0
-            while x < x1:
-                d.line([(x, ry), (min(x + 26, x1), ry)], fill=GRAY, width=3)
-                x += 42
             if cross_frame is None and val >= rec:
                 cross_frame = i
-
-        # the climb: concave-up area + bright line + leading dot
-        pts = []
-        K = 72
-        for k in range(K + 1):
-            s = k / K
-            fx = x0 + (x1 - x0) * s * p
-            fy = ybase - (ybase - ytop) * ((target * (s ** 1.18) * p) / ymax)
-            pts.append((fx, fy))
-        d.polygon(pts + [(pts[-1][0], ybase), (x0, ybase)], fill=DIMGOLD)
-        d.line(pts, fill=GOLD, width=6, joint="curve")
-        d.ellipse([pts[-1][0] - 11, pts[-1][1] - 11,
-                   pts[-1][0] + 11, pts[-1][1] + 11], fill=GOLD)
-
-        if rec:
             hot = cross_frame is not None and (i - cross_frame) < fps * 0.45
-            d.text((x0, ry - 58), f"{int(rec)}  {c.get('second_label', '')}".strip(),
-                   font=sml, fill=WHITE if hot else GRAY)
+            d.rounded_rectangle([lx0, ybase - hgt(rec_val), lx0 + bw, ybase],
+                                radius=14, fill=GRAYBAR)
+            d.text((lx0 + bw / 2, ybase - hgt(rec_val) - 40), f"{int(rec)}",
+                   font=sml, fill=WHITE if hot else GRAY, anchor="mm")
 
-        # counter
-        d.text((W / 2, H * 0.315), f"{int(round(val))}", font=big, fill=GOLD, anchor="mm")
-        d.text((W / 2, H * 0.405), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
+        d.rounded_rectangle([rx0, ybase - max(hgt(val), 8), rx0 + bw, ybase],
+                            radius=14, fill=GOLD)
+
+        if rec and c.get("second_label"):
+            d.text((W / 2, ybase + 52), f"{int(rec)} = {c['second_label']}",
+                   font=sml, fill=GRAY, anchor="mm")
 
         img.save(tmp / f"f{i:04d}.png")
 

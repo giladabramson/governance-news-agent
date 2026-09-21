@@ -81,12 +81,12 @@ def run(out: Path, cfg: dict):
         labels.append(f"[v{i}]")
     n = len(shots)
 
-    # Captions sit mid-screen, which collides with the number card's text.
-    # While the card is up, push caption lines to the lower third ({\an2} +
-    # MarginV) so the card owns the center. Derived file; original untouched.
+    # Captions sit mid-screen, which collides with full-screen text/graphic
+    # shots (card, animated chart). While any such shot is up, push caption
+    # lines to the lower third ({\an2} + MarginV). Derived file.
     ass_use = out / "captions.ass"
-    card = next((s for s in shots if s.get("static")), None)
-    if card:
+    specials = [s for s in shots if s.get("static") or s.get("video")]
+    if specials:
         def _sec(ts):
             h, m, sec = ts.split(":")
             return int(h) * 3600 + int(m) * 60 + float(sec)
@@ -94,7 +94,8 @@ def run(out: Path, cfg: dict):
         for ln in (out / "captions.ass").read_text(encoding="utf-8").splitlines():
             if ln.startswith("Dialogue:"):
                 parts = ln.split(",", 9)
-                if card["start"] - 0.05 <= _sec(parts[1]) < card["end"]:
+                t = _sec(parts[1])
+                if any(sp["start"] - 0.05 <= t < sp["end"] for sp in specials):
                     parts[7] = "380"
                     parts[9] = r"{\an2}" + parts[9]
                     ln = ",".join(parts)

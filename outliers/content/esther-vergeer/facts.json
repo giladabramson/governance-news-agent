@@ -116,12 +116,10 @@
   "image_queries": [
     "Esther Vergeer",
     "Vergeer wheelchair",
-    "wheelchair tennis Paralympic Games",
-    "tennis wheelchair match",
-    "wheelchair tennis US Open",
-    "wheelchair tennis Roland Garros",
-    "Paralympic tennis"
+    "Wheelchair tennis Olympic Tennis Arena view",
+    "wheelchair tennis Roland Garros"
   ],
+  "chart_match": ["longest", "seventy-four"],
   "image_cues": [
     {"match": ["beijing", "point"], "query": "080908 Esther Vergeer serves", "max": 1},
     {"match": ["retired", "retirement"], "query": "Esther Vergeer packs up her gear", "max": 1}

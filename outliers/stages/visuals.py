@@ -74,6 +74,7 @@ def run(out: Path, cfg: dict):
 
     # Cues download FIRST and claim their images — otherwise a cue whose photo
     # also matches a pool query gets deduped away and silently never fires.
+    cue_claimed = set()
     cue_downloads = []
     for ci, cue in enumerate(facts.get("image_cues", [])):
         queries = cue["query"] if isinstance(cue["query"], list) else [cue["query"]]
@@ -94,7 +95,7 @@ def run(out: Path, cfg: dict):
                               int(W0*box[2]), int(H0*box[3]))).save(p)
                 cue_paths.append(str(p)); credits.append(hit); seen.add(key)
                 # also claim the un-cropped identity so the pool skips it
-                seen.add(" ".join("".join(c for c in hit["page"] if not c.isdigit()).split()))
+                cue_claimed.add(" ".join("".join(c for c in hit["page"] if not c.isdigit()).split()))
                 break
             if len(cue_paths) >= cue.get("max", 2):
                 break
@@ -105,21 +106,26 @@ def run(out: Path, cfg: dict):
     # zin; everything else pans or pulls back.
     subj_tokens = {t for t in re.findall(r"[a-z]+", facts["name"].lower()) if len(t) > 3}
     subj_flags = []
+    _kless = lambda t: " ".join("".join(c for c in t if not c.isdigit()).split())
+    _kfull = lambda t: " ".join(t.split())
     for q in facts["image_queries"]:
         per_q = 0  # cap per query so no single photo series dominates the pool
         q_subj = any(t in q.lower() for t in subj_tokens)
         for hit in commons_search(q, ua, n=6):
             if per_q >= 2:
                 break
-            # Archives upload burst shots seconds apart whose titles differ only
-            # in a serial number — digit-stripped title dedupes those sessions.
-            # (whitespace collapsed too: "backhand 2" must equal "backhand")
-            key = " ".join("".join(c for c in hit["page"] if not c.isdigit()).split())
-            if key in seen:
+            # Burst dedupe (digit-stripped title) applies to NEUTRAL images.
+            # For the subject, distinct frames of the same session are wanted
+            # — a subject-starved video should show them, not filler.
+            if _kfull(hit["page"]) in seen or _kless(hit["page"]) in cue_claimed:
+                continue
+            if not q_subj and _kless(hit["page"]) in seen:
                 continue
             p = imgdir / f"{len(paths):02d}.jpg"
             p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
-            paths.append(str(p)); credits.append(hit); seen.add(key); per_q += 1
+            paths.append(str(p)); credits.append(hit)
+            seen.add(_kfull(hit["page"])); seen.add(_kless(hit["page"]) if not q_subj else _kfull(hit["page"]))
+            per_q += 1
             subj_flags.append(q_subj)
             if len(paths) >= 24: break
         if len(paths) >= 24: break
@@ -152,10 +158,19 @@ def run(out: Path, cfg: dict):
     if cfg["video"].get("number_card", False):
         fixed.append({"file": str(card), "start": card_start, "end": card_end, "static": True})
     if chart_fixed:
-        hook_words = script["hook"].split()
-        sents = re.split(r"(?<=[.!?])\s+", script["hook"].strip())
-        lead = len(hook_words) - len(sents[-1].split()) if len(sents) > 1 else 0
-        t0 = max(0.0, words[min(lead, len(words) - 1)]["s"] - 0.1)
+        # Place the chart where the stat is SPOKEN: facts.chart_match lists
+        # trigger words; fallback is the hook's final sentence.
+        _nw = lambda t: "".join(ch for ch in t.lower() if ch.isalnum())
+        t0 = None
+        for trig in facts.get("chart_match", []):
+            hitw = next((w for w in words if _nw(w["w"]) == trig), None)
+            if hitw:
+                t0 = max(0.0, hitw["s"] - 0.3); break
+        if t0 is None:
+            hook_words = script["hook"].split()
+            sents = re.split(r"(?<=[.!?])\s+", script["hook"].strip())
+            lead = len(hook_words) - len(sents[-1].split()) if len(sents) > 1 else 0
+            t0 = max(0.0, words[min(lead, len(words) - 1)]["s"] - 0.1)
         fixed.append({"file": str(out / "chart.mp4"), "start": t0,
                       "end": min(t0 + chart_fixed, duration), "video": True})
     for cue, cue_paths in cue_downloads:
