@@ -60,6 +60,13 @@
       "source_url": "https://bleacherreport.com/articles/364221-the-most-unbreakable-sporting-mark",
       "confidence": "medium",
       "note": "From Davis's statistical study, widely reproduced. Attribute in script ('one statistician did the math'). Jordan career scoring average 30.12 - say 'retired at 30' or 'just over 30'."
+    },
+    {
+      "claim": "the Australian Broadcasting Corporation's post office box in every capital city is 9994, chosen in Bradman's honour",
+      "number": "9994",
+      "source_url": "https://en.wikipedia.org/wiki/Don_Bradman_in_popular_culture",
+      "confidence": "high",
+      "note": "Requested by ABC GM Charles Moses, a personal friend; in effect since 1983. Authenticated by ABC staff and 'The A-Z of Bradman' - not urban legend. THE closer."
     }
   ],
   "comparison": {
@@ -74,29 +81,21 @@
   "image_queries": [
     "Don Bradman",
     "Don Bradman 1930",
-    "Don Bradman batting",
-    "The Oval cricket ground",
-    "Ashes Test cricket 1930s",
-    "cricket batsman 1930s"
+    "Donald Bradman Sam Hood",
+    "Don Bradman autographed portrait",
+    "Bat used by Don Bradman to score 334",
+    "Sydney Cricket Ground 1930s"
   ],
   "chart_match": [
-    "61.87",
-    "6187"
+    "completed"
   ],
   "image_cues": [
     {
       "match": [
-        "tank",
-        "bowral"
+        "jordan",
+        "basketball"
       ],
-      "query": "Bradman water tank",
-      "max": 1
-    },
-    {
-      "match": [
-        "oval"
-      ],
-      "query": "The Oval cricket ground pavilion",
+      "query": "Michael Jordan",
       "max": 1
     }
   ]

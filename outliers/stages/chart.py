@@ -57,8 +57,9 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             gy = ybase - (ybase - bar_top) * gfrac
             d.line([(W * 0.08, gy), (W * 0.92, gy)], fill=(30, 30, 29), width=2)
 
-        # counter + label up top
-        d.text((W / 2, H * 0.245), f"{int(round(val))}", font=big, fill=GOLD, anchor="mm")
+        # counter + label up top (decimal targets keep decimals: 99.94 != 100)
+        ctext = f"{val:.2f}" if target % 1 > 1e-9 else f"{int(round(val))}"
+        d.text((W / 2, H * 0.245), ctext, font=big, fill=GOLD, anchor="mm")
         d.text((W / 2, H * 0.335), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
 
         # milestone lines (e.g. "107 consecutive finals") — labels drawn after
@@ -82,7 +83,7 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             hot = cross_frame is not None and (i - cross_frame) < fps * 0.45
             d.rounded_rectangle([lx0, ybase - hgt(rec_val), lx0 + bw, ybase],
                                 radius=14, fill=GRAYBAR)
-            d.text((lx0 + bw / 2, ybase - hgt(rec_val) - 40), f"{int(rec)}",
+            d.text((lx0 + bw / 2, ybase - hgt(rec_val) - 40), f"{rec:g}",
                    font=sml, fill=WHITE if hot else GRAY, anchor="mm")
 
         d.rounded_rectangle([rx0, ybase - max(hgt(val), 8), rx0 + bw, ybase],
@@ -92,7 +93,7 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             d.text(pos, txt, font=sml, fill=col, anchor="lm")
 
         if rec and c.get("second_label"):
-            d.text((W / 2, ybase + 44), f"{int(rec)} = {c['second_label']}",
+            d.text((W / 2, ybase + 44), f"{rec:g} = {c['second_label']}",
                    font=sml, fill=GRAY, anchor="mm")
 
         img.save(tmp / f"f{i:04d}.png")

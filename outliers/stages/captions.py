@@ -17,6 +17,19 @@ def run(out: Path, cfg: dict):
              for seg in segments for w in seg.words]
     if not words:
         raise SystemExit("captions: whisper returned no words — check voice.mp3")
+
+    # Whisper splits decimals/thousands across tokens ("99" + ".94.") — merge
+    # them back so numbers are whole words for captions, cues and alignment.
+    merged = []
+    for w in words:
+        t = w["w"].strip()
+        if (merged and re.fullmatch(r"[.,]\d+[.,]?", t)
+                and merged[-1]["w"].strip().rstrip(".,").isdigit()):
+            merged[-1]["w"] = merged[-1]["w"].strip() + t
+            merged[-1]["e"] = w["e"]
+        else:
+            merged.append(dict(w))
+    words = merged
     (out / "words.json").write_text(json.dumps(words, indent=1), encoding="utf-8")
 
     W, H = cfg["video"]["width"], cfg["video"]["height"]
@@ -41,14 +54,24 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     sm = difflib.SequenceMatcher(None, [_n(x) for x in sw],
                                  [_n(x["w"]) for x in words], autojunk=False)
     flag = [w["w"].rstrip('"\'').endswith((".", "!", "?")) for w in words]
+    # The script is also the authority on how NUMBERS look: Whisper writes
+    # "9994"/"9,994" where the script says "99.94"/"9994" — display the
+    # script's token whenever a 1:1 aligned pair involves digits.
+    disp_over = {}
     for op, i1, i2, j1, j2 in sm.get_opcodes():
         if op in ("equal", "replace"):
             for d in range(min(i2 - i1, j2 - j1)):
                 if ends[i1 + d]:
                     flag[j1 + d] = True
+                if (i2 - i1) == (j2 - j1) \
+                        and any(ch.isdigit() for ch in sw[i1 + d]) \
+                        and sw[i1 + d].strip('.,') != words[j1 + d]["w"].strip('.,'):
+                    disp_over[j1 + d] = sw[i1 + d]
 
     groups, grp = [], []
     for i, w in enumerate(words):
+        if i in disp_over:
+            w = dict(w, w=disp_over[i])
         grp.append(w)
         if len(grp) == 3 or flag[i]:
             groups.append(grp); grp = []
