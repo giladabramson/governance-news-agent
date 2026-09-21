@@ -1,0 +1,93 @@
+{
+  "name": "Edwin Moses",
+  "slug": "edwin-moses",
+  "field": "400m hurdles",
+  "one_line": "Lost in August 1977, then won every 400m hurdles race for 9 years, 9 months and 9 days - 122 in a row.",
+  "comparison_type": "streak",
+  "facts": [
+    {
+      "claim": "won 122 consecutive races between 1977 and 1987, of which 107 were consecutive finals",
+      "number": "122",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'Between 1977 and 1987, Moses won 107 consecutive finals (122 consecutive races).' PRECISION MATTERS: 122 races including heats, 107 finals - a script saying only '122 finals' would be wrong."
+    },
+    {
+      "claim": "the streak lasted nine years, nine months, and nine days",
+      "number": "9",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: after the 1977 loss he 'did not lose another race for nine years, nine months, and nine days.' The 9-9-9 symmetry is the hook-grade number."
+    },
+    {
+      "claim": "the last man to beat him before the streak was Harald Schmid, in Berlin, 26 August 1977",
+      "number": "1977",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "the streak ended on 4 June 1987 in Madrid, when Danny Harris beat him",
+      "number": "1987",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "after the streak ended, he won his next 10 races in a row",
+      "number": "10",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": "THE closer. He answered the only loss in a decade with another streak."
+    },
+    {
+      "claim": "before March 1976 he had run only one 400m hurdles race in his life; that July he was Olympic champion in Montreal",
+      "number": "1",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": "The origin beat. Four months from novice to Olympic gold."
+    },
+    {
+      "claim": "studied physics and industrial engineering at Morehouse College, which had no track - he trained at public high school facilities",
+      "number": "",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": "Academic scholarship, not athletic. The world's most dominant athlete trained on borrowed high-school tracks."
+    },
+    {
+      "claim": "set the world record four times; personal best 47.02 in 1983",
+      "number": "4",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "Olympic gold in 1976 and 1984; could not compete in 1980 (US boycott) despite being mid-streak; bronze in 1988",
+      "number": "2",
+      "source_url": "https://en.wikipedia.org/wiki/Edwin_Moses",
+      "confidence": "high",
+      "note": "One of his prime Olympics was taken by politics, mid-streak. Congressional Gold Medal as consolation."
+    }
+  ],
+  "comparison": {
+    "their_number": "122",
+    "their_label": "consecutive race wins",
+    "second_best": "",
+    "second_label": "",
+    "gap_description": "122 straight wins across 9 years, 9 months and 9 days."
+  },
+  "story_beat": "Before March 1976 he had run exactly one 400m hurdles race; four months later he was Olympic champion. His college had no track, so the man who would dominate the event for a decade trained at public high school facilities while finishing a physics degree.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Edwin_Moses",
+  "image_queries": [
+    "Edwin Moses",
+    "Edwin Moses hurdles",
+    "400 meter track at the 1984 Summer Olympics",
+    "400 metres hurdles",
+    "hurdles race athletics"
+  ],
+  "chart_match": ["122"],
+  "image_cues": [
+    {"match": ["hurdles", "hurdle"], "query": "F. M. Taylor winning 400 meter hurdles", "max": 1},
+    {"match": ["olympic", "montreal"], "query": "400 meter track at the 1984 Summer Olympics", "max": 1}
+  ]
+}
