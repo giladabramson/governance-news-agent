@@ -1,0 +1,73 @@
+{
+  "name": "Don Bradman",
+  "slug": "don-bradman",
+  "field": "cricket",
+  "one_line": "Career Test batting average 99.94; no completed career in Test history has reached 62.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "career Test batting average of 99.94 - 6,996 runs and 29 centuries in 52 Tests",
+      "number": "99.94",
+      "source_url": "https://en.wikipedia.org/wiki/Don_Bradman",
+      "confidence": "high",
+      "note": "Wikipedia: 'considered by some to be the greatest achievement by any sportsman in any major sport.'"
+    },
+    {
+      "claim": "the next-best COMPLETED career average in all of Test history is 61.87 (Adam Voges, retired 2017, min 20 innings)",
+      "number": "61.87",
+      "source_url": "https://www.abc.net.au/news/2017-02-15/voges-ends-test-career-with-the-best-average-since-bradman/8271302",
+      "confidence": "high",
+      "note": "TRAP DEFUSED: an active player (Kamindu Mendis, ~62.66 as of 2026) may rank above Voges on some cuts, so never say '61.87 is second best' flatly - say 'no completed career has done better than 61.87' or 'nobody who finished a career got past 62'. Voges framing sourced at his retirement: 'best average since Bradman'."
+    },
+    {
+      "claim": "in his final innings, at The Oval on 14 August 1948, he needed four runs to retire with an average of exactly 100 - England gave him three cheers, and he was bowled second ball for nought by Eric Hollies",
+      "number": "4",
+      "source_url": "https://en.wikipedia.org/wiki/Fifth_Test,_1948_Ashes_series",
+      "confidence": "high",
+      "note": "THE closer. Average fell from 101.39 to 99.94. Australia won by an innings, so he never batted again. Most famous duck in cricket history. Reported speech only - no quotes."
+    },
+    {
+      "claim": "as a boy in Bowral he practiced alone with a cricket stump and a golf ball, hitting rebounds off a curved water tank stand",
+      "number": "",
+      "source_url": "https://en.wikipedia.org/wiki/Don_Bradman",
+      "confidence": "high",
+      "note": "Origin beat. Wikipedia: 'the ball rebounded at high speed and varying angles.' A stump is far narrower than a bat; a golf ball far smaller than a cricket ball."
+    },
+    {
+      "claim": "scored 974 runs in the 1930 Ashes series - still the record for any Test series, unmatched as of 2022",
+      "number": "974",
+      "source_url": "https://en.wikipedia.org/wiki/Don_Bradman",
+      "confidence": "high",
+      "note": "Wikipedia: 'no-one has matched or exceeded 974 runs or three double centuries in one Test series.' At an average of 139.14 in that series."
+    },
+    {
+      "claim": "England devised an entirely new bowling tactic - Bodyline, 1932-33 - specifically to curb him; he still averaged 56.57 in that series",
+      "number": "56.57",
+      "source_url": "https://en.wikipedia.org/wiki/Don_Bradman",
+      "confidence": "high",
+      "note": "Wikipedia: devised to 'curb his almost uncanny skill'; 56.57 was 'just 57% of his career mean' - and would still rank among the best careers ever. A whole strategy, and a diplomatic crisis, engineered against one man."
+    }
+  ],
+  "comparison": {
+    "their_number": "99.94",
+    "their_label": "career batting average",
+    "second_best": "61.87",
+    "second_label": "the best anyone else finished with",
+    "gap_description": "99.94 against 61.87 - the biggest gap between first and second in any major sport."
+  },
+  "story_beat": "In his last innings he needed four runs to end with an average of exactly 100. The England players gave him three cheers as he arrived - and two balls later he was walking back, bowled for nought. His team won by an innings, so the chance never came again: 99.94, forever.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Fifth_Test,_1948_Ashes_series",
+  "image_queries": [
+    "Don Bradman",
+    "Don Bradman 1930",
+    "Don Bradman batting",
+    "The Oval cricket ground",
+    "Ashes Test cricket 1930s",
+    "cricket batsman 1930s"
+  ],
+  "chart_match": ["61.87", "6187"],
+  "image_cues": [
+    {"match": ["tank", "bowral"], "query": "Bradman water tank", "max": 1},
+    {"match": ["oval"], "query": "The Oval cricket ground pavilion", "max": 1}
+  ]
+}
