@@ -13,6 +13,13 @@
       "note": "Wikipedia: 'considered by some to be the greatest achievement by any sportsman in any major sport.'"
     },
     {
+      "claim": "a batting average is runs scored divided by times out; above 50 is considered the benchmark of a great batsman",
+      "number": "50",
+      "source_url": "https://en.wikipedia.org/wiki/Batting_average_(cricket)",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'A batting average of above 50 is considered by many as a benchmark to distinguish between a good and a great batsman.' The explainer that makes 99.94 legible to non-cricket viewers."
+    },
+    {
       "claim": "the next-best COMPLETED career average in all of Test history is 61.87 (Adam Voges, retired 2017, min 20 innings)",
       "number": "61.87",
       "source_url": "https://www.abc.net.au/news/2017-02-15/voges-ends-test-career-with-the-best-average-since-bradman/8271302",
@@ -65,9 +72,25 @@
     "Ashes Test cricket 1930s",
     "cricket batsman 1930s"
   ],
-  "chart_match": ["61.87", "6187"],
+  "chart_match": [
+    "61.87",
+    "6187"
+  ],
   "image_cues": [
-    {"match": ["tank", "bowral"], "query": "Bradman water tank", "max": 1},
-    {"match": ["oval"], "query": "The Oval cricket ground pavilion", "max": 1}
+    {
+      "match": [
+        "tank",
+        "bowral"
+      ],
+      "query": "Bradman water tank",
+      "max": 1
+    },
+    {
+      "match": [
+        "oval"
+      ],
+      "query": "The Oval cricket ground pavilion",
+      "max": 1
+    }
   ]
 }
