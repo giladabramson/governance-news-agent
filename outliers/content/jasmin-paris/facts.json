@@ -56,12 +56,12 @@
     }
   ],
   "comparison": {
-    "their_number": "215901",
-    "their_label": "her Barkley finish",
-    "second_best": "216000",
-    "second_label": "the 60-hour cutoff",
+    "their_number": "299543",
+    "their_label": "her finish",
+    "second_best": "343020",
+    "second_label": "the old course record - 95:17, set by a man",
     "format": "hms",
-    "gap_description": "59:58:21 against a 60:00:00 cutoff - 99 seconds of margin after 100 miles."
+    "gap_description": "83:12 against the old record of 95:17 - twelve hours removed."
   },
   "story_beat": "At the 2024 Barkley Marathons she reached the final stretch with the 60-hour cutoff nearly gone, sprinted uphill after 100 miles and 60,000 feet of climb, and collapsed against the yellow gate having beaten the clock by 99 seconds - the first woman to finish in the race's history.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Jasmin_Paris",
@@ -72,9 +72,24 @@
     "Spine Race",
     "Barkley Marathons"
   ],
-  "chart_match": ["cutoff"],
+  "chart_match": [
+    "95"
+  ],
   "image_cues": [
-    {"match": ["barkley"], "query": "Lighting the cigarette to start Barkley", "max": 1},
-    {"match": ["pennine", "spine"], "query": "Pavel Paloncý on Spine Race - Fountain Fell", "max": 1}
+    {
+      "match": [
+        "barkley"
+      ],
+      "query": "Lighting the cigarette to start Barkley",
+      "max": 1
+    },
+    {
+      "match": [
+        "pennine",
+        "spine"
+      ],
+      "query": "Pavel Palonc\u00fd on Spine Race - Fountain Fell",
+      "max": 1
+    }
   ]
 }
