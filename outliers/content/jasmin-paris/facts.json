@@ -1,0 +1,80 @@
+{
+  "name": "Jasmin Paris",
+  "slug": "jasmin-paris",
+  "field": "ultrarunning",
+  "one_line": "Won a 268-mile race outright against all the men, then became the first woman ever to finish the Barkley Marathons - with 99 seconds to spare.",
+  "comparison_type": "streak",
+  "facts": [
+    {
+      "claim": "won the 2019 Montane Spine Race OUTRIGHT - 268 miles along the Pennine Way in winter - beating every man in the field",
+      "number": "268",
+      "source_url": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+      "confidence": "high",
+      "note": "Wikipedia: 'the first woman to win the event overall.' Non-stop winter race."
+    },
+    {
+      "claim": "her Spine time, 83 hours 12 minutes, smashed the overall course record - previously 95 hours 17 minutes - by twelve hours",
+      "number": "83",
+      "source_url": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+      "confidence": "high",
+      "note": "She didn't edge the record held by men - she took HALF A DAY off it."
+    },
+    {
+      "claim": "during breaks in the Spine Race she expressed milk for her baby daughter",
+      "number": "",
+      "source_url": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'During breaks in the race she expressed milk for her baby.' Report flatly - the fact needs no decoration."
+    },
+    {
+      "claim": "in 2024 became the first woman ever to finish the Barkley Marathons, in 59:58:21 - 99 seconds inside the 60-hour cutoff",
+      "number": "99",
+      "source_url": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+      "confidence": "high",
+      "note": "Confirmed by CNN/ESPN/iRunFar. Collapsed at the yellow gate at 5:16pm, 22 March 2024, Frozen Head State Park, Tennessee."
+    },
+    {
+      "claim": "the Barkley: 100 miles in five loops, roughly 60,000 feet of climb, unmarked course, hidden books as checkpoints, 60-hour limit",
+      "number": "60,000",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "60,000 ft is roughly twice Everest from sea level. Runners tear a page from each hidden book to prove passage."
+    },
+    {
+      "claim": "in the race's history through 2024, only 20 people had ever finished it; she is the only woman",
+      "number": "20",
+      "source_url": "https://www.irunfar.com/2024-barkley-marathons-results",
+      "confidence": "high",
+      "note": "iRunFar: 2024's five finishers 'brought the total number of people to complete the course to 20.' Hundreds attempt; say 'twenty people ever' not an attempts ratio (attempt counts vary by source)."
+    },
+    {
+      "claim": "she is a senior lecturer in veterinary studies at the University of Edinburgh; her PhD was in leukemia research; two children",
+      "number": "",
+      "source_url": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+      "confidence": "high",
+      "note": "Running is effectively her side job. Born Manchester, 1983."
+    }
+  ],
+  "comparison": {
+    "their_number": "215901",
+    "their_label": "her Barkley finish",
+    "second_best": "216000",
+    "second_label": "the 60-hour cutoff",
+    "format": "hms",
+    "gap_description": "59:58:21 against a 60:00:00 cutoff - 99 seconds of margin after 100 miles."
+  },
+  "story_beat": "At the 2024 Barkley Marathons she reached the final stretch with the 60-hour cutoff nearly gone, sprinted uphill after 100 miles and 60,000 feet of climb, and collapsed against the yellow gate having beaten the clock by 99 seconds - the first woman to finish in the race's history.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+  "image_queries": [
+    "Jasmin Paris",
+    "2018 Borrowdale Fell Race Jasmin Paris",
+    "Pennine Way",
+    "Spine Race",
+    "Barkley Marathons"
+  ],
+  "chart_match": ["cutoff"],
+  "image_cues": [
+    {"match": ["barkley"], "query": "Lighting the cigarette to start Barkley", "max": 1},
+    {"match": ["pennine", "spine"], "query": "Pavel Paloncý on Spine Race - Fountain Fell", "max": 1}
+  ]
+}
