@@ -1,0 +1,86 @@
+{
+  "name": "The Barkley Marathons",
+  "slug": "barkley-marathons",
+  "field": "ultrarunning",
+  "one_line": "A race born from a failed prison escape, where 63 percent of editions end with nobody finishing - and the first woman to survive it did so with 99 seconds to spare.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "in 1977 a convict escaped Brushy Mountain penitentiary into the Tennessee mountains and was caught having covered about 8 miles in 54 hours; local runner Gary Cantrell scoffed that he could do at least 100 - and created the race",
+      "number": "8",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "Cantrell verbatim: 'I could do at least 100 miles.' The escapee was James Earl Ray - state plainly if used; the fact is historical. Race founded 1986, named for Cantrell's neighbor Barry Barkley. Cantrell goes by 'Lazarus Lake'."
+    },
+    {
+      "claim": "entry costs $1.60, requires an essay titled 'Why I Should Be Allowed to Run in the Barkley', and first-timers must bring a license plate",
+      "number": "1.60",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "The plates hang at camp (we have the photo). Each year one strong runner is invited as the 'sacrificial virgin' - picked because Cantrell believes they will fail."
+    },
+    {
+      "claim": "five loops of unmarked mountain terrain, officially 100 miles - closer to 130 in practice - with roughly 60,000 feet of climb and a 60-hour limit",
+      "number": "60",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "60,000 ft is about twice Everest from sea level. Two water stations, no other aid. Course changes yearly."
+    },
+    {
+      "claim": "runners prove their route by finding hidden books and tearing out the page matching their bib number",
+      "number": "9",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "9-15 books per loop."
+    },
+    {
+      "claim": "the race begins when Lazarus Lake lights a cigarette; a conch blast an hour earlier is the only warning",
+      "number": "1",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'the race officially begins when Cantrell lights a cigarette.' We have the photo."
+    },
+    {
+      "claim": "in the race's four-decade history there have been 26 finishes by only 20 people; about 63 percent of editions end with no finisher at all",
+      "number": "20",
+      "source_url": "https://en.wikipedia.org/wiki/Barkley_Marathons",
+      "confidence": "high",
+      "note": "As of 2026. Nearly 800 had attempted by 2013 with 12 finishers at that point."
+    },
+    {
+      "claim": "in 2024 Jasmin Paris became the first woman ever to finish, collapsing at the gate in 59:58:21 - 99 seconds inside the 60-hour cutoff",
+      "number": "99",
+      "source_url": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+      "confidence": "high",
+      "note": "Confirmed by CNN/ESPN/iRunFar. Part two of our Jasmin Paris video - she is this video's climax; the race is its subject."
+    }
+  ],
+  "comparison": {
+    "their_number": "215901",
+    "their_label": "her finish",
+    "second_best": "216000",
+    "second_label": "the 60-hour cutoff",
+    "format": "hms",
+    "gap_description": "59:58:21 against a 60:00:00 wall - 99 seconds of margin after roughly 130 miles."
+  },
+  "story_beat": "In 2024, the sixty-hour clock nearly gone, Jasmin Paris - a veterinary lecturer and mother of two - sprinted the final climb and collapsed against the yellow gate with 99 seconds to spare: the first woman to finish in the race's history.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Jasmin_Paris",
+  "image_queries": [
+    "!Lighting the cigarette to start Barkley",
+    "!Licence plates Barkley",
+    "!Start of Barkley 2009",
+    "!Castle-rock-frozen-head-tn1",
+    "!Crab-orchard-mountains-frozenhead1",
+    "!Frozen-head-indian-knob-tn1",
+    "!Frozen-head-tower-west1",
+    "!Brushy Mountain State Prison.jpg",
+    "!2018 Borrowdale Fell Race Jasmin Paris 1",
+    "!2014 Ennerdale Horseshoe Jasmin Paris"
+  ],
+  "chart_match": ["99"],
+  "image_cues": [
+    {"match": ["escaped", "prison"], "query": "!Sharpshooter at Brushy Mountain State Prison naps after esc", "max": 1},
+    {"match": ["cigarette"], "query": "!Lighting the cigarette to start Barkley", "max": 1},
+    {"match": ["jasmin", "paris"], "query": "!2015 Langdale Horseshoe Jasmin Paris", "max": 1}
+  ]
+}
