@@ -98,6 +98,7 @@ def run(out: Path, cfg: dict):
         crop = cue.get("crop")
         cue_paths = []
         for q in queries:
+            q = q.lstrip("!")   # cues always take one hit; accept '!' anyway
             for hit in commons_search(q, ua):
                 key = " ".join("".join(c for c in hit["page"] if not c.isdigit()).split()) + (crop or "")
                 if key in seen:

@@ -72,10 +72,20 @@
     "!Greco-Roman wrestling at the 2025 CIS Games 24",
     "!Mexico 68 Wrestling event",
     "!Wrestling at the 2012 Summer Olympics 2028",
-    "!Olympic Freestyle Wrestling at Excel - 96kg Gold Medal Match"
+    "!Olympic Freestyle Wrestling at Excel - 96kg Gold Medal Match",
+    "!Aleksandr Karelin 2018",
+    "!Alexandr Karelin 2013 (RUS)"
   ],
-  "chart_match": ["887"],
+  "chart_match": [
+    "887"
+  ],
   "image_cues": [
-    {"match": ["gardner"], "query": "!Rulon Gardner.jpg", "max": 1}
+    {
+      "match": [
+        "gardner"
+      ],
+      "query": "!Rulon Gardner.jpg",
+      "max": 1
+    }
   ]
 }
