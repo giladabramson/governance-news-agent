@@ -1,0 +1,79 @@
+{
+  "name": "Wayne Gretzky",
+  "slug": "wayne-gretzky",
+  "field": "ice hockey",
+  "one_line": "His assists alone outnumber every other player's total career points.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "career totals: 2,857 points - 894 goals and 1,963 assists",
+      "number": "2,857",
+      "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+      "confidence": "high",
+      "note": "In hockey a point = a goal or an assist. This definition must be explained in-script per the sport-explainer rule."
+    },
+    {
+      "claim": "he has more assists than any other player has total career points",
+      "number": "1,963",
+      "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+      "confidence": "high",
+      "note": "Wikipedia verbatim. THE fact - equivalent to: delete all 894 of his goals and he is still the highest scorer in history. Chart: gold = his assists 1,963 vs gray = Jagr's entire career 1,921."
+    },
+    {
+      "claim": "second on the all-time scoring list is Jaromir Jagr, with 1,921 career points",
+      "number": "1,921",
+      "source_url": "https://www.nhl.com/news/updated-nhl-all-time-list-284962954",
+      "confidence": "high",
+      "note": "NHL.com official. Jagr needed 24 seasons to get there."
+    },
+    {
+      "claim": "at retirement in 1999 he held 61 NHL records: 40 regular season, 15 playoff, 6 All-Star",
+      "number": "61",
+      "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+      "confidence": "high",
+      "note": "Wikipedia verbatim breakdown."
+    },
+    {
+      "claim": "the only player ever to score 200 points in a season - he did it four times",
+      "number": "200",
+      "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+      "confidence": "high",
+      "note": "Wikipedia: 'the only NHL player to total over 200 points in one season, a feat he accomplished four times.' Everyone else in history: zero times."
+    },
+    {
+      "claim": "scored 92 goals in the 1981-82 season - still the single-season record",
+      "number": "92",
+      "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "four Stanley Cups with Edmonton (1984, 1985, 1987, 1988); his number 99 is retired across the entire league",
+      "number": "99",
+      "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+      "confidence": "high",
+      "note": "No player on any NHL team may ever wear 99 again."
+    }
+  ],
+  "comparison": {
+    "their_number": "1963",
+    "their_label": "his assists alone",
+    "second_best": "1921",
+    "second_label": "the next-best player's ENTIRE career",
+    "gap_description": "1,963 assists against 1,921 total points for second place - his passes outscore everyone's everything."
+  },
+  "story_beat": "If you deleted every goal Wayne Gretzky ever scored - all 894 of them - he would still be the highest-scoring player in NHL history, on assists alone.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
+  "image_queries": [
+    "Wayne Gretzky 1997",
+    "GretzkyEDM",
+    "GretzkyFinal",
+    "Wayne Gretzky statue",
+    "Rink IIHF vs NHL",
+    "Empty net goal"
+  ],
+  "chart_match": ["1,921", "1921"],
+  "image_cues": [
+    {"match": ["hockey"], "query": "Xtraice ice rink at the Hockeyville", "max": 1}
+  ]
+}
