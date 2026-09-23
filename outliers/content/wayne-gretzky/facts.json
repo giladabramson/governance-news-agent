@@ -76,7 +76,10 @@
     "GretzkyEDM",
     "GretzkyFinal",
     "Wayne Gretzky statue",
-    "Rink IIHF vs NHL",
+    "Canada vs Switzerland ice hockey game in St Moritz",
+    "Ice hockey McGill University",
+    "Western Michigan vs Michigan ice hockey 2024",
+    "Slapshot Goal by Mike Modano",
     "Empty net goal"
   ],
   "chart_match": [
@@ -88,7 +91,7 @@
       "match": [
         "hockey"
       ],
-      "query": "Xtraice ice rink at the Hockeyville",
+      "query": "Germany - Canada faceoff 2006",
       "max": 1
     }
   ]
