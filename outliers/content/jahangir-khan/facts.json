@@ -77,7 +77,9 @@
     "Jahangir Khan with a Fan",
     "ASB Squash Court at British Open 1981",
     "Glass Squash Court",
-    "Squash court"
+    "Squash court",
+    "US Open Squash Championship 2011",
+    "Stretching on court"
   ],
   "chart_match": [
     "555"
@@ -87,7 +89,21 @@
       "match": [
         "squash"
       ],
-      "query": "ASB Squash Court at British Open 1981",
+      "query": [
+        "Open International de Squash de Nantes",
+        "US Open Squash Championship 2011",
+        "Glass Squash Court"
+      ],
+      "max": 1
+    },
+    {
+      "match": [
+        "tribute"
+      ],
+      "query": [
+        "Jahangir Khan with a Fan",
+        "Jahangir Khan in Karachi by Faizan"
+      ],
       "max": 1
     }
   ]
