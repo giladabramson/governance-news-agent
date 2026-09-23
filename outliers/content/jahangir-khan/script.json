@@ -1,13 +1,13 @@
 {
-  "hook": "Who holds the Guinness record for sport's longest win streak? Not the craziest part.",
-  "story": "The sport is squash: two players sealed in a walled court, taking turns to hit the same ball off the front wall, until one of them breaks. In 1979, his older brother Torsam - also a professional - collapsed and died mid-match at a tournament in Adelaide. Jahangir Khan was fifteen. He nearly quit; instead, he made the game his tribute. World champion at seventeen, the youngest ever. And then he stopped losing entirely.",
-  "number": "From 1981 to 1986 he won 555 consecutive matches. Guinness lists it as the longest winning streak in top-level professional sport; the next-longest, in any game, is 470. Inside that run, he once won a professional final without conceding a single point. When Ross Norman finally beat him, five years had passed between defeats.",
-  "closer": "Number two on that list, at 470 wins? Esther Vergeer.",
-  "full_text": "Who holds the Guinness record for sport's longest win streak? Not the craziest part. The sport is squash: two players sealed in a walled court, taking turns to hit the same ball off the front wall, until one of them breaks. In 1979, his older brother Torsam - also a professional - collapsed and died mid-match at a tournament in Adelaide. Jahangir Khan was fifteen. He nearly quit; instead, he made the game his tribute. World champion at seventeen, the youngest ever. And then he stopped losing entirely. From 1981 to 1986 he won 555 consecutive matches. Guinness lists it as the longest winning streak in top-level professional sport; the next-longest, in any game, is 470. Inside that run, he once won a professional final without conceding a single point. When Ross Norman finally beat him, five years had passed between defeats. Number two on that list, at 470 wins? Esther Vergeer.",
+  "hook": "The man with sport's longest winning streak has a sad story behind it.",
+  "story": "The sport is squash: two players sealed in a walled court, hitting the same ball off the front wall until one of them breaks. Jahangir Khan of Pakistan was world champion at seventeen, the youngest ever. Then, from 1981 to 1986, he simply did not lose: 555 consecutive matches, the longest winning streak in professional sport, per Guinness. He once won a professional final without conceding a single point.",
+  "number": "When Ross Norman finally beat him, at the 1986 World Open final, five years had passed between defeats.",
+  "closer": "And the sad story? In 1979, his older brother Torsam, also a professional, collapsed and died in the middle of a match. Jahangir was fifteen. He nearly quit. Instead, all 555 were for his brother.",
+  "full_text": "The man with sport's longest winning streak has a sad story behind it. The sport is squash: two players sealed in a walled court, hitting the same ball off the front wall until one of them breaks. Jahangir Khan of Pakistan was world champion at seventeen, the youngest ever. Then, from 1981 to 1986, he simply did not lose: 555 consecutive matches, the longest winning streak in professional sport, per Guinness. He once won a professional final without conceding a single point. When Ross Norman finally beat him, at the 1986 World Open final, five years had passed between defeats. And the sad story? In 1979, his older brother Torsam, also a professional, collapsed and died in the middle of a match. Jahangir was fifteen. He nearly quit. Instead, all 555 were for his brother.",
   "hook_alternatives": [
-    "Who holds the Guinness record for sport's longest win streak? Not the craziest part.",
+    "The man with sport's longest winning streak has a sad story behind it.",
     "Who owns sport's longest winning streak, per Guinness? And it's not even the craziest part.",
     "He didn't lose a match for five years. 555 in a row."
   ],
-  "word_count": 152
+  "word_count": 135
 }
