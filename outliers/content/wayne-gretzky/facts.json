@@ -48,7 +48,7 @@
       "note": ""
     },
     {
-      "claim": "four Stanley Cups with Edmonton (1984, 1985, 1987, 1988); his number 99 is retired across the entire league",
+      "claim": "four Stanley Cups with the Edmonton Oilers (1984, 1985, 1987, 1988); his number 99 is retired across the entire league",
       "number": "99",
       "source_url": "https://en.wikipedia.org/wiki/Wayne_Gretzky",
       "confidence": "high",
@@ -72,8 +72,17 @@
     "Rink IIHF vs NHL",
     "Empty net goal"
   ],
-  "chart_match": ["1,921", "1921"],
+  "chart_match": [
+    "1,921",
+    "1921"
+  ],
   "image_cues": [
-    {"match": ["hockey"], "query": "Xtraice ice rink at the Hockeyville", "max": 1}
+    {
+      "match": [
+        "hockey"
+      ],
+      "query": "Xtraice ice rink at the Hockeyville",
+      "max": 1
+    }
   ]
 }
