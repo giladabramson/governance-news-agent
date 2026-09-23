@@ -1,0 +1,81 @@
+{
+  "name": "Rocky Marciano",
+  "slug": "rocky-marciano",
+  "field": "boxing",
+  "one_line": "Forty-nine professional fights, forty-nine wins - the only heavyweight champion in history to retire undefeated and stay that way.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "professional record of 49 wins, 0 losses, with 43 knockouts",
+      "number": "49",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "87.8% KO rate. Chart: gold 49 wins vs gray 0 losses."
+    },
+    {
+      "claim": "the only world heavyweight champion in history to finish his career undefeated",
+      "number": "0",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'remains the only heavyweight champion to finish his career undefeated.' Seventy years on, still true. (Mayweather went 50-0 in 2017 but as a welter/middleweight - do not conflate weight classes.)"
+    },
+    {
+      "claim": "at 5 foot 10 with a reach around 68 inches, he was one of the smallest heavyweight champions ever - considerably shorter in wingspan than his opponents",
+      "number": "68",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "Wikipedia: 'considerably shorter in wingspan than most heavyweight champions'; 'did not fit the mold of a typical heavyweight boxer.' He was giving away height and reach in nearly every fight."
+    },
+    {
+      "claim": "son of an Italian immigrant shoe-factory worker in Brockton, Massachusetts; dug ditches and hauled ice before boxing, and only turned professional at 23 with a mediocre amateur record",
+      "number": "23",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "Amateur record 8-4. First pro fight March 1947. A very late, unpromising start."
+    },
+    {
+      "claim": "in the 1952 title fight he was knocked down in round one and losing on points, then knocked out Jersey Joe Walcott in the 13th with a single overhand right",
+      "number": "13",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "THE story beat. The punch (nicknamed the Suzie Q) is one of the most famous KOs in boxing history - and we have the photo of Walcott going down. Behind, then one punch."
+    },
+    {
+      "claim": "defended the title six times, then retired in 1956 at 31 - and, uniquely, never came back",
+      "number": "6",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "The retiring-and-staying-retired is half the record. Most champions ruin the zero chasing one more payday."
+    },
+    {
+      "claim": "died in a small-plane crash in 1969, the day before his 46th birthday",
+      "number": "1969",
+      "source_url": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+      "confidence": "high",
+      "note": "Cessna 172, near Newton, Iowa. Optional closer texture."
+    }
+  ],
+  "comparison": {
+    "their_number": "49",
+    "their_label": "wins",
+    "second_best": "0",
+    "second_label": "losses, in his entire career",
+    "gap_description": "49 wins, 0 losses - the only heavyweight champion ever to retire perfect and stay perfect."
+  },
+  "story_beat": "In the 1952 title fight Marciano was knocked down in the first round and losing on the scorecards. In the thirteenth he threw one overhand right, knocked the champion out cold, and took the title. He would defend it six times, retire undefeated, and never fight again.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Rocky_Marciano",
+  "image_queries": [
+    "!Rocky Marciano 1951",
+    "!Rocky Marciano 1954 (2)",
+    "!Boxer Rocky Marciano (cropped)",
+    "!Rocky Marciano and Jersey Joe Walcott 1953",
+    "!Rocky Marciano vs. Rex Layne 1951",
+    "!Roland La Starza vs. Rocky Marciano 1953",
+    "!Ezzard Charles vs Rocky Marciano 1954",
+    "!Rocky Marciano (10559562993)"
+  ],
+  "chart_match": ["49"],
+  "image_cues": [
+    {"match": ["walcott", "knocked", "punch"], "query": "!Rocky Marciano knocks out Jersey Joe Walcott, 1952", "max": 1}
+  ]
+}
