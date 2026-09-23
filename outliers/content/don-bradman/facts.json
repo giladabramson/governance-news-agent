@@ -108,16 +108,7 @@
     "Sydney Cricket Ground 1930s"
   ],
   "chart_match": [
-    "completed"
+    "62"
   ],
-  "image_cues": [
-    {
-      "match": [
-        "jordan",
-        "basketball"
-      ],
-      "query": "Michael Jordan",
-      "max": 1
-    }
-  ]
+  "image_cues": []
 }
