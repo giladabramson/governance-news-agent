@@ -30,7 +30,6 @@ def run(out: Path, cfg: dict):
         else:
             merged.append(dict(w))
     words = merged
-    (out / "words.json").write_text(json.dumps(words, indent=1), encoding="utf-8")
 
     W, H = cfg["video"]["width"], cfg["video"]["height"]
     header = f"""[Script Info]
@@ -68,10 +67,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                         and sw[i1 + d].strip('.,') != words[j1 + d]["w"].strip('.,'):
                     disp_over[j1 + d] = sw[i1 + d]
 
+    # Bake script-corrected number tokens INTO words.json — cue matching and
+    # chart triggers read it, and Whisper mishears digits ("1,921" -> "1,221").
+    for j, t in disp_over.items():
+        words[j]["w"] = t
+    (out / "words.json").write_text(json.dumps(words, indent=1), encoding="utf-8")
+
     groups, grp = [], []
     for i, w in enumerate(words):
-        if i in disp_over:
-            w = dict(w, w=disp_over[i])
         grp.append(w)
         if len(grp) == 3 or flag[i]:
             groups.append(grp); grp = []
