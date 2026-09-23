@@ -126,10 +126,14 @@ def run(out: Path, cfg: dict):
     _kless = lambda t: " ".join("".join(c for c in t if not c.isdigit()).split())
     _kfull = lambda t: " ".join(t.split())
     for q in facts["image_queries"]:
+        # "!" prefix = precision query: take exactly ONE hit (fuzzy Commons
+        # ranking loves to hand precise queries a stranger in slot two)
+        cap = 1 if q.startswith("!") else 2
+        q = q.lstrip("!")
         per_q = 0  # cap per query so no single photo series dominates the pool
         q_subj = any(t in q.lower() for t in subj_tokens)
         for hit in commons_search(q, ua, n=6):
-            if per_q >= 2:
+            if per_q >= cap:
                 break
             # Burst dedupe (digit-stripped title) applies to NEUTRAL images.
             # For the subject, distinct frames of the same session are wanted

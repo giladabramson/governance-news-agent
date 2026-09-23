@@ -58,15 +58,19 @@
   "story_beat": "His trainer, Sir Henry Cecil, was a racing legend the sport had written off, and he was dying of cancer. Frankel gave him fourteen wins in fourteen races on the way out - Cecil said one of them made him feel twenty years better. He died months after the horse retired.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Frankel_(horse)",
   "image_queries": [
-    "Frankel horse",
-    "Frankel Champions Stakes",
-    "Frankel at York",
-    "Newmarket Racecourse",
-    "Horse Race Finish Line",
-    "1920 Epsom Derby finish"
+    "!04 Frankel",
+    "!Frankel Champions Stakes",
+    "!Frankel (5628637541)",
+    "!Newmarket Racecourse geograph 4853846",
+    "!Talking tactics at Newmarket",
+    "!Horse Race Finish Line",
+    "!1920 Epsom Derby finish side",
+    "!Race horses and jockeys cross the finishing line",
+    "!Montana Expo Park Horse Racing 05",
+    "!Horse racing held at Third Month Fair in Yunnan"
   ],
-  "chart_match": ["147"],
-  "image_cues": [
-    {"match": ["guineas", "newmarket"], "query": "The Rowley Mile Racecourse Newmarket", "max": 1}
-  ]
+  "chart_match": [
+    "147"
+  ],
+  "image_cues": []
 }
