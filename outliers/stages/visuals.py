@@ -246,8 +246,10 @@ def run(out: Path, cfg: dict):
         while sum(alloc) < len(paths) and k < len(rema):
             alloc[rema[k]] += 1; k += 1
         while sum(alloc) > len(paths):
-            j = max(range(len(alloc)), key=lambda i: alloc[i] / max(wants[i], 1))
-            if alloc[j] <= 1: break
+            cands = [i for i in range(len(alloc)) if alloc[i] > 1]
+            if not cands:
+                break   # more gaps than images — repeats unavoidable
+            j = max(cands, key=lambda i: alloc[i] / max(wants[i], 1))
             alloc[j] -= 1
     else:
         alloc = wants

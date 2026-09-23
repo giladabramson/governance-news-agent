@@ -117,11 +117,30 @@
     "Esther Vergeer",
     "Vergeer wheelchair",
     "Wheelchair tennis Olympic Tennis Arena view",
-    "wheelchair tennis Roland Garros"
+    "wheelchair tennis Roland Garros",
+    "!Esther Vergeer 20170605 160614150",
+    "!Paris-FR-75-Roland Garros-5 juin 2014-promo handisport-18"
   ],
-  "chart_match": ["longest", "seventy-four"],
+  "chart_match": [
+    "longest",
+    "seventy-four"
+  ],
   "image_cues": [
-    {"match": ["beijing", "point"], "query": "080908 Esther Vergeer serves", "max": 1},
-    {"match": ["retired", "retirement"], "query": "Esther Vergeer packs up her gear", "max": 1}
+    {
+      "match": [
+        "beijing",
+        "point"
+      ],
+      "query": "080908 Esther Vergeer serves",
+      "max": 1
+    },
+    {
+      "match": [
+        "retired",
+        "retirement"
+      ],
+      "query": "Esther Vergeer packs up her gear",
+      "max": 1
+    }
   ]
 }
