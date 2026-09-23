@@ -1,0 +1,81 @@
+{
+  "name": "Aleksandr Karelin",
+  "slug": "aleksandr-karelin",
+  "field": "Greco-Roman wrestling",
+  "one_line": "887 wins, 2 losses, six straight years without conceding a single point - until a dairy farmer beat him 1-0.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "career senior record: 887 wins, 2 losses - both losses by a single point, thirteen years apart",
+      "number": "887",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": "Loss 1: 1987 USSR Championships (Rostorotsky). Loss 2: Sydney 2000 final. Chart: gold 887 vs gray 2."
+    },
+    {
+      "claim": "unbeaten internationally for 13 years, and no one scored a single point on him in the six years before Sydney 2000",
+      "number": "6",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'a point had not been scored against him in competition the previous six years.'"
+    },
+    {
+      "claim": "three Olympic golds (1988, 1992, 1996) under three different flags - Soviet Union, Unified Team, Russia - and carried the flag at all three ceremonies",
+      "number": "3",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": "The country changed around him; the champion did not."
+    },
+    {
+      "claim": "nine world titles and twelve European titles, never losing at either",
+      "number": "9",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "his signature move, the Karelin Lift, hoisted 130-kilogram opponents off the mat and threw them - a reverse body lift no one else dared use at super-heavyweight",
+      "number": "130",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": "Worth maximum points in Greco-Roman. Opponents reportedly preferred conceding position to being thrown. Nicknames: the Russian Bear, the Experiment."
+    },
+    {
+      "claim": "in the Sydney 2000 final he lost 1-0 to American Rulon Gardner - a former dairy farmer who had never won a major international title - and retired",
+      "number": "2000",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": "The 'Miracle on the Mat'. First points conceded in six years; first loss in thirteen. Gardner grew up doing farm work in Wyoming. Karelin retired after the match."
+    },
+    {
+      "claim": "born 1967 in Novosibirsk, Siberia; after retiring became a member of Russia's parliament",
+      "number": "1967",
+      "source_url": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+      "confidence": "high",
+      "note": "Context block: 130kg super-heavyweight, feared across the sport for a decade and a half."
+    }
+  ],
+  "comparison": {
+    "their_number": "887",
+    "their_label": "career wins",
+    "second_best": "2",
+    "second_label": "career losses - both by one point",
+    "gap_description": "887 wins against 2 losses, thirteen years apart, each by a single point."
+  },
+  "story_beat": "In the Sydney 2000 final, the man who hadn't conceded a point in six years met Rulon Gardner, an American raised on a dairy farm who had never won a major title. Gardner scored one point and gave up none. Karelin, beaten for the first time in thirteen years, walked off the mat and retired.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Aleksandr_Karelin",
+  "image_queries": [
+    "!Aleksandr Karelin.jpg",
+    "!Aleksandr Karelin 2008 Somalia stamp",
+    "!Aleksandr Karelin WCG-2013",
+    "!GrecoRomanWrestling1",
+    "!Greco-Roman wrestling at the 2025 CIS Games 24",
+    "!Mexico 68 Wrestling event",
+    "!Wrestling at the 2012 Summer Olympics 2028",
+    "!Olympic Freestyle Wrestling at Excel - 96kg Gold Medal Match"
+  ],
+  "chart_match": ["887"],
+  "image_cues": [
+    {"match": ["gardner"], "query": "!Rulon Gardner.jpg", "max": 1}
+  ]
+}
