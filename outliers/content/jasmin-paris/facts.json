@@ -76,8 +76,7 @@
     "Jasmin Paris",
     "2018 Borrowdale Fell Race Jasmin Paris",
     "Pennine Way",
-    "Spine Race",
-    "Barkley Marathons"
+    "Spine Race"
   ],
   "chart_match": [
     "95"
@@ -85,9 +84,9 @@
   "image_cues": [
     {
       "match": [
-        "barkley"
+        "second"
       ],
-      "query": "Lighting the cigarette to start Barkley",
+      "query": "Eoin keith spine race finish",
       "max": 1
     },
     {

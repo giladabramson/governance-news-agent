@@ -39,7 +39,9 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
     bw, gap = W * 0.20, W * 0.10
     lx0, rx0 = W / 2 - gap / 2 - bw, W / 2 + gap / 2
     ybase, bar_top = H * 0.74, H * 0.48    # chart area sits clear of the title block
-    ymax = target * 1.08
+    ymax = max(target, rec or 0) * 1.08    # the runner-up may be TALLER (time races)
+    hms = c.get("format") == "hms"
+    _hms = lambda v: f"{int(v)//3600}:{int(v)%3600//60:02d}:{int(v)%60:02d}"
     hgt = lambda v: (ybase - bar_top) * (v / ymax)
     n = int(dur * fps)
     cross_frame = None
@@ -58,7 +60,10 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             d.line([(W * 0.08, gy), (W * 0.92, gy)], fill=(30, 30, 29), width=2)
 
         # counter + label up top (decimal targets keep decimals: 99.94 != 100)
-        ctext = f"{val:.2f}" if target % 1 > 1e-9 else f"{int(round(val))}"
+        if hms:
+            ctext = _hms(val)
+        else:
+            ctext = f"{val:.2f}" if target % 1 > 1e-9 else f"{int(round(val))}"
         d.text((W / 2, H * 0.245), ctext, font=big, fill=GOLD, anchor="mm")
         d.text((W / 2, H * 0.335), c.get("their_label", ""), font=mid, fill=WHITE, anchor="mm")
 
@@ -83,7 +88,8 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             hot = cross_frame is not None and (i - cross_frame) < fps * 0.45
             d.rounded_rectangle([lx0, ybase - hgt(rec_val), lx0 + bw, ybase],
                                 radius=14, fill=GRAYBAR)
-            d.text((lx0 + bw / 2, ybase - hgt(rec_val) - 40), f"{rec:g}",
+            d.text((lx0 + bw / 2, ybase - hgt(rec_val) - 40),
+                   _hms(rec) if hms else f"{rec:g}",
                    font=sml, fill=WHITE if hot else GRAY, anchor="mm")
 
         d.rounded_rectangle([rx0, ybase - max(hgt(val), 8), rx0 + bw, ybase],
@@ -93,7 +99,8 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             d.text(pos, txt, font=sml, fill=col, anchor="lm")
 
         if rec and c.get("second_label"):
-            d.text((W / 2, ybase + 44), f"{rec:g} = {c['second_label']}",
+            rtxt = _hms(rec) if hms else f"{rec:g}"
+            d.text((W / 2, ybase + 44), f"{rtxt} = {c['second_label']}",
                    font=sml, fill=GRAY, anchor="mm")
 
         img.save(tmp / f"f{i:04d}.png")
