@@ -1,0 +1,79 @@
+{
+  "name": "Jahangir Khan",
+  "slug": "jahangir-khan",
+  "field": "squash",
+  "one_line": "Unbeaten in professional squash for five years and 555 matches - the longest winning streak in top-level sport.",
+  "comparison_type": "streak",
+  "facts": [
+    {
+      "claim": "won 555 consecutive matches, unbeaten from 1981 to 1986 - recorded by Guinness World Records as the longest winning streak by any athlete in top-level professional sport",
+      "number": "555",
+      "source_url": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'the longest winning streak by any athlete in top-level professional sport as recorded by Guinness World Records.' Attribute the count to Guinness if pressed - some squash historians argue the true match count is unknowable, but Guinness canonized 555."
+    },
+    {
+      "claim": "the streak ended at the 1986 World Open final, when Ross Norman beat him 5-9, 7-9, 9-7, 1-9",
+      "number": "1986",
+      "source_url": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+      "confidence": "high",
+      "note": "Five years between defeats."
+    },
+    {
+      "claim": "won the World Open in 1981 aged 17, the youngest-ever winner; world amateur champion at 15",
+      "number": "17",
+      "source_url": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+      "confidence": "high",
+      "note": "The streak began weeks after that 1981 title."
+    },
+    {
+      "claim": "won ten consecutive British Opens, 1982-1991",
+      "number": "10",
+      "source_url": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+      "confidence": "high",
+      "note": "The British Open was squash's Wimbledon. Ten in a row."
+    },
+    {
+      "claim": "six World Open titles: 1981, 1982, 1983, 1984, 1985, 1988",
+      "number": "6",
+      "source_url": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "his older brother Torsam died suddenly in November 1979, mid-match, at a tournament in Adelaide; Jahangir, then 15, considered quitting and instead built his career as a tribute to him",
+      "number": "1979",
+      "source_url": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+      "confidence": "high",
+      "note": "Wikipedia: the death 'profoundly affected Khan. He considered quitting the game, but decided to pursue a career in the sport as a tribute to his brother.' Report flat, no melodrama - the facts carry it."
+    },
+    {
+      "claim": "the next-longest unbeaten streak in professional sport is Esther Vergeer's 470 - the subject of an earlier video on this channel",
+      "number": "470",
+      "source_url": "https://www.paralympic.org/feature/no-6-esther-vergeer-retires-remains-involved",
+      "confidence": "high",
+      "note": "IPC on Vergeer: her 470 was 'second only to Pakistani squash great Jahangir Khan's record mark of 555.' Chart: gold 555 vs gray 470. Possible self-reference in script/description."
+    }
+  ],
+  "comparison": {
+    "their_number": "555",
+    "their_label": "consecutive match wins",
+    "second_best": "470",
+    "second_label": "the next-longest streak in sport (Esther Vergeer)",
+    "gap_description": "555 straight wins over five years; nothing else in professional sport has passed 470."
+  },
+  "story_beat": "In November 1979 his older brother Torsam, also a professional, collapsed and died mid-match in Adelaide. Jahangir was 15 and nearly quit. Two years later he was world champion at 17 - and then didn't lose a match to anyone, anywhere, for five years.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Jahangir_Khan",
+  "image_queries": [
+    "Jahangir Khan squash",
+    "Jahangir Khan in Karachi",
+    "Jahangir Khan with a Fan",
+    "ASB Squash Court at British Open 1981",
+    "Glass Squash Court",
+    "Squash court"
+  ],
+  "chart_match": ["470"],
+  "image_cues": [
+    {"match": ["squash"], "query": "ASB Squash Court at British Open 1981", "max": 1}
+  ]
+}
