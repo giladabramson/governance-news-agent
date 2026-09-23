@@ -1,0 +1,72 @@
+{
+  "name": "Frankel",
+  "slug": "frankel",
+  "field": "horse racing",
+  "one_line": "Ran 14 races, won all 14, and retired as the highest-rated racehorse in the history of ratings.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "raced 14 times between 2010 and 2012 and won all 14, retiring unbeaten",
+      "number": "14",
+      "source_url": "https://en.wikipedia.org/wiki/Frankel_(horse)",
+      "confidence": "high",
+      "note": "British thoroughbred, owned by Khalid Abdullah, sired by Galileo, named after the late American trainer Bobby Frankel."
+    },
+    {
+      "claim": "rated 147 by Timeform - the highest rating in the organisation's history, ahead of Sea-Bird's 145 (1965)",
+      "number": "147",
+      "source_url": "https://www.sportinglife.com/racing/news/when-frankel-earned-the-highest-rating-in-timeforms-history/201431",
+      "confidence": "high",
+      "note": "Timeform has rated racehorses since 1948. Chart: gold 147 vs gray 145 - and note Sea-Bird's 145 stood for ~47 years as the ceiling. Wikipedia confirms 'highest-rated horse in the organisation's history.'"
+    },
+    {
+      "claim": "won the 2011 2000 Guineas by six lengths, described as 'one of the greatest displays on a British racecourse'",
+      "number": "6",
+      "source_url": "https://en.wikipedia.org/wiki/Frankel_(horse)",
+      "confidence": "high",
+      "note": "He led almost the entire race - commentators thought the jockey had lost control; the horse was just faster than the sport."
+    },
+    {
+      "claim": "bookmakers priced him as short as 1/20 - bet twenty to win one",
+      "number": "1/20",
+      "source_url": "https://en.wikipedia.org/wiki/Frankel_(horse)",
+      "confidence": "high",
+      "note": "Sussex Stakes 2012. Betting on him became nearly pointless - the market gave up pretending he could lose."
+    },
+    {
+      "claim": "his trainer, Sir Henry Cecil, trained Frankel's entire career while dying of cancer; he said a 2012 win made him feel 'twenty years better'; he died in June 2013, months after Frankel retired",
+      "number": "2013",
+      "source_url": "https://en.wikipedia.org/wiki/Frankel_(horse)",
+      "confidence": "high",
+      "note": "The human heart of the video. Cecil was a legendary trainer in decline - written off by the sport - and Frankel was his resurrection. Report flat."
+    },
+    {
+      "claim": "retired to stud at a fee of 125,000 pounds per mating, which rose to 350,000 by 2024",
+      "number": "350,000",
+      "source_url": "https://en.wikipedia.org/wiki/Frankel_(horse)",
+      "confidence": "high",
+      "note": "The only athlete on this channel whose retirement job pays six figures per appointment."
+    }
+  ],
+  "comparison": {
+    "their_number": "147",
+    "their_label": "Frankel's rating",
+    "second_best": "145",
+    "second_label": "the best of every other horse since 1948",
+    "gap_description": "147 against 145 - a ceiling that had stood for half a century, cleared."
+  },
+  "story_beat": "His trainer, Sir Henry Cecil, was a racing legend the sport had written off, and he was dying of cancer. Frankel gave him fourteen wins in fourteen races on the way out - Cecil said one of them made him feel twenty years better. He died months after the horse retired.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Frankel_(horse)",
+  "image_queries": [
+    "Frankel horse",
+    "Frankel Champions Stakes",
+    "Frankel at York",
+    "Newmarket Racecourse",
+    "Horse Race Finish Line",
+    "1920 Epsom Derby finish"
+  ],
+  "chart_match": ["147"],
+  "image_cues": [
+    {"match": ["guineas", "newmarket"], "query": "The Rowley Mile Racecourse Newmarket", "max": 1}
+  ]
+}
