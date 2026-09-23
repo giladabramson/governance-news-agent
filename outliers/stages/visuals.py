@@ -3,6 +3,18 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 
+def _is_damaged(path: Path) -> bool:
+    """Reject archival scans with big pure-white gaps (torn/missing regions).
+    >6% near-white pixels reliably flags the rectangle artifacts; clean B&W
+    photos sit under ~4%."""
+    try:
+        im = Image.open(path).convert("L").resize((160, 160))
+        px = im.getdata()
+        return sum(1 for p in px if p > 250) / len(px) > 0.045
+    except Exception:
+        return False
+
+
 def _sentence_ends(full_text: str, words: list) -> list:
     """Times where script sentences end, aligned onto heard words (script is
     the authority on punctuation, same approach as captions.py)."""
@@ -145,6 +157,10 @@ def run(out: Path, cfg: dict):
                 continue
             p = imgdir / f"{len(paths):02d}.jpg"
             p.write_bytes(requests.get(hit["url"], headers={"User-Agent": ua}, timeout=60).content)
+            if _is_damaged(p):
+                p.unlink(missing_ok=True)
+                print(f"visuals: skipped damaged scan {hit['page'][:50]}")
+                seen.add(_kfull(hit["page"])); continue
             paths.append(str(p)); credits.append(hit)
             seen.add(_kfull(hit["page"])); seen.add(_kless(hit["page"]) if not q_subj else _kfull(hit["page"]))
             per_q += 1

@@ -40,6 +40,7 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
     lx0, rx0 = W / 2 - gap / 2 - bw, W / 2 + gap / 2
     ybase, bar_top = H * 0.74, H * 0.48    # chart area sits clear of the title block
     ymax = max(target, rec or 0) * 1.08    # the runner-up may be TALLER (time races)
+    has_rec = "second_best" in c and c["second_best"] != ""  # 0 is a real value
     hms = c.get("format") == "hms"
     _hms = lambda v: f"{int(v)//3600}:{int(v)%3600//60:02d}:{int(v)%60:02d}"
     hgt = lambda v: (ybase - bar_top) * (v / ymax)
@@ -82,13 +83,15 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
             m_labels.append(((W * 0.08 + 6, ly), m.get("label", str(m["value"])),
                              WHITE if near else GRAY))
 
-        if rec:
+        if has_rec:
             if cross_frame is None and val >= rec:
                 cross_frame = i
             hot = cross_frame is not None and (i - cross_frame) < fps * 0.45
-            d.rounded_rectangle([lx0, ybase - hgt(rec_val), lx0 + bw, ybase],
+            # a 0 record still gets a visible stub so the gap reads
+            rbar = max(hgt(rec_val), 8)
+            d.rounded_rectangle([lx0, ybase - rbar, lx0 + bw, ybase],
                                 radius=14, fill=GRAYBAR)
-            d.text((lx0 + bw / 2, ybase - hgt(rec_val) - 40),
+            d.text((lx0 + bw / 2, ybase - max(hgt(rec_val), 8) - 40),
                    _hms(rec) if hms else f"{rec:g}",
                    font=sml, fill=WHITE if hot else GRAY, anchor="mm")
 
@@ -98,7 +101,7 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
         for pos, txt, col in m_labels:
             d.text(pos, txt, font=sml, fill=col, anchor="lm")
 
-        if rec and c.get("second_label"):
+        if has_rec and c.get("second_label"):
             rtxt = _hms(rec) if hms else f"{rec:g}"
             d.text((W / 2, ybase + 44), f"{rtxt} = {c['second_label']}",
                    font=sml, fill=GRAY, anchor="mm")
@@ -109,7 +112,8 @@ def run(out: Path, cfg: dict, dur: float = 3.5):
                     "-i", str(tmp / "f%04d.png"), "-c:v", "libx264", "-crf", "18",
                     "-pix_fmt", "yuv420p", str(out / "chart.mp4")], check=True)
     (out / "chart.json").write_text(json.dumps({"dur": dur}), encoding="utf-8")
-    print(f"chart: {int(target)} vs {int(rec) if rec else '—'} -> {out/'chart.mp4'} ({dur}s)")
+    rlbl = int(rec) if has_rec else "—"
+    print(f"chart: {int(target)} vs {rlbl} -> {out/'chart.mp4'} ({dur}s)")
 
 
 if __name__ == "__main__":

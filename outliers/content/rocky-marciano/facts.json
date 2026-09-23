@@ -68,14 +68,28 @@
     "!Rocky Marciano 1951",
     "!Rocky Marciano 1954 (2)",
     "!Boxer Rocky Marciano (cropped)",
-    "!Rocky Marciano and Jersey Joe Walcott 1953",
+    "!Rocky Marciano standing over Harry Matthews",
+    "!Tommy Harrison and Rocky Marciano 1953",
+    "!Rocky Marciano and Jersey Joe Walcott training 1952 pre",
+    "!Rocky Marciano (10559562993)",
+    "!Rocky Marciano with contract in 1952",
     "!Rocky Marciano vs. Rex Layne 1951",
-    "!Roland La Starza vs. Rocky Marciano 1953",
-    "!Ezzard Charles vs Rocky Marciano 1954",
-    "!Rocky Marciano (10559562993)"
+    "!Ezzard Charles vs Rocky Marciano June 1954",
+    "!Rocky Marciano, Don Cockell and Willie Ritchie at weigh",
+    "!Rocky Marciano by Stanley Weston"
   ],
-  "chart_match": ["49"],
+  "chart_match": [
+    "49"
+  ],
   "image_cues": [
-    {"match": ["walcott", "knocked", "punch"], "query": "!Rocky Marciano knocks out Jersey Joe Walcott, 1952", "max": 1}
+    {
+      "match": [
+        "walcott",
+        "knocked",
+        "punch"
+      ],
+      "query": "!Rocky Marciano knocks out Jersey Joe Walcott, 1952",
+      "max": 1
+    }
   ]
 }
