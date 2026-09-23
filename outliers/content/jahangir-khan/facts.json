@@ -53,6 +53,13 @@
       "source_url": "https://www.paralympic.org/feature/no-6-esther-vergeer-retires-remains-involved",
       "confidence": "high",
       "note": "IPC on Vergeer: her 470 was 'second only to Pakistani squash great Jahangir Khan's record mark of 555.' Chart: gold 555 vs gray 470. Possible self-reference in script/description."
+    },
+    {
+      "claim": "in 1982, mid-streak, he won the final of the ISPA Championship without losing a single point",
+      "number": "0",
+      "source_url": "https://www.psasquashtour.com/featured-news/psa50-jahangir-khan-the-sultan-of-squash/",
+      "confidence": "high",
+      "note": "PSA (the professional tour itself) and olympics.com both carry it. Phrase as 'a professional final' - it was the FINAL without a point, not the whole tournament. This is the hook's 'craziest part' payoff."
     }
   ],
   "comparison": {
@@ -72,8 +79,16 @@
     "Glass Squash Court",
     "Squash court"
   ],
-  "chart_match": ["470"],
+  "chart_match": [
+    "470"
+  ],
   "image_cues": [
-    {"match": ["squash"], "query": "ASB Squash Court at British Open 1981", "max": 1}
+    {
+      "match": [
+        "squash"
+      ],
+      "query": "ASB Squash Court at British Open 1981",
+      "max": 1
+    }
   ]
 }
