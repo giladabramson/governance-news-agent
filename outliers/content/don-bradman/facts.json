@@ -110,5 +110,14 @@
   "chart_match": [
     "62"
   ],
-  "image_cues": []
+  "image_cues": [
+    {
+      "match": [
+        "jordan",
+        "basketball"
+      ],
+      "query": "Michael Jordan",
+      "max": 1
+    }
+  ]
 }
