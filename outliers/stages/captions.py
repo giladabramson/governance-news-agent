@@ -62,9 +62,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
             for d in range(min(i2 - i1, j2 - j1)):
                 if ends[i1 + d]:
                     flag[j1 + d] = True
-                if (i2 - i1) == (j2 - j1) \
-                        and any(ch.isdigit() for ch in sw[i1 + d]) \
+                if op == "replace" and (i2 - i1) == (j2 - j1) \
                         and sw[i1 + d].strip('.,') != words[j1 + d]["w"].strip('.,'):
+                    # confidently aligned but spelled differently: the script
+                    # is ground truth (Whisper wrote 'Caroline' for Karelin,
+                    # 'Jagger' for Jagr, '1,221' for 1,921)
                     disp_over[j1 + d] = sw[i1 + d]
 
     # Bake script-corrected number tokens INTO words.json — cue matching and
