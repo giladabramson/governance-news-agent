@@ -22,6 +22,8 @@ YouTube Shorts about people who dominated their field to a statistically absurd 
 - Never put a number in a script that is not in facts.json with a source_url.
 - If sources disagree on a number, facts.json must say so and the script must attribute ("by most counts", "per the Chinook team").
 - Scripts are 120–160 words. Hook ≤ 15 words. No "did you know", no "legendary", no "incredible".
+- Every script establishes the sport early: one line on what the game is and what the
+  key number means (e.g. cricket's average, squash's format). Never assume the viewer knows.
 - Do not run tts.py yourself; it spends credits. I run render.py.
 - Do not edit files under content/*/ except facts.json, script.json, meta.json.
 
