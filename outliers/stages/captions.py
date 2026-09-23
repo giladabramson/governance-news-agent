@@ -104,7 +104,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 for k, g in enumerate(grp))
             lines.append(f"Dialogue: 0,{_ts(cur['s'])},{_ts(end)},Cap,,0,0,0,,{txt}")
     (out / "captions.ass").write_text(header + "\n".join(lines), encoding="utf-8")
-    # short tail: lead-trim makes starts instant, so a tight end keeps loops
-    # seamless and non-loop videos snappy
-    (out / "duration.txt").write_text(str(words[-1]["e"] + 0.35), encoding="utf-8")
+    # video starts and ends WITH the audio: lead/tail silence is trimmed off
+    # the voice itself; 0.12s here is just decay room for the last consonant
+    (out / "duration.txt").write_text(str(words[-1]["e"] + 0.12), encoding="utf-8")
     print(f"captions: {len(words)} words, {words[-1]['e']:.1f}s")
