@@ -15,7 +15,7 @@ def _trim_lead(mp3: Path):
                     "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.08"
                     ":stop_periods=-1:stop_threshold=-40dB:stop_duration=0.5,"
                     "areverse,"
-                    "silenceremove=start_periods=1:start_threshold=-40dB:start_silence=0.05,"
+                    "silenceremove=start_periods=1:start_threshold=-55dB:start_silence=0.35,"
                     "areverse",
                     "-c:a", "libmp3lame", "-q:a", "2", str(t)], check=True)
     t.replace(mp3)
