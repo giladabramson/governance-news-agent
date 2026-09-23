@@ -67,6 +67,27 @@
       "source_url": "https://en.wikipedia.org/wiki/Don_Bradman_in_popular_culture",
       "confidence": "high",
       "note": "Requested by ABC GM Charles Moses, a personal friend; in effect since 1983. Authenticated by ABC staff and 'The A-Z of Bradman' - not urban legend. THE closer."
+    },
+    {
+      "claim": "Bodyline was fast bowling aimed at the batsman's body, expecting a defensive deflection to be caught; devised for the 1932-33 Ashes specifically to neutralize Bradman",
+      "number": "1932",
+      "source_url": "https://en.wikipedia.org/wiki/Bodyline",
+      "confidence": "high",
+      "note": "Wikipedia verbatim definition."
+    },
+    {
+      "claim": "Bodyline escalated into a diplomatic incident between the British and Australian governments - Australia's PM warned of trade consequences",
+      "number": "",
+      "source_url": "https://en.wikipedia.org/wiki/Bodyline",
+      "confidence": "high",
+      "note": "Wikipedia: 'escalated into a diplomatic incident'; PM Joseph Lyons warned of 'severe economic hardships' from British boycotts."
+    },
+    {
+      "claim": "in 1935 the MCC changed the Laws of cricket: 'direct attack' bowling was declared unfair and umpires empowered to stop it",
+      "number": "1935",
+      "source_url": "https://en.wikipedia.org/wiki/Bodyline",
+      "confidence": "high",
+      "note": "The sport literally rewrote its laws because of tactics invented against one man."
     }
   ],
   "comparison": {
