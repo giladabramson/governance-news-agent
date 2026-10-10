@@ -65,9 +65,9 @@
   "comparison": {
     "their_number": "11",
     "their_label": "world titles",
-    "second_best": "8",
-    "second_label": "the most by anyone else, ever",
-    "gap_description": "11 world titles between age 20 and 39; nobody else in the sport's history has more than 8."
+    "second_best": "4",
+    "second_label": "the most by any other man, ever",
+    "gap_description": "11 world titles; no other man in surfing history has more than 4."
   },
   "story_beat": "In February 2022, days before turning fifty, Slater entered the Pipeline Masters - the same deadly Hawaiian wave he had first conquered at twenty - against surfers literally half his age. He won. Thirty years separated his first Pipeline title from his last.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Kelly_Slater",
@@ -83,9 +83,26 @@
     "!Empty wave at Banzai Pipeline",
     "!Surfer at Banzai Pipeline, North Shore (Oahu)"
   ],
-  "chart_match": ["eleven", "11"],
+  "chart_match": [
+    "eleven",
+    "11"
+  ],
   "image_cues": [
-    {"match": ["pipeline"], "query": "!Escaping the jaws of a Banzai Pipeline wave", "max": 1, "crop": "medium"},
-    {"match": ["fifty", "won"], "query": "!Pro Surfer Kelly Slater - Hawaii Pipeline North Shore Oahu", "max": 1}
+    {
+      "match": [
+        "pipeline"
+      ],
+      "query": "!Escaping the jaws of a Banzai Pipeline wave",
+      "max": 1,
+      "crop": "medium"
+    },
+    {
+      "match": [
+        "fifty",
+        "won"
+      ],
+      "query": "!Pro Surfer Kelly Slater - Hawaii Pipeline North Shore Oahu",
+      "max": 1
+    }
   ]
 }
