@@ -1,0 +1,91 @@
+{
+  "name": "Kelly Slater",
+  "slug": "kelly-slater",
+  "field": "surfing",
+  "one_line": "World surfing champion at 20 and at 39, winner at Pipeline at 49 - the only athlete to be the best on Earth across three decades of his own aging body.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "11 world surfing titles - 1992 to 2011",
+      "number": "11",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": "Title years: 1992, 1994-1998, 2005-2006, 2008, 2010-2011. Wikipedia: 'widely regarded as the greatest professional surfer of all time.'"
+    },
+    {
+      "claim": "youngest world champion in surfing history at 20, and the oldest at 39",
+      "number": "20",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": "1992 and 2011. BOTH ends of the record. 19 years between first and last title - the core outlier fact: nobody else has been best-on-Earth across their own aging."
+    },
+    {
+      "claim": "the most world titles by anyone else, ever, is 8 - Stephanie Gilmore's women's record; the men's runner-up has 4",
+      "number": "8",
+      "source_url": "https://en.wikipedia.org/wiki/Stephanie_Gilmore",
+      "confidence": "high",
+      "note": "Gilmore: 8 titles, 8th in 2022, 'most world titles in the history of the women's WSL.' Mark Richards' 4 is the men's second-best. Chart: gold 11 vs gray 8."
+    },
+    {
+      "claim": "56 championship tour event victories, the all-time record",
+      "number": "56",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "claim": "won the Pipeline Masters eight times, the first in 1992 and the last in 2022 - at 49, days before his 50th birthday, against opponents half his age",
+      "number": "8",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": "Pipeline = the most dangerous famous wave in surfing, breaking over shallow reef in Hawaii. 2022 win confirmed; born 11 Feb 1972, final was early Feb 2022. THE story beat: 30 years between first and last win at the same deadly wave."
+    },
+    {
+      "claim": "the only surfer ever to score two perfect 20-point heats",
+      "number": "20",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": "May 2005 and June 2013. Two perfect rides in one heat, judged flawless - done twice, by him alone."
+    },
+    {
+      "claim": "retired at the end of 1998 at the top, returned in 2002 - and won five more world titles after coming back",
+      "number": "5",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": "Titles 2005, 2006, 2008, 2010, 2011 all post-comeback, in his 30s. The comeback alone would be a career."
+    },
+    {
+      "claim": "born 1972 in Cocoa Beach, Florida; turned professional in 1990",
+      "number": "1972",
+      "source_url": "https://en.wikipedia.org/wiki/Kelly_Slater",
+      "confidence": "high",
+      "note": "Florida kid, not Hawaii royalty - learned on small mushy Atlantic waves."
+    }
+  ],
+  "comparison": {
+    "their_number": "11",
+    "their_label": "world titles",
+    "second_best": "8",
+    "second_label": "the most by anyone else, ever",
+    "gap_description": "11 world titles between age 20 and 39; nobody else in the sport's history has more than 8."
+  },
+  "story_beat": "In February 2022, days before turning fifty, Slater entered the Pipeline Masters - the same deadly Hawaiian wave he had first conquered at twenty - against surfers literally half his age. He won. Thirty years separated his first Pipeline title from his last.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Kelly_Slater",
+  "image_queries": [
+    "!Kelly Slater 2017",
+    "!KellySlater byRobKeaton",
+    "!Kelly Slater (6020584199)",
+    "!Kelly Slater @ US Open of Surfing 2012 - Final Day",
+    "!2012 - Protect OUr Waves, Kelly Slater POW",
+    "!Pro Surfer Kelly Slater - Hawaii Pipeline North Shore Oahu",
+    "!Escaping the jaws of a Banzai Pipeline wave",
+    "!The perfect wave at the Banzai Pipeline",
+    "!Empty wave at Banzai Pipeline",
+    "!Surfer at Banzai Pipeline, North Shore (Oahu)"
+  ],
+  "chart_match": ["eleven", "11"],
+  "image_cues": [
+    {"match": ["pipeline"], "query": "!Escaping the jaws of a Banzai Pipeline wave", "max": 1, "crop": "medium"},
+    {"match": ["fifty", "won"], "query": "!Pro Surfer Kelly Slater - Hawaii Pipeline North Shore Oahu", "max": 1}
+  ]
+}
