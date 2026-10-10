@@ -47,7 +47,8 @@ def run(out: Path, cfg: dict):
     # assemble) writes the next vN.mp4; earlier cuts are never overwritten.
     vers = _versions(out)
     deps = [out / f for f in ("voice.mp3", "captions.ass", "shots.json", "script.json")]
-    deps += [p for p in [Path("assets/sfx/hook.mp3")] if p.exists()]
+    deps += [p for p in [Path("assets/sfx/hook.mp3"), Path("assets/sfx/whoosh.wav")]
+             if p.exists()]
     if vers and not cfg.get("_force_assemble"):
         newest_dep = max(d.stat().st_mtime for d in deps if d.exists())
         if vers[-1][1].stat().st_mtime >= newest_dep:
@@ -59,27 +60,35 @@ def run(out: Path, cfg: dict):
     tracks = sorted(Path("assets/music").glob("*.mp3"))
     music = random.choice(tracks) if tracks else None
 
-    inputs, filters, labels = [], [], []
+    n = len(shots)
+    durs = [s["end"] - s["start"] for s in shots]
+    # Crossfade length: every shot except the last is rendered F longer, and
+    # each xfade consumes exactly that overlap — total duration (and therefore
+    # caption + voice sync) is preserved to the frame.
+    F = min(0.20, 0.45 * min(durs))
+
+    inputs, filters = [], []
     for i, s in enumerate(shots):
-        dur = s["end"] - s["start"]
+        dur, pad = durs[i], (F if i < n - 1 else 0.0)
+        tail = f",format=yuv420p,settb=AVTB[v{i}]"   # xfade needs matched fmt/tb
         if s.get("video"):
-            # pre-rendered clip (animated chart) — pass through at native motion
+            # pre-rendered clip (animated chart) — pass through at native
+            # motion; tpad clones the last frame to cover the fade overlap
             inputs += ["-t", f"{dur:.3f}", "-i", s["file"]]
-            filters.append(f"[{i}:v]scale={W}:{H},setsar=1,fps={fps}[v{i}]")
+            filters.append(f"[{i}:v]scale={W}:{H},setsar=1,fps={fps},"
+                           f"tpad=stop_mode=clone:stop_duration={pad:.3f}" + tail)
         elif s.get("static"):
             # "static" now means caption-repositioning only — the card itself
             # still drifts (Gilad: fully still frames look bad)
             inputs += ["-i", s["file"]]
-            filters.append(_kb(f"{i}:v", dur, W, H, fps, "zin_soft") + f"[v{i}]")
+            filters.append(_kb(f"{i}:v", dur + pad, W, H, fps, "zin_soft") + tail)
         else:
             # Single-frame input: zoompan's d=<frames> generates the whole clip
             # from one frame. Looping the input first would make zoompan expand
             # EVERY input frame by d, ballooning the stream to hours.
             inputs += ["-i", s["file"]]
             move = s.get("move", "zin" if i % 2 == 0 else "zout")
-            filters.append(_kb(f"{i}:v", dur, W, H, fps, move) + f"[v{i}]")
-        labels.append(f"[v{i}]")
-    n = len(shots)
+            filters.append(_kb(f"{i}:v", dur + pad, W, H, fps, move) + tail)
 
     # Captions sit mid-screen, which collides with full-screen text/graphic
     # shots (card, animated chart). While any such shot is up, push caption
@@ -105,7 +114,27 @@ def run(out: Path, cfg: dict):
 
     ass = _filter_path(ass_use)
     fontsdir = _filter_path(Path(v["caption_font"]).parent)
-    filters.append("".join(labels) + f"concat=n={n}:v=1:a=0[vc]")
+
+    # Chained crossfades instead of hard concat. Full-screen graphics (chart,
+    # card) keep plain fades; every third photo-to-photo cut slides for variety.
+    def _trans(i):
+        a, b = shots[i - 1], shots[i]
+        if a.get("video") or b.get("video") or a.get("static") or b.get("static"):
+            return "fade"
+        if i % 3 == 2:
+            return "smoothleft" if (i // 3) % 2 == 0 else "smoothright"
+        return "fade"
+
+    if n == 1:
+        filters.append("[v0]null[vc]")
+    else:
+        off, cur = 0.0, "v0"
+        for i in range(1, n):
+            off += durs[i - 1]
+            nxt = f"x{i}" if i < n - 1 else "vc"
+            filters.append(f"[{cur}][v{i}]xfade=transition={_trans(i)}"
+                           f":duration={F:.3f}:offset={off:.3f}[{nxt}]")
+            cur = nxt
     # Film grain + vignette under the captions: stills stop reading as slides.
     filters.append("[vc]noise=alls=6:allf=t,vignette=angle=PI/5[vg]")
     filters.append(f"[vg]ass={ass}:fontsdir={fontsdir}[vout]")
@@ -129,13 +158,35 @@ def run(out: Path, cfg: dict):
     if hook_end is not None:
         audio_in += ["-i", str(sfx)]
         sfx_idx = ai; ai += 1
+    # Quiet whoosh under every transition — starts 0.12s early so its peak
+    # lands exactly on the cut.
+    whoosh, wh_idx = Path("assets/sfx/whoosh.wav"), None
+    cut_times = []
+    acc = 0.0
+    for d in durs[:-1]:
+        acc += d; cut_times.append(acc)
+    if whoosh.exists() and cut_times:
+        audio_in += ["-i", str(whoosh)]
+        wh_idx = ai; ai += 1
 
     filters.append(f"[{n}:a]aformat=channel_layouts=stereo[voice]")
-    vsrc = "voice"
+    vsrc, mix = "voice", []
     if sfx_idx is not None:
         ms = int(hook_end * 1000)
         filters.append(f"[{sfx_idx}:a]adelay={ms}|{ms},aformat=channel_layouts=stereo,volume=-8dB[sfx]")
-        filters.append("[voice][sfx]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[vmix]")
+        mix.append("[sfx]")
+    if wh_idx is not None:
+        k = len(cut_times)
+        filters.append(f"[{wh_idx}:a]volume=-12dB,aformat=channel_layouts=stereo,"
+                       f"asplit={k}" + "".join(f"[wr{j}]" for j in range(k)))
+        for j, ct in enumerate(cut_times):
+            ms = max(0, int((ct - 0.12) * 1000))
+            filters.append(f"[wr{j}]adelay={ms}|{ms}[wd{j}]")
+            mix.append(f"[wd{j}]")
+    if mix:
+        filters.append("[voice]" + "".join(mix) +
+                       f"amix=inputs={1 + len(mix)}:duration=first"
+                       f":dropout_transition=0:normalize=0[vmix]")
         vsrc = "vmix"
     if music_idx is not None:
         filters.append(f"[{music_idx}:a]volume={v['music_volume_db']}dB,aformat=channel_layouts=stereo[mus]")

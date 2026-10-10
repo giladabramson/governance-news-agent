@@ -101,9 +101,21 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 end = max(cur["e"], min(nxt_start, cur["e"] + 0.8))
             else:
                 end = cur["e"]
-            txt = " ".join(
-                (r"{\c&H00FFFF&}" + _disp(g["w"]) + r"{\c&HFFFFFF&}") if k == j else _disp(g["w"])
-                for k, g in enumerate(grp))
+            # Animated karaoke: the active word pops to 124% and settles to
+            # 112% in brand gold; number tokens stay gold even when inactive
+            # (the stats ARE the channel); each new group fades in 50ms.
+            GOLD, WHT = r"\c&H75C7FA&", r"\c&HFFFFFF&"
+            def _tok(g, active):
+                t = _disp(g["w"])
+                if active:
+                    return (r"{" + GOLD + r"\fscx124\fscy124\t(0,70,\fscx112\fscy112)}"
+                            + t + r"{" + WHT + r"\fscx100\fscy100}")
+                if any(ch.isdigit() for ch in t):
+                    return r"{" + GOLD + r"}" + t + r"{" + WHT + r"}"
+                return t
+            txt = " ".join(_tok(g, k == j) for k, g in enumerate(grp))
+            if j == 0:
+                txt = r"{\fad(50,0)}" + txt
             lines.append(f"Dialogue: 0,{_ts(cur['s'])},{_ts(end)},Cap,,0,0,0,,{txt}")
     (out / "captions.ass").write_text(header + "\n".join(lines), encoding="utf-8")
     # video starts and ends WITH the audio; 0.30s covers the last word's real
