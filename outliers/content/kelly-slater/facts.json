@@ -78,7 +78,6 @@
     "!Kelly Slater @ US Open of Surfing 2012 - Final Day",
     "!2012 - Protect OUr Waves, Kelly Slater POW",
     "!Pro Surfer Kelly Slater - Hawaii Pipeline North Shore Oahu",
-    "!Escaping the jaws of a Banzai Pipeline wave",
     "!The perfect wave at the Banzai Pipeline",
     "!Empty wave at Banzai Pipeline",
     "!Surfer at Banzai Pipeline, North Shore (Oahu)"
@@ -90,7 +89,7 @@
   "image_cues": [
     {
       "match": [
-        "pipeline"
+        "deadliest"
       ],
       "query": "!Escaping the jaws of a Banzai Pipeline wave",
       "max": 1,
@@ -98,8 +97,7 @@
     },
     {
       "match": [
-        "fifty",
-        "won"
+        "paddled"
       ],
       "query": "!Pro Surfer Kelly Slater - Hawaii Pipeline North Shore Oahu",
       "max": 1
