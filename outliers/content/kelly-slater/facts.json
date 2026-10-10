@@ -72,6 +72,7 @@
   "story_beat": "In February 2022, days before turning fifty, Slater entered the Pipeline Masters - the same deadly Hawaiian wave he had first conquered at twenty - against surfers literally half his age. He won. Thirty years separated his first Pipeline title from his last.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Kelly_Slater",
   "image_queries": [
+    "!Escaping the jaws of a Banzai Pipeline wave",
     "!Kelly Slater @ US Open of Surfing 2012 - Final Day",
     "!KellySlater byRobKeaton",
     "!Kelly Slater (6020584199)",
@@ -85,14 +86,6 @@
     "11"
   ],
   "image_cues": [
-    {
-      "match": [
-        "deadliest"
-      ],
-      "query": "!Escaping the jaws of a Banzai Pipeline wave",
-      "max": 1,
-      "crop": "medium"
-    },
     {
       "match": [
         "paddled"
