@@ -1,0 +1,75 @@
+{
+  "name": "Abebe Bikila",
+  "slug": "abebe-bikila",
+  "field": "marathon",
+  "one_line": "PART 1: A palace guard ran the 1960 Olympic marathon barefoot, at night, past the monument looted from his country - and broke the world record.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "born 1932 in Jato, Ethiopia; a captain (shambel) in Emperor Haile Selassie's Imperial Guard",
+      "number": "1932",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "5th Infantry Regiment, joined ~1952. 'Palace guard' framing is accurate."
+    },
+    {
+      "claim": "at the 1960 Rome Olympics his new shoes caused blisters, so he decided to run the marathon barefoot",
+      "number": "1960",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "GUARDRAIL: his entry was long-planned, NOT a last-minute addition (myth). And the barefoot choice was practical, not poverty - he trained barefoot. Script must not say 'too poor for shoes'."
+    },
+    {
+      "claim": "the race was run at night, with Italian soldiers holding torches lining the route; the course passed the Obelisk of Axum - looted from Ethiopia by Mussolini's army in 1937 - twice, and his final sprint began near it",
+      "number": "1937",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "The symbolism beat: an Ethiopian soldier winning barefoot in front of Ethiopia's stolen monument, in the capital of the empire that failed to conquer his country. Commons has the obelisk in Rome photographed in 1960 AND its 1937 fascist unveiling."
+    },
+    {
+      "claim": "won in 2:15:16.2, breaking the marathon world record - by eight tenths of a second",
+      "number": "2:15:16.2",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "Barefoot, on cobblestones, at night - and still the fastest marathon ever run to that date."
+    },
+    {
+      "claim": "became Ethiopia's first Olympic gold medalist, and is celebrated as Black Africa's first Olympic champion",
+      "number": "1",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "medium",
+      "note": "Ethiopia's-first is sourced solid. The 'first Black African / sub-Saharan champion' claim is standard in coverage but VERIFY exact phrasing before final render; safe fallback: 'Africa had never had a champion like him.'"
+    },
+    {
+      "claim": "runner-up Rhadi Ben Abdesselam of Morocco finished 25 seconds behind; the famous photo shows Bikila pulling away from him",
+      "number": "25",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "medium",
+      "note": "25s margin - verify. The Commons race photo (sprints away from Rhadi) is the signature image."
+    }
+  ],
+  "comparison": {
+    "their_number": "8116.2",
+    "their_label": "the world record - barefoot",
+    "second_best": "8117",
+    "second_label": "the old record, in shoes",
+    "format": "hms",
+    "gap_description": "2:15:16.2 barefoot vs 2:15:17 shod - he beat every shoe on Earth by eight tenths of a second."
+  },
+  "story_beat": "At night, by torchlight, a captain of Ethiopia's Imperial Guard ran barefoot over Rome's cobblestones, began his final sprint beside the obelisk Mussolini had looted from his homeland, and broke the world record - becoming Ethiopia's first Olympic champion.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+  "image_queries": [
+    "!Abebe Bikila sprints away from Rhadi Ben Abdesselam",
+    "!Abebe Bikila - Star of Ethiopia",
+    "!Ethiopian obelisk in Rome 1960",
+    "!Axum obelisk in Rome unveiling 1937",
+    "!Arch of Constantine at Night.jpg",
+    "!Arch of Constantine at night 01"
+  ],
+  "chart_match": ["record"],
+  "image_cues": [
+    {"match": ["obelisk", "looted"], "query": "!Ethiopian obelisk in Rome 1960", "max": 1},
+    {"match": ["barefoot"], "query": "!Abebe Bikila sprints away from Rhadi Ben Abdesselam", "max": 1}
+  ],
+  "series": {"part": 1, "next": "abebe-bikila-2", "tease": "Four years later he did something even harder - part two."}
+}

@@ -1,0 +1,73 @@
+{
+  "name": "Abebe Bikila",
+  "slug": "abebe-bikila-2",
+  "field": "marathon",
+  "one_line": "PART 2: Forty days after surgery he won the Olympic marathon again - then lost his legs, and kept competing anyway.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "40 days before the 1964 Tokyo Olympic marathon, Bikila had an appendectomy",
+      "number": "40",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "Part 2 opens here. He was not expected to be fit."
+    },
+    {
+      "claim": "he won Tokyo 1964 in 2:12:11.2 - another world record - finishing 4 minutes and 8 seconds ahead of silver medalist Basil Heatley",
+      "number": "2:12:11.2",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "Wearing shoes this time (Puma). The 4:08 margin is enormous for an Olympic marathon."
+    },
+    {
+      "claim": "the first person in history to win the Olympic marathon twice",
+      "number": "2",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "Wikipedia: 'First athlete to successfully defend an Olympic marathon title.' Chart: gold 2 vs gray 1 = the most by anyone before him."
+    },
+    {
+      "claim": "in March 1969 his car overturned near Addis Ababa; he was paralyzed and never walked again, though he regained upper-body mobility",
+      "number": "1969",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "Volkswagen, 22 March 1969. Tone: state it plainly, no melodrama - the channel's deadpan carries grief better than adjectives."
+    },
+    {
+      "claim": "he kept competing: archery and table tennis at the 1970 Stoke Mandeville Wheelchair Games, and won a cross-country sled event in Norway in 1971",
+      "number": "1971",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "THE part-2 beat: the man who ran barefoot found new sports from a wheelchair - and won again (Norway sled, 1971)."
+    },
+    {
+      "claim": "died October 1973, aged 41, of a cerebral hemorrhage related to the accident; an estimated 65,000 people attended his state funeral and Haile Selassie declared a national day of mourning",
+      "number": "65000",
+      "source_url": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+      "confidence": "high",
+      "note": "The national stadium in Addis Ababa bears his name."
+    }
+  ],
+  "comparison": {
+    "their_number": "2",
+    "their_label": "Olympic marathon golds",
+    "second_best": "1",
+    "second_label": "the most by anyone before him",
+    "gap_description": "The first person ever to win the Olympic marathon twice - 40 days after surgery."
+  },
+  "story_beat": "Forty days after an appendectomy, Bikila won the Tokyo Olympic marathon by over four minutes - the first person ever to win it twice. Five years later a car crash took his legs. He switched to archery, then sled racing - and won in Norway in 1971. He died at 41; sixty-five thousand people came to say goodbye.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Abebe_Bikila",
+  "image_queries": [
+    "!Abebe Bikila 1968 (b retouched)",
+    "!Abebe-Bikila-1969",
+    "!Abebe Bikila, 1972 card",
+    "!Japan National Stadium Electronic Bulletin Board 1964",
+    "!Addis Ababa Stadium.jpg",
+    "!Abebe Bikila.jpg"
+  ],
+  "chart_match": ["twice"],
+  "image_cues": [
+    {"match": ["tokyo"], "query": "!Japan National Stadium Electronic Bulletin Board 1964", "max": 1}
+  ],
+  "series": {"part": 2, "prev": "abebe-bikila", "opening_callback": "the barefoot champion from part one"}
+}
