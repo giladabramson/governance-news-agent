@@ -1,0 +1,85 @@
+{
+  "name": "Wilt Chamberlain",
+  "slug": "wilt-chamberlain",
+  "field": "basketball",
+  "one_line": "Scored 100 points in an NBA game that was never filmed - the greatest night in basketball history survives as a radio tape, a box score, and one photograph.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "scored 100 points in a single NBA game: Philadelphia Warriors 169, New York Knicks 147, on March 2, 1962, in Hershey, Pennsylvania",
+      "number": "100",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "high",
+      "note": "Hershey Sports Arena, attendance 4,124. The NBA's untouchable single-game record."
+    },
+    {
+      "claim": "the game was not televised and no video footage has ever been recovered; only audio of the fourth quarter survives",
+      "number": "4",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'The game was not televised, and no video footage of the game has been recovered; there are only audio recordings of the game's fourth quarter.' The radio tape entered the National Recording Registry in 2016. No New York press attended; only two photographers were present. THE premise: nobody alive has ever watched it."
+    },
+    {
+      "claim": "the famous locker-room photo of Wilt holding a paper reading '100' was taken by an AP photographer who was only there for personal reasons",
+      "number": "100",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "high",
+      "note": "Paul Vathis, AP. The photo IS on Commons (File:Wilt Chamberlain 100 Point Game 1962.jpg) - use as the reveal cue."
+    },
+    {
+      "claim": "shot 28 of 32 free throws that night - 87.5 percent, from a career ~50 percent free-throw shooter",
+      "number": "28",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "high",
+      "note": "36 of 63 field goals + 28/32 FT = 100. The worst part of his game went perfect on the one night it mattered."
+    },
+    {
+      "claim": "the Knicks spent the fourth quarter fouling other Warriors and stalling the ball to keep it away from him; over 200 fans stormed the court when he hit 100",
+      "number": "200",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "high",
+      "note": "An NBA team played keep-away to stop one man from scoring. Echoes the Bradman/Bodyline 'they changed how they played to stop him' pattern."
+    },
+    {
+      "claim": "that same season he AVERAGED 50.4 points per game",
+      "number": "50.4",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "high",
+      "note": "1961-62. An average higher than most players' career best single game. Nobody since has averaged even 38."
+    },
+    {
+      "claim": "in the 64 years since, the closest anyone has come is 83 points - Bam Adebayo, March 2026; Kobe Bryant's 81 in 2006 held the runner-up spot for two decades",
+      "number": "83",
+      "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+      "confidence": "medium",
+      "note": "Wikipedia (updated 2026): 'Bam Adebayo came closest with 83 points (March 10, 2026).' VERIFY before final render - recent edit. Chart: gold 100 vs gray 83, milestone line at 81 'Kobe, 2006'."
+    }
+  ],
+  "comparison": {
+    "their_number": "100",
+    "their_label": "points, one game",
+    "second_best": "83",
+    "second_label": "the closest anyone has come since",
+    "gap_description": "100 points in 1962; in 64 years nobody has come within 17."
+  },
+  "chart_milestones": [
+    {"value": 81, "label": "Kobe, 2006"}
+  ],
+  "story_beat": "On March 2, 1962, in a half-empty arena in Hershey, Pennsylvania, with no TV cameras and no New York reporters present, Wilt Chamberlain scored 100 points in one NBA game. The Knicks spent the final quarter holding the ball and fouling his teammates to stop him. Two hundred fans stormed the court. No film of it has ever been found.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
+  "image_queries": [
+    "!Wilt Chamberlain 1962",
+    "!Wilt Chamberlain 1960 (cropped)",
+    "!1961-62 Fleer - Wilt Chamberlain (cropped)",
+    "!Wilt Chamberlain3",
+    "!Hershey Park Arena",
+    "!Hersheypark Arena at ice level",
+    "!Placard for wilt chamberlains 100 point game",
+    "!Kobe Bryant 81",
+    "!Wilt Chamberlain headshot"
+  ],
+  "chart_match": ["hundred", "100"],
+  "image_cues": [
+    {"match": ["photograph", "photo"], "query": "!Wilt Chamberlain 100 Point Game 1962", "max": 1}
+  ]
+}
