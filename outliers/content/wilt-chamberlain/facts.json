@@ -63,7 +63,10 @@
     "gap_description": "100 points in 1962; in 64 years nobody has come within 17."
   },
   "chart_milestones": [
-    {"value": 81, "label": "Kobe, 2006"}
+    {
+      "value": 81,
+      "label": "Kobe, 2006"
+    }
   ],
   "story_beat": "On March 2, 1962, in a half-empty arena in Hershey, Pennsylvania, with no TV cameras and no New York reporters present, Wilt Chamberlain scored 100 points in one NBA game. The Knicks spent the final quarter holding the ball and fouling his teammates to stop him. Two hundred fans stormed the court. No film of it has ever been found.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
@@ -78,8 +81,17 @@
     "!Kobe Bryant 81",
     "!Wilt Chamberlain headshot"
   ],
-  "chart_match": ["hundred", "100"],
+  "chart_match": [
+    "17"
+  ],
   "image_cues": [
-    {"match": ["photograph", "photo"], "query": "!Wilt Chamberlain 100 Point Game 1962", "max": 1}
+    {
+      "match": [
+        "photograph",
+        "photo"
+      ],
+      "query": "!Wilt Chamberlain 100 Point Game 1962",
+      "max": 1
+    }
   ]
 }
