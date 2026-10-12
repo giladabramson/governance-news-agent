@@ -272,6 +272,14 @@ def run(out: Path, cfg: dict):
             alloc[j] -= 1
     else:
         alloc = wants
+    # The hook-end cut needs >=2 shots in the opening gap — steal a slot from
+    # the richest gap rather than open on one endless image (Bikila p1: 13.7s).
+    if (gaps and alloc[0] < 2 and gaps[0][0] < 0.5
+            and gaps[0][1] - hook_end >= 1.0):
+        donors = [i for i in range(1, len(alloc)) if alloc[i] > 1]
+        if donors:
+            alloc[max(donors, key=lambda i: alloc[i])] -= 1
+            alloc[0] = 2
 
     shots, idx = [dict(f) for f in fixed], 0
     for gi, (t0, t1) in enumerate(gaps):

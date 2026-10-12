@@ -61,6 +61,7 @@
     "!Abebe Bikila 1968 (b retouched)",
     "!Abebe-Bikila-1969",
     "!Abebe Bikila, 1972 card",
+    "!TokyoOlympics1964Opening",
     "!Japan National Stadium Electronic Bulletin Board 1964",
     "!Addis Ababa Stadium.jpg",
     "!Abebe Bikila.jpg"
@@ -71,7 +72,7 @@
       "match": [
         "tokyo"
       ],
-      "query": "!Japan National Stadium Electronic Bulletin Board 1964",
+      "query": "!Abebe Bikila 1964 Olympics",
       "max": 1
     }
   ],
