@@ -243,6 +243,9 @@ def run(out: Path, cfg: dict):
     SUBJ_MOVES = ["zin", "panr"]
     NEUTRAL_MOVES = ["panr", "zout", "panl"]
     sent_ends = _sentence_ends(script["full_text"], words)
+    # The first cut lands ON the hook's last word (with the boom) — holding
+    # the opening image into the story reads slow (Gilad, Wilt v4).
+    hook_end = words[min(len(script["hook"].split()), len(words)) - 1]["e"] + 0.06
     gaps, t = [], 0.0
     for f in fixed:
         if f["start"] - t >= 0.25:
@@ -277,10 +280,15 @@ def run(out: Path, cfg: dict):
             print("visuals: pool exhausted — images will repeat; add image_queries")
         # Cut on sentence ends when possible: snap each uniform cut point to
         # the nearest sentence boundary within 0.8s (keeping shots >= 1.0s).
-        seg = (t1 - t0) / n
         bounds = [t0]
-        for k in range(1, n):
-            ideal = t0 + k * seg
+        rest0, n_rest = t0, n
+        if (t0 < 0.5 and n >= 2 and hook_end - t0 >= 0.8
+                and t1 - hook_end >= 1.0 * (n - 1)):
+            bounds.append(hook_end)
+            rest0, n_rest = hook_end, n - 1
+        seg = (t1 - rest0) / n_rest
+        for k in range(1, n_rest):
+            ideal = rest0 + k * seg
             b = ideal
             if sent_ends:
                 snap = min(sent_ends, key=lambda s: abs(s - ideal)) + 0.05
