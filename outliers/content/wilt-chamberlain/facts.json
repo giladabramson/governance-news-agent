@@ -51,8 +51,8 @@
       "claim": "in the 64 years since, the closest anyone has come is 83 points - Bam Adebayo, March 2026; Kobe Bryant's 81 in 2006 held the runner-up spot for two decades",
       "number": "83",
       "source_url": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
-      "confidence": "medium",
-      "note": "Wikipedia (updated 2026): 'Bam Adebayo came closest with 83 points (March 10, 2026).' VERIFY before final render - recent edit. Chart: gold 100 vs gray 83, milestone line at 81 'Kobe, 2006'."
+      "confidence": "high",
+      "note": "VERIFIED 2026-10-12 via CNN/NPR/Al Jazeera: Adebayo 83, March 10 2026, Heat 150-129 Wizards, passed Kobe 81."
     }
   ],
   "comparison": {
@@ -71,15 +71,13 @@
   "story_beat": "On March 2, 1962, in a half-empty arena in Hershey, Pennsylvania, with no TV cameras and no New York reporters present, Wilt Chamberlain scored 100 points in one NBA game. The Knicks spent the final quarter holding the ball and fouling his teammates to stop him. Two hundred fans stormed the court. No film of it has ever been found.",
   "story_beat_source": "https://en.wikipedia.org/wiki/Wilt_Chamberlain%27s_100-point_game",
   "image_queries": [
-    "!Wilt Chamberlain 1962",
     "!Wilt Chamberlain 1960 (cropped)",
     "!1961-62 Fleer - Wilt Chamberlain (cropped)",
-    "!Wilt Chamberlain3",
+    "!Wilt Chamberlain 1963",
+    "!Wilt Chamberlain 1967",
     "!Hershey Park Arena",
     "!Hersheypark Arena at ice level",
-    "!Placard for wilt chamberlains 100 point game",
-    "!Kobe Bryant 81",
-    "!Wilt Chamberlain headshot"
+    "!Placard for wilt chamberlains 100 point game"
   ],
   "chart_match": [
     "17"
@@ -90,7 +88,7 @@
         "photograph",
         "photo"
       ],
-      "query": "!Wilt Chamberlain 100 Point Game 1962",
+      "query": "!Wilt Chamberlain 100 Point Game 1962 original",
       "max": 1
     }
   ]
