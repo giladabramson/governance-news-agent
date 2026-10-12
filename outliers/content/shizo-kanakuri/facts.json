@@ -1,0 +1,95 @@
+{
+  "name": "Shizo Kanakuri",
+  "slug": "shizo-kanakuri",
+  "field": "marathon",
+  "one_line": "Vanished mid-marathon at the 1912 Olympics, was listed missing in Sweden for 50 years - and finished his race in 1967, setting a record that can never be broken.",
+  "comparison_type": "gap",
+  "facts": [
+    {
+      "claim": "one of Japan's first two Olympic athletes ever, selected at age 20 for the 1912 Stockholm Games",
+      "number": "20",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "Born 20 Aug 1891, Nagomi, Kumamoto. Japan's Olympic debut = him + sprinter Yahiko Mishima."
+    },
+    {
+      "claim": "the journey to Stockholm took 18 days by ship and the Trans-Siberian Railway; his classmates fundraised 1,500 of the 1,800 yen it cost",
+      "number": "18",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "Lovely underdog texture for the setup."
+    },
+    {
+      "claim": "the 1912 marathon ran in extreme heat; dozens dropped out, and Portugal's Francisco Lazaro collapsed and died - the first Olympic fatality",
+      "number": "1912",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "Establishes that quitting was survival, not weakness - keeps the tone kind."
+    },
+    {
+      "claim": "about 16 miles in, exhausted, he left the course, stumbled into a garden party, and drank orange juice for an hour",
+      "number": "16",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "Wikipedia verbatim: 'left the course and desperately stumbled into a nearby garden party, where he drank orange juice for an hour.' The absurd beat."
+    },
+    {
+      "claim": "ashamed, he returned to Japan without telling race officials - and Sweden kept him on its missing persons list for fifty years",
+      "number": "50",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "GUARDRAIL: he was NOT actually lost - he ran the 1920 Antwerp Olympics (16th, 2:48:45.4) and 1924 Paris (DNF), and founded the Hakone Ekiden in 1920. Only SWEDEN'S paperwork lost him. The script must say 'Sweden listed him as missing', never 'he vanished for 54 years'."
+    },
+    {
+      "claim": "in 1967, Swedish television found him - 75 years old - and invited him back to finish; he crossed the line on March 20, 1967",
+      "number": "1967",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "Age at finish: 75 (born Aug 1891). The anniversary invitation."
+    },
+    {
+      "claim": "official time: 54 years, 8 months, 6 days, 5 hours, 32 minutes, 20.3 seconds - the slowest marathon ever completed, a record that cannot be broken",
+      "number": "54",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "No future marathon can beat it without a 55-year-old open Olympic DNF. 'Unbreakable record' framing is safe."
+    },
+    {
+      "claim": "his words at the finish: it was a long trip - along the way he got married, had six children and ten grandchildren",
+      "number": "6",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "Quote verbatim: 'It was a long trip. Along the way, I got married, had six children and ten grandchildren.' HOUSE RULE: no direct quotes - use reported speech: 'He said it had been a long trip...' THE closer."
+    },
+    {
+      "claim": "founded the Hakone Ekiden university relay in 1920; celebrated in Japan as the father of the marathon",
+      "number": "1920",
+      "source_url": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+      "confidence": "high",
+      "note": "The redemption beat - the 'failure' built Japan's biggest running tradition, still run today (2026 photos on Commons)."
+    }
+  ],
+  "comparison": {
+    "their_number": "54.68",
+    "their_label": "years to finish",
+    "second_best": "0.00025",
+    "second_label": "the marathon world record, in years",
+    "gap_description": "54 years, 8 months, 6 days to finish one marathon - the only record in sports that can never be broken."
+  },
+  "story_beat": "In 1967 Swedish television tracked him down, 75 years old, and invited him to finish what he had started in 1912. He jogged across the line at 54 years, 8 months, 6 days, 5 hours, 32 minutes and 20.3 seconds - then said it had been a long trip: along the way he had married, had six children and ten grandchildren.",
+  "story_beat_source": "https://en.wikipedia.org/wiki/Shizo_Kanakuri",
+  "image_queries": [
+    "!Shisou Kanaguri",
+    "!Shiso Kanaguri 1924",
+    "!Shiso Kanakuri 1924",
+    "!1912 Summer Olympics Opening",
+    "!Olympic marathon 1912 turnpoint",
+    "!Turning point Olympic marathon 1912",
+    "!United States Marathon Team at the 1912 Summer Olympics",
+    "!Hakone Ekiden 2026.jpg"
+  ],
+  "chart_match": ["54"],
+  "image_cues": [
+    {"match": ["missing"], "query": "!Commemorative plaque of Shizo Kanakuri in Sollentuna", "max": 1, "crop": "medium"}
+  ]
+}
