@@ -84,12 +84,20 @@
     "!Shiso Kanakuri 1924",
     "!1912 Summer Olympics Opening",
     "!Olympic marathon 1912 turnpoint",
-    "!Turning point Olympic marathon 1912",
     "!United States Marathon Team at the 1912 Summer Olympics",
     "!Hakone Ekiden 2026.jpg"
   ],
-  "chart_match": ["54"],
+  "chart_match": [
+    "months"
+  ],
   "image_cues": [
-    {"match": ["missing"], "query": "!Commemorative plaque of Shizo Kanakuri in Sollentuna", "max": 1, "crop": "medium"}
+    {
+      "match": [
+        "missing"
+      ],
+      "query": "!Commemorative plaque of Shizo Kanakuri in Sollentuna",
+      "max": 1,
+      "crop": "medium"
+    }
   ]
 }
