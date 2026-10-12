@@ -66,10 +66,27 @@
     "!Arch of Constantine at Night.jpg",
     "!Arch of Constantine at night 01"
   ],
-  "chart_match": ["record"],
+  "chart_match": [],
   "image_cues": [
-    {"match": ["obelisk", "looted"], "query": "!Ethiopian obelisk in Rome 1960", "max": 1},
-    {"match": ["barefoot"], "query": "!Abebe Bikila sprints away from Rhadi Ben Abdesselam", "max": 1}
+    {
+      "match": [
+        "obelisk",
+        "looted"
+      ],
+      "query": "!Ethiopian obelisk in Rome 1960",
+      "max": 1
+    },
+    {
+      "match": [
+        "barefoot"
+      ],
+      "query": "!Abebe Bikila sprints away from Rhadi Ben Abdesselam",
+      "max": 1
+    }
   ],
-  "series": {"part": 1, "next": "abebe-bikila-2", "tease": "Four years later he did something even harder - part two."}
+  "series": {
+    "part": 1,
+    "next": "abebe-bikila-2",
+    "tease": "Four years later he did something even harder - part two."
+  }
 }

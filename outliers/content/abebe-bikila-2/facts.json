@@ -65,9 +65,19 @@
     "!Addis Ababa Stadium.jpg",
     "!Abebe Bikila.jpg"
   ],
-  "chart_match": ["twice"],
+  "chart_match": [],
   "image_cues": [
-    {"match": ["tokyo"], "query": "!Japan National Stadium Electronic Bulletin Board 1964", "max": 1}
+    {
+      "match": [
+        "tokyo"
+      ],
+      "query": "!Japan National Stadium Electronic Bulletin Board 1964",
+      "max": 1
+    }
   ],
-  "series": {"part": 2, "prev": "abebe-bikila", "opening_callback": "the barefoot champion from part one"}
+  "series": {
+    "part": 2,
+    "prev": "abebe-bikila",
+    "opening_callback": "the barefoot champion from part one"
+  }
 }
