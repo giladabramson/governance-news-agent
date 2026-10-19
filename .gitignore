@@ -28,6 +28,9 @@ Projects/grow_recipes/
 # Portable Node + Vercel CLI (binary, ~270 MB)
 tools/node-portable/
 
+# Poppler for Windows (pdftoppm/pdftotext; on the user PATH — used by Claude's PDF reading)
+tools/poppler/
+
 # Claude Code local-only settings
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
