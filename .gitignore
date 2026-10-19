@@ -15,11 +15,24 @@ __pycache__/
 .venv/
 .env
 
-# Nested repo with its own remote (giladabramson/University, semesters as submodules)
+# Nested repos with their own remotes
 University/
+Projects/adaptive-music-slicer/
+
+# Local-only projects (kept out of git by choice)
+Projects/soccer-edge/
+Projects/plant_ai_timelapse/
+Projects/tagah_physics/
+Projects/grow_recipes/
+
+# Local tooling (absolute paths baked in — stays at the workspace root)
+.venv311/
+.node-portable/
+.shot-tool/
 
 # Claude Code local-only settings
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
 
 # Local run artifacts
 report_artifacts/

@@ -4,18 +4,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Workspace layout
 
-`c:\dev\` is a workspace, not a single project. It hosts unrelated Python projects that share a single `.venv` and a single git repo:
+`c:\dev\` is a workspace, not a single project. Its git repo is `giladabramson/governance-news-agent` (historical name — it now holds several projects plus the GitHub Actions for two of them).
 
-| Path | What | Owns its own CLAUDE.md? |
-|---|---|---|
-| [watchdog/](watchdog/) | Governance Watchdog — Hebrew-language news classifier and daily email digest. The user's primary project. | Yes — [watchdog/CLAUDE.md](watchdog/CLAUDE.md) |
-| [tagah_physics/](tagah_physics/) | TAGAH physics — physics problem-set generator. Greenfield, no implementation yet. | Yes — [tagah_physics/CLAUDE.md](tagah_physics/CLAUDE.md) |
-| [gmail_mcp_server.py](gmail_mcp_server.py) + [.mcp.json](.mcp.json) | Read-only Gmail MCP server registered with Claude Code via project-scope `.mcp.json`. Pure tooling — gives Claude `search_messages`, `get_message`, `get_profile`, `list_labels` against the user's Gmail. | No — see this file |
-| [University/](University/) | HUJI course work. **Its own nested git repo** (`giladabramson/University`, gitignored by the workspace) holding the read-only Moodle MCP server at `tools/moodle_mcp_server.py` (`moodle-readonly`, registered in both this root `.mcp.json` and the repo's own). Each semester is a **separate repo mounted as a submodule** at `<year>/Semester-<X>` (2026-27: A = course folders 52000/52221/52419/52571/52879, B = empty). All of them commit as the user's GitHub noreply identity. Commit inside the semester first, then the submodule pointer in University. Local files are the source of truth — don't bulk-mirror Moodle; only 52419 is actively used so far. | No — see its [README](University/README.md) |
-| [esports-edge/](esports-edge/) | Dota 2 probability model for Polymarket tier-2 markets. Research phase: pipeline + calibrated baseline only, NO trading code until each phase passes human review (build order in its README). | No — see [esports-edge/README.md](esports-edge/README.md) |
-| [outliers/](outliers/) | Outliers Shorts — name → 45–60 s vertical YouTube Short. Claude Code does the research/scripting via slash commands, Python does TTS/captions/visuals/ffmpeg. | Yes — [outliers/CLAUDE.md](outliers/CLAUDE.md) |
+```
+c:\dev\
+├─ University\        own repo (giladabramson/University) — HUJI course work + Moodle MCP
+├─ Projects\          everything else
+├─ tools\             workspace tooling (Gmail MCP server)
+├─ .github\workflows\ Actions for Projects/watchdog and Projects/tennis-value-bot
+└─ .venv\ .venv311\ .node-portable\ .shot-tool\   local tooling — NEVER move: absolute paths are baked in
+```
 
-When the user asks about "the watchdog" or "the bot," they mean the project under `watchdog/`. When they ask about Gmail tools or `mcp__gmail-readonly__*`, they mean the MCP server at the root.
+| Path | What | In this repo? | Own CLAUDE.md? |
+|---|---|---|---|
+| [University/](University/) | HUJI course work. **Own nested repo** (`giladabramson/University`) holding the read-only Moodle MCP server at `tools/moodle_mcp_server.py` (`moodle-readonly`). Each semester is a **separate repo mounted as a submodule** at `<year>/Semester-<X>` (2026-27: A = 52000/52221/52419, B = 52571/52879 — from Moodle's semester field). All commit as the user's GitHub noreply identity. Commit inside the semester first, then the submodule pointer in University. Local files are the source of truth — don't bulk-mirror Moodle; only 52419 is actively used so far. | No (gitignored) | No — see its [README](University/README.md) |
+| [Projects/watchdog/](Projects/watchdog/) | Governance Watchdog — Hebrew-language news classifier and daily email digest (Action, daily 07:00 UTC). | Yes | Yes |
+| [Projects/tennis-value-bot/](Projects/tennis-value-bot/) | Paper-trading tennis value bot. Action runs every 30 min and **commits `data/ledger.db` back to this repo** — always `git pull --rebase` before pushing. | Yes | No — README |
+| [Projects/outliers/](Projects/outliers/) | Outliers Shorts — name → 45–60 s vertical YouTube Short. Rendered media under `content/` is gitignored (local only). | Yes | Yes |
+| [Projects/esports-edge/](Projects/esports-edge/) | Dota 2 probability model for Polymarket tier-2 markets. Research phase, NO trading code until each phase passes human review. | Yes | No — README |
+| [Projects/adaptive-music-slicer/](Projects/adaptive-music-slicer/) | StemForge / adaptive music slicer. **Own nested repo** (`giladabramson/adaptive-music-slicer`); landing page deploys to Vercel from its `landing/`. Uses `c:\dev\.venv311` (CUDA torch, demucs). | No (gitignored) | No — README |
+| [Projects/soccer-edge/](Projects/soccer-edge/), [plant_ai_timelapse/](Projects/plant_ai_timelapse/), [tagah_physics/](Projects/tagah_physics/), [grow_recipes/](Projects/grow_recipes/) | Smaller / finished experiments, kept local only by the user's choice. | No (gitignored) | tagah_physics only |
+| [tools/gmail_mcp_server.py](tools/gmail_mcp_server.py) | Read-only Gmail MCP server (`gmail-readonly` in [.mcp.json](.mcp.json)). | Yes | No — see below |
+
+When the user asks about "the watchdog" they mean `Projects/watchdog/`. Gmail tools / `mcp__gmail-readonly__*` → `tools/gmail_mcp_server.py`. Moodle / courses / `mcp__moodle-readonly__*` → `University/`.
 
 ## Commands (from workspace root)
 
@@ -23,30 +34,27 @@ When the user asks about "the watchdog" or "the bot," they mean the project unde
 .\.venv\Scripts\Activate.ps1
 
 # Watchdog
-cd watchdog
+cd Projects\watchdog
 pip install -r requirements.txt
 python main.py
-cd ..
 
 # Gmail MCP — re-auth (only needed if token.json is deleted or expired)
-pip install -r requirements.txt
-python gmail_mcp_server.py auth
+pip install -r tools\requirements.txt
+python tools\gmail_mcp_server.py auth
 ```
 
-There is no test framework, linter, or build step in either project.
+There is no shared test framework, linter, or build step.
 
 ## Gmail MCP server
 
-`gmail_mcp_server.py` exposes four read-only tools to Claude Code via [.mcp.json](.mcp.json). It uses an OAuth client under the user's personal Google Cloud project `gmail-mcp` (account `tiulhilufim@gmail.com`). Secrets live outside the repo at `~/.gmail-mcp-readonly/` (never commit those):
+`tools/gmail_mcp_server.py` exposes four read-only tools to Claude Code via [.mcp.json](.mcp.json). It uses an OAuth client under the user's personal Google Cloud project `gmail-mcp` (account `tiulhilufim@gmail.com`). Secrets live outside the repo at `~/.gmail-mcp-readonly/` (never commit those):
 
 - `~/.gmail-mcp-readonly/credentials.json` — OAuth client (download from Google Cloud Console)
 - `~/.gmail-mcp-readonly/token.json` — refresh token (auto-created on first auth, auto-renews)
 
 The OAuth scope is hardcoded to `https://www.googleapis.com/auth/gmail.readonly`. The server cannot send, modify, or delete mail even if asked — Google rejects writes at the API layer.
 
-To switch to a different Gmail account: delete `~/.gmail-mcp-readonly/token.json`, then run `python gmail_mcp_server.py auth` again. To revoke entirely: https://myaccount.google.com/permissions → `gmail-mcp` → Remove access.
-
-Auto-approve for `mcp__gmail-readonly__*` is set in [.claude/settings.local.json](.claude/settings.local.json), so tool calls run without permission prompts.
+To switch to a different Gmail account: delete `~/.gmail-mcp-readonly/token.json`, then run `python tools\gmail_mcp_server.py auth` again. To revoke entirely: https://myaccount.google.com/permissions → `gmail-mcp` → Remove access.
 
 ## Permissions / auto-approve
 
@@ -54,11 +62,16 @@ Auto-approve for `mcp__gmail-readonly__*` is set in [.claude/settings.local.json
 
 ## Requirements files
 
-Each project owns its own `requirements.txt`. They share several `google-*` packages, which is fine because pip is idempotent against the shared `.venv`.
+Each project owns its own `requirements.txt`; they share the root `.venv` (pip is idempotent against it). The slicer uses `.venv311` instead.
 
-- [requirements.txt](requirements.txt) — Gmail MCP only (`mcp`, `google-auth`, `google-auth-oauthlib`, `google-api-python-client`)
-- [watchdog/requirements.txt](watchdog/requirements.txt) — Watchdog only (`feedparser`, `google-generativeai`, `requests`, `beautifulsoup4`, `google-auth*`)
+- [tools/requirements.txt](tools/requirements.txt) — Gmail MCP only
+- [Projects/watchdog/requirements.txt](Projects/watchdog/requirements.txt) — Watchdog only
 
 ## GitHub Actions
 
-`.github/workflows/daily_report.yml` runs the watchdog from inside the `watchdog/` directory (via `working-directory: watchdog`) and installs deps from `watchdog/requirements.txt`. It must remain at the workspace root because GitHub Actions only discovers workflows under `.github/workflows/` at the repo root.
+Workflows must stay in `.github/workflows/` at the repo root (GitHub only discovers them there). They point into `Projects/` via `working-directory`:
+
+- `daily_report.yml` → `Projects/watchdog` (the report artifact is written to `$GITHUB_WORKSPACE/report_artifacts/`, i.e. the repo root, not the project folder).
+- `tennis_bot.yml` → `Projects/tennis-value-bot`, commits `Projects/tennis-value-bot/data/ledger.db`.
+
+If a project folder moves, update both its `working-directory` and any repo-relative paths in the workflow.

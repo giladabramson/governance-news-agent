@@ -6,15 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Governance Watchdog: a Python automation agent that ingests Hebrew-language Israeli news RSS feeds (N12/Mako, Ynet, Walla), classifies items as governance/law-enforcement-failure stories, and emails a Hebrew HTML+plain digest. Runs daily on GitHub Actions cron (07:00 UTC) and locally via `python main.py`.
 
-This project lives in `c:\dev\watchdog\`. The parent `c:\dev\` is a workspace that also hosts an unrelated read-only Gmail MCP server for Claude Code tooling — see the root [CLAUDE.md](../CLAUDE.md). The `.venv` and `.git` are shared at the workspace level.
+This project lives in `c:\dev\Projects\watchdog\`. The parent `c:\dev\` is a workspace that also hosts an unrelated read-only Gmail MCP server for Claude Code tooling — see the root [CLAUDE.md](../../CLAUDE.md). The `.venv` and `.git` are shared at the workspace level.
 
 ## Commands
 
 Run from the `watchdog/` directory. The `.venv` is at the workspace root (`c:\dev\.venv\`).
 
 ```powershell
-cd c:\dev\watchdog
-..\.venv\Scripts\Activate.ps1
+cd c:\dev\Projects\watchdog
+..\..\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
 # Real run — sends email; needs all required env vars

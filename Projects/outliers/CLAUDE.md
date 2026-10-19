@@ -32,6 +32,6 @@ lowercase, hyphens: "Marion Tinsley" → marion-tinsley
 
 ## Environment (this machine)
 - Python lives in the shared workspace venv: `c:\dev\.venv\Scripts\python.exe`. Run commands
-  from `c:\dev\outliers\` using that interpreter, or activate with `..\.venv\Scripts\Activate.ps1`.
+  from `c:\dev\Projects\outliers\` using that interpreter, or activate with `..\..\.venv\Scripts\Activate.ps1`.
 - `ffmpeg.exe` / `ffprobe.exe` are in `c:\dev\.venv\Scripts\` — on PATH once the venv is active.
 - This folder is part of the `c:\dev` git repo, not a repo of its own.

@@ -2,7 +2,7 @@
   "mcpServers": {
     "gmail-readonly": {
       "command": "python",
-      "args": ["gmail_mcp_server.py"]
+      "args": ["tools/gmail_mcp_server.py"]
     },
     "moodle-readonly": {
       "command": "python",

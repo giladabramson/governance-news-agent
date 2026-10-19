@@ -9,7 +9,7 @@ separate, deliberate step gated on paper results (spec §9).
 
 ## Prior evidence (read this first)
 
-The sibling project `c:\dev\soccer-edge` tested this exact strategy class on
+The sibling project `c:\dev\Projects\soccer-edge` tested this exact strategy class on
 2,328 small-league soccer matches: Polymarket tracked the bookmaker consensus
 to within ~0.7 points and buying disagreements lost at every threshold. The
 null hypothesis for tennis is "same result". The CLV ledger this bot produces
@@ -19,8 +19,8 @@ rare by design.
 ## Setup
 
 ```powershell
-cd c:\dev\tennis-value-bot
-..\.venv\Scripts\Activate.ps1
+cd c:\dev\Projects\tennis-value-bot
+..\..\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 copy .env.example .env      # then put your free key in it
 ```
