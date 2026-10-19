@@ -20,9 +20,9 @@ c:\dev\
 | [University/](University/) | HUJI course work. **Own nested repo** (`giladabramson/University`) holding the read-only Moodle MCP server at `tools/moodle_mcp_server.py` (`moodle-readonly`). Each semester is a **separate repo mounted as a submodule** at `<year>/Semester-<X>` (2026-27: A = 52000/52221/52419, B = 52571/52879 — from Moodle's semester field). All commit as the user's GitHub noreply identity. Commit inside the semester first, then the submodule pointer in University. Local files are the source of truth — don't bulk-mirror Moodle; only 52419 is actively used so far. | No (gitignored) | No — see its [README](University/README.md) |
 | [Projects/watchdog/](Projects/watchdog/) | Governance Watchdog — Hebrew-language news classifier and daily email digest (Action, daily 07:00 UTC). | Yes | Yes |
 | [Projects/tennis-value-bot/](Projects/tennis-value-bot/) | Paper-trading tennis value bot. Action runs every 30 min and **commits `data/ledger.db` back to this repo** — always `git pull --rebase` before pushing. | Yes | No — README |
-| [Projects/outliers/](Projects/outliers/) | Outliers Shorts — name → 45–60 s vertical YouTube Short. Rendered media under `content/` is gitignored (local only). | Yes | Yes |
+| [Projects/outliers/](Projects/outliers/) | Outliers Shorts — name → 45–60 s vertical YouTube Short. Rendered media under `content/` is gitignored (local only). The highest `vN.mp4` is NOT necessarily the published one — the FINAL/SHIP version is named in the git commit messages. | Yes | Yes |
 | [Projects/esports-edge/](Projects/esports-edge/) | Dota 2 probability model for Polymarket tier-2 markets. Research phase, NO trading code until each phase passes human review. | Yes | No — README |
-| [Projects/adaptive-music-slicer/](Projects/adaptive-music-slicer/) | StemForge / adaptive music slicer. **Own nested repo** (`giladabramson/adaptive-music-slicer`); landing page deploys to Vercel from its `landing/`. Uses `c:\dev\.venv311` (CUDA torch, demucs). | No (gitignored) | No — README |
+| [Projects/adaptive-music-slicer/](Projects/adaptive-music-slicer/) | StemForge / adaptive music slicer. **Own nested repo** (`giladabramson/adaptive-music-slicer`); landing page deploys to Vercel from its `landing/`. Two envs, both needed: its own `.venv-cuda/` (torch cu121 + **demucs** — used by `adaptive_music_engine/separation.py`) and `c:\dev\.venv311` (torch cu124 + audio-separator, no demucs — used by `scripts/*` and `simple_player.py`). | No (gitignored) | No — README |
 | [Projects/soccer-edge/](Projects/soccer-edge/), [plant_ai_timelapse/](Projects/plant_ai_timelapse/), [tagah_physics/](Projects/tagah_physics/), [grow_recipes/](Projects/grow_recipes/) | Smaller / finished experiments, kept local only by the user's choice. | No (gitignored) | tagah_physics only |
 | [tools/gmail_mcp_server.py](tools/gmail_mcp_server.py) | Read-only Gmail MCP server (`gmail-readonly` in [.mcp.json](.mcp.json)). | Yes | No — see below |
 
@@ -62,7 +62,7 @@ To switch to a different Gmail account: delete `~/.gmail-mcp-readonly/token.json
 
 ## Requirements files
 
-Each project owns its own `requirements.txt`; they share the root `.venv` (pip is idempotent against it). The slicer uses `.venv311` instead.
+Each project owns its own `requirements.txt`; they share the root `.venv` (pip is idempotent against it). The slicer uses `.venv311` and its own `.venv-cuda` instead (see the table).
 
 - [tools/requirements.txt](tools/requirements.txt) — Gmail MCP only
 - [Projects/watchdog/requirements.txt](Projects/watchdog/requirements.txt) — Watchdog only
