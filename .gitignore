@@ -25,10 +25,8 @@ Projects/plant_ai_timelapse/
 Projects/tagah_physics/
 Projects/grow_recipes/
 
-# Local tooling (absolute paths baked in — stays at the workspace root)
-.venv311/
-.node-portable/
-.shot-tool/
+# Portable Node + Vercel CLI (binary, ~270 MB)
+tools/node-portable/
 
 # Claude Code local-only settings
 .claude/settings.local.json
