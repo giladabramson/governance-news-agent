@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 c:\dev\
 ├─ University\        own repo (giladabramson/University) — HUJI course work + Moodle MCP
 ├─ Projects\          everything else
-├─ tools\             workspace tooling: Gmail MCP server + node-portable\ (Node 24 + Vercel CLI, gitignored)
+├─ tools\             workspace tooling: Gmail MCP server + node-portable\ (Node 24 + Vercel CLI) + poppler\ (pdftoppm/pdftotext, on the user PATH) — binaries gitignored
 ├─ .github\workflows\ Actions for Projects/watchdog and Projects/tennis-value-bot
 └─ .venv\             shared Python env (watchdog, outliers, tennis, MCP servers; ffmpeg in Scripts\) — don't move
 ```
