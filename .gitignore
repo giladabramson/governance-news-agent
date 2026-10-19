@@ -15,6 +15,9 @@ __pycache__/
 .venv/
 .env
 
+# Nested repo with its own remote (giladabramson/University, semesters as submodules)
+University/
+
 # Claude Code local-only settings
 .claude/settings.local.json
 

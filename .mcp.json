@@ -3,6 +3,10 @@
     "gmail-readonly": {
       "command": "python",
       "args": ["gmail_mcp_server.py"]
+    },
+    "moodle-readonly": {
+      "command": "python",
+      "args": ["University/tools/moodle_mcp_server.py"]
     }
   }
 }
