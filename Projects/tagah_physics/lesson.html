@@ -1,0 +1,1680 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פיזיקה לחילוץ — טג"ח</title>
+<style>
+  :root { color-scheme: light; --main:#234e6c; --b:#e07b00; --r:#1a9a4a; --red:#c62828; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
+  html, body { margin: 0; background: #fafaf7; color: #222;
+               font-family: "Segoe UI", "Arial Hebrew", sans-serif; font-size: clamp(15px, 1.25vw, 24px); }
+  .slide { display: grid; grid-template-columns: minmax(280px, 30%) 1fr; gap: 2.5vw; padding: 4vh 3vw; border-bottom: 1px solid #e6e6e0; }
+  .slide.center { display: block; text-align: center; }
+  .slide > .stage { position: sticky; top: 4.5rem; align-self: start; }
+  #vecC { touch-action: none; }
+  .slide.exs { display: block; }
+  @keyframes in { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
+  .side { display: flex; flex-direction: column; gap: 1.1rem; justify-content: center; }
+  .stage { display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 0; }
+  h1 { font-size: 3.2rem; color: var(--main); margin: 0 0 1rem; }
+  h2 { font-size: 2.1rem; color: var(--main); margin: 0; border-bottom: 3px solid var(--b); padding-bottom: .3rem; }
+  .num { color: var(--b); }
+  .f, .formula { direction: ltr; unicode-bidi: isolate; font-family: "Cambria Math", Cambria, serif; }
+  .formula { display: block; font-size: 1.45rem; background: #fff; border-radius: 10px; padding: .55rem .9rem; text-align: center;
+             box-shadow: 0 1px 4px rgba(0,0,0,.1); border-inline-start: 5px solid var(--main); }
+  .pt { font-size: 1.15rem; margin: 0; line-height: 1.5; }
+  canvas { display: block; background: #fff; border: 1px solid #ddd; border-radius: 10px; direction: ltr;
+           max-width: 100%; max-height: 66vh; width: auto; height: auto; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+  canvas + canvas { margin-top: 1vh; max-height: 40vh; }
+  .ctrls { display: flex; flex-direction: column; gap: .55rem; }
+  .ctrls label { display: grid; grid-template-columns: 7.5em 1fr 3.4em; align-items: center; gap: .5rem; font-size: 1rem; }
+  .ctrls input[type=range] { width: 100%; }
+  .ctrls output { font-weight: bold; color: var(--main); direction: ltr; text-align: center; }
+  .row { display: flex; gap: .5rem; flex-wrap: wrap; }
+  button, select { font: inherit; font-size: 1rem; padding: .3rem 1rem; border-radius: 7px; border: 1px solid var(--main); background: var(--main); color: #fff; cursor: pointer; }
+  select { background: #fff; color: var(--main); padding: .2rem .4rem; }
+  button.alt { background: #fff; color: var(--main); }
+  button.on { background: var(--b); border-color: var(--b); }
+  .read { background: #fff; border-radius: 10px; padding: .6rem .9rem; font-size: .95rem; line-height: 1.6; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .read .muted { display: none; }
+  .read b { color: var(--main); }
+  .warn { color: var(--red); font-weight: bold; } .ok { color: var(--r); font-weight: bold; }
+  .legend { font-size: .85rem; } .legend span { margin-inline-end: .7rem; font-weight: bold; unicode-bidi: isolate; display: inline-block; }
+  /* title / roadmap */
+  .road { list-style: none; padding: 0; margin: 1.5rem auto; display: grid; grid-template-columns: repeat(4, minmax(0, 15rem)); gap: 1rem; justify-content: center; }
+  .road li { background: #fff; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,.08); cursor: pointer; font-size: 1.2rem; font-weight: bold; color: var(--main); transition: transform .15s; }
+  .road li:hover { transform: translateY(-4px); }
+  .road li span { display: block; font-size: 2.2rem; color: var(--b); }
+  /* exercises */
+  .exgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(30rem, 100%), 1fr)); gap: 1.6rem; margin-top: 1.5rem; }
+  .ex { text-align: right; }
+  .ex button { margin-top: .7rem; }
+  .sbx { display: flex; flex-direction: column; gap: .45rem; background: #fff; border-radius: 10px; padding: .6rem .7rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  #tr_ropes button:disabled { opacity: .35; cursor: not-allowed; }
+  .ropes { display: flex; flex-direction: column; gap: .4rem; }
+  .rrow { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+  .rrow > span { min-width: 7.5em; font-weight: bold; color: var(--main); }
+  .rrow button { padding: .2rem .65rem; font-size: .92rem; }
+  .terms { margin: 0; background: #fff; border-radius: 10px; padding: .6rem 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  .terms dt { font-weight: bold; color: var(--main); margin-top: .5rem; }
+  .terms dd { margin: .1rem 0 0; color: #444; font-size: .95rem; line-height: 1.5; }
+  .htabs { display: flex; align-self: start; border: 2px solid var(--main); border-radius: 9px; overflow: hidden; }
+  .htabs button { border: 0; border-radius: 0; background: #fff; color: var(--main); padding: .35rem 1.2rem; }
+  .htabs button.on { background: var(--main); color: #fff; }
+  .hpanel, canvas.hcanvas { display: none; }
+  .howmode .hpanel, .howmode canvas.hcanvas { display: block; }
+  .howmode .side > :not(h2):not(.htabs):not(.hpanel), .howmode .stage > :not(.hcanvas) { display: none; }
+  .hpanel { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: .6rem .7rem; }
+  .hpanel ol { margin: 0; padding-inline-start: 1.7rem; }
+  .hpanel li { padding: .28rem .55rem; margin: .1rem 0; border-radius: 7px; cursor: pointer; color: #9aa3ab; font-size: .95rem; line-height: 1.45;
+               border-inline-start: 4px solid transparent; transition: background .2s, color .2s; }
+  .hpanel li:hover { background: #f4f6f8; }
+  .hpanel li.done { color: #4a5560; }
+  .hpanel li.on { color: #1d2a35; background: #fff3e3; border-inline-start-color: var(--b); font-weight: 600; }
+  .hpanel li::marker { font-weight: bold; color: var(--b); }
+  .hnav { display: flex; align-items: center; gap: .5rem; margin-top: .6rem; }
+  .hnav span { flex: 1; text-align: center; color: #888; font-size: .9rem; direction: ltr; }
+  .hnav button:disabled { opacity: .35; cursor: default; }
+  details.how { background: #fff; border-radius: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.08); padding: .5rem .9rem; font-size: .95rem; }
+  details.how summary { cursor: pointer; font-weight: bold; color: #fff; background: var(--b); border-radius: 7px; padding: .3rem .8rem; list-style: none; text-align: center; }
+  details.how summary::-webkit-details-marker { display: none; }
+  details.how[open] summary { margin-bottom: .5rem; }
+  details.how ol { margin: .3rem 0; padding-inline-start: 1.5rem; line-height: 1.55; }
+  details.how li { margin: .25rem 0; }
+  details.how li::marker { color: var(--b); font-weight: bold; }
+  .howex { background: #f2f6f9; border-radius: 7px; padding: .4rem .7rem; margin-top: .4rem; line-height: 1.7; }
+  .ex svg { display: block; width: 100%; max-height: 15rem; margin: .4rem 0 .8rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); direction: ltr; }
+  .ex svg .lbl { font: bold 13px "Segoe UI", Arial, sans-serif; fill: #333; text-anchor: middle; } .ex svg .s { font-size: 11px; }
+  .ex svg .o { fill: var(--b); } .ex svg .gr { fill: var(--r); } .ex svg .rd { fill: var(--red); }
+  .ex svg .beam { stroke: #555; stroke-width: 5; } .ex svg .thin { stroke: #555; stroke-width: 2; }
+  .ex svg .sling { stroke: #8a6d3b; stroke-width: 4; } .ex svg .rope { fill: none; stroke: #b07a3c; stroke-width: 4; stroke-linejoin: round; }
+  .ex svg .box { fill: #d7dde3; stroke: #555; stroke-width: 2; } .ex svg .ang { fill: none; stroke: var(--b); stroke-width: 2; }
+  .ex svg .pul { fill: #dfe6ec; stroke: #555; stroke-width: 2; } .ex svg .pul.m { fill: #ffe0b3; }
+  .ex svg .hill { fill: #efe6d6; stroke: #6b5432; stroke-width: 2; } .ex svg .ground { stroke: #555; stroke-width: 2; }
+  .ex svg .arr { stroke-width: 3; marker-end: url(#ah); } .ex svg .arr.g { stroke: var(--r); } .ex svg .arr.r { stroke: var(--red); }
+  .ex svg .tree { fill: #8d6e4a; } .ex svg .wrap { fill: none; stroke: #b07a3c; stroke-width: 4; }
+  .ex svg .hand { fill: #f2c79a; stroke: #8a5a2b; } .ex svg .wall { stroke: #8b8070; stroke-width: 4; }
+  .ex svg .climber { fill: var(--red); } .ex svg .bolt { fill: #1f6fd1; }
+  .ex svg .dim { stroke: var(--b); stroke-width: 1.5; stroke-dasharray: 4 3; }
+  .ktab { border-collapse: collapse; font-size: 1rem; margin: 0 auto; direction: ltr; }
+  .ktab td { border: 1px solid #ddd; padding: .15rem .6rem; text-align: center; background: #fff; }
+  .ktab tr:first-child td { color: #666; } .ktab tr:last-child td { font-weight: bold; color: var(--main); }
+  .ex .q { font-size: 1.25rem; line-height: 1.6; background: #fff; padding: 1.2rem 1.6rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+  .ex .ans { display: none; font-size: 1.15rem; line-height: 1.8; margin-top: 1.2rem; padding: 1rem 1.6rem; border-radius: 12px; background: #eef6ee; border-inline-start: 6px solid var(--r); }
+  .ex .ans.show { display: block; animation: in .3s ease; }
+  .ex .tag { color: var(--b); font-weight: bold; font-size: 1.1rem; }
+  /* nav */
+  #top { position: sticky; top: 0; z-index: 5; background: rgba(250,250,247,.95); backdrop-filter: blur(4px); border-bottom: 1px solid #ddd;
+         display: flex; gap: .3rem 1.2rem; flex-wrap: wrap; justify-content: center; padding: .5rem 1rem; font-size: .95rem; }
+  #top a { color: var(--main); text-decoration: none; font-weight: bold; }
+  #top a:hover { color: var(--b); }
+  @media (max-width: 900px) {
+    html { scroll-padding-top: 3rem; }
+    .slide { grid-template-columns: 1fr; padding: 3vh 4vw; gap: 1rem; }
+    .slide > .stage { order: -1; top: 2.6rem; z-index: 3; background: #fafaf7; padding: .3rem 0; }
+    .stage canvas { width: 100% !important; }
+    #top { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; white-space: nowrap; scrollbar-width: none; }
+    .road { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 2.2rem; } h2 { font-size: 1.6rem; }
+    .formula { font-size: 1.15rem; }
+    .ctrls label { grid-template-columns: 6.5em 1fr 3em; }
+    .ex .q { font-size: 1.05rem; }
+    .hpanel li { font-size: .9rem; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker></defs></svg>
+<nav id="top">
+  <a href="#s1">1 וקטורים</a><a href="#s3">2 ניוטון</a><a href="#s4">3 מדרון</a><a href="#s5">4 חיכוך</a>
+  <a href="#s7">5 גלגלות</a><a href="#s8">6 מקדם נפילה</a><a href="#s9">7 אומגה — ניוד ציוד</a><a href="#s10">8 תרגילים</a>
+</nav>
+
+<!-- 0. title -->
+<section class="slide center">
+  <h1>פיזיקה לחילוץ</h1>
+  <p class="pt" style="font-size:1.4rem;color:#666">טג"ח — כוחות, חבלים ועיגונים</p>
+  <ol class="road">
+    <li data-go="1"><span>1</span>וקטורים</li>
+    <li data-go="3"><span>2</span>חוקי ניוטון</li>
+    <li data-go="4"><span>3</span>גוש על מדרון</li>
+    <li data-go="5"><span>4</span>חיכוך</li>
+    <li data-go="7"><span>5</span>גלגלות ויתרון מכני</li>
+    <li data-go="8"><span>6</span>מקדם נפילה</li>
+    <li data-go="9"><span>7</span>אומגה — ניוד ציוד</li>
+    <li data-go="10"><span>8</span>תרגילים</li>
+  </ol>
+</section>
+
+<!-- 1. vectors -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">1</span> וקטורים</h2>
+    <p class="pt">כוח = <b>גודל + כיוון</b></p>
+    <div class="row"><button class="vec_m alt on" data-m="sum">חיבור וקטורים</button><button class="vec_m alt" data-m="dec">פירוק ל־x ו־y</button></div>
+    <span class="formula">R = A + B</span>
+    <span class="formula">Fx = F·cos θ &nbsp; Fy = F·sin θ</span>
+    <p class="pt" style="color:#666" id="vecHint">גררו את A ו־B</p>
+    <div class="read" id="vecR"></div>
+  </div>
+  <div class="stage"><canvas id="vecC" width="640" height="380"></canvas></div>
+</section>
+
+<!-- 2. anchor V -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">1</span> עיגון V</h2>
+    <span class="formula">T = W / (2·cos(α/2))</span>
+    <div class="row"><button class="an_n alt on" data-n="2">2 רגליים</button><button class="an_n alt" data-n="3">3 רגליים</button><button class="an_n alt" data-n="tri">משולש</button></div>
+    <div class="ctrls">
+      <label>זווית α₁ <input type="range" id="an_a1" min="0" max="85" value="30"><output id="an_a1_v"></output></label>
+      <label>זווית α₂ <input type="range" id="an_a2" min="0" max="85" value="30"><output id="an_a2_v"></output></label>
+      <label><span>זוויות שוות</span><input type="checkbox" id="an_eq" checked style="justify-self:start"><span></span></label>
+      <label>מטען (kg) <input type="range" id="an_m" min="50" max="300" step="10" value="100"><output id="an_m_v"></output></label>
+    </div>
+    <div class="read" id="anR"></div>
+    <p class="pt">120° בין הרגליים ⇐ כל רצועה נושאת <b>הכול</b></p>
+  </div>
+  <div class="stage"><canvas id="anC" width="640" height="320"></canvas></div>
+</section>
+
+<!-- 3. Newton -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">2</span> חוקי ניוטון</h2>
+    <p class="pt"><b>I.</b> ΣF = 0 ⇐ מנוחה / מהירות קבועה</p>
+    <p class="pt"><b>II.</b> <span class="f">ΣF = m·a</span></p>
+    <p class="pt"><b>III.</b> פעולה = תגובה</p>
+    <span class="formula">W = m·g &nbsp;(100 kg ≈ 1 kN)</span>
+    <div class="ctrls">
+      <label>כוח F (N) <input type="range" id="nw_F" min="0" max="300" step="5" value="100"><output id="nw_F_v"></output></label>
+      <label>מסה (kg) <input type="range" id="nw_m" min="5" max="100" value="20"><output id="nw_m_v"></output></label>
+      <div class="row"><button id="nw_go">הפעל</button><button class="alt" id="nw_rs">אפס</button></div>
+    </div>
+    <div class="read" id="nwR"></div>
+  </div>
+  <div class="stage"><canvas id="nwC" width="640" height="220"></canvas></div>
+</section>
+
+<!-- 4. slope -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">3</span> גוש על מדרון</h2>
+    <span class="formula">W∥ = mg·sin θ &nbsp; N = mg·cos θ</span>
+    <span class="formula">f ≤ μs·N &nbsp;&nbsp; tan θ &gt; μs ⇐ מחליק</span>
+    <div class="ctrls">
+      <label>זווית θ <input type="range" id="sp_th" min="0" max="70" value="30"><output id="sp_th_v"></output></label>
+      <label>מסה (kg) <input type="range" id="sp_m" min="5" max="150" step="5" value="50"><output id="sp_m_v"></output></label>
+      <label>μs <input type="range" id="sp_ms" min="0" max="1" step="0.05" value="0.4"><output id="sp_ms_v"></output></label>
+      <label>μk <input type="range" id="sp_mk" min="0" max="1" step="0.05" value="0.3"><output id="sp_mk_v"></output></label>
+      <label>משיכה P (N) <input type="range" id="sp_P" min="0" max="1500" step="10" value="0"><output id="sp_P_v"></output></label>
+      <div class="row"><button id="sp_go">שחרר</button><button class="alt" id="sp_rs">אפס</button></div>
+    </div>
+  </div>
+  <div class="stage">
+    <canvas id="spC" width="640" height="370"></canvas>
+    <p class="legend"><span style="color:#444">mg</span><span style="color:#1f6fd1">N</span><span style="color:var(--red)">f חיכוך</span><span style="color:var(--r)">P משיכה</span><span style="color:#999">-- רכיבים</span></p>
+    <div class="read" id="spR" style="max-width:640px"></div>
+  </div>
+</section>
+
+<!-- 5. friction -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">4</span> חיכוך</h2>
+    <p class="pt"><b>סטטי</b>: שווה לכוח המופעל, עד <span class="f">μs·N</span></p>
+    <p class="pt"><b>קינטי</b>: קבוע, <span class="f">μk·N</span> (<span class="f">μk &lt; μs</span>)</p>
+    <p class="pt">לא תלוי בשטח המגע</p>
+    <div class="ctrls">
+      <label>מסה (kg) <input type="range" id="fr_m" min="5" max="100" value="30"><output id="fr_m_v"></output></label>
+      <label>μs <input type="range" id="fr_ms" min="0.1" max="1" step="0.05" value="0.6"><output id="fr_ms_v"></output></label>
+      <label>μk <input type="range" id="fr_mk" min="0.05" max="1" step="0.05" value="0.4"><output id="fr_mk_v"></output></label>
+      <div class="row"><button id="fr_go">הפעל</button><button class="alt" id="fr_rs">אפס</button></div>
+    </div>
+    <div class="read" id="frR"></div>
+  </div>
+  <div class="stage"><canvas id="frC" width="640" height="150"></canvas><canvas id="frG" width="640" height="250"></canvas></div>
+</section>
+
+<!-- 6. capstan -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">4</span> חבל סביב עץ</h2>
+    <span class="formula">T<sub>hold</sub> = T<sub>load</sub> × η × η × …</span>
+    <p class="pt">כל <b>חצי סיבוב</b> (180°) מעביר רק <span class="f">η</span> מהכוח</p>
+    <p class="pt" style="color:#666">חבל דרך קרבינר / סביב עץ: <span class="f">η ≈ 0.5</span> ⇐ כל חצי סיבוב <b>חוצה</b> את הכוח</p>
+    <div class="ctrls">
+      <label>סיבובים <input type="range" id="cp_n" min="0" max="3" step="0.25" value="1"><output id="cp_n_v"></output></label>
+      <label>יעילות η <input type="range" id="cp_mu" min="0.3" max="0.9" step="0.05" value="0.5"><output id="cp_mu_v"></output></label>
+      <label>מטען (kg) <input type="range" id="cp_m" min="20" max="200" step="10" value="100"><output id="cp_m_v"></output></label>
+    </div>
+    <div class="read" id="cpR"></div>
+  </div>
+  <div class="stage"><canvas id="cpC" width="640" height="300"></canvas></div>
+</section>
+
+<!-- 7. pulleys -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">5</span> גלגלות</h2>
+    <span class="formula">Work = F · d</span>
+    <span class="formula">F = W / n &nbsp;&nbsp; d<sub>rope</sub> = n · d<sub>load</sub></span>
+    <p class="pt">n = קטעי חבל על הגלגלת <b>הנעה</b></p>
+    <div class="row">
+      <button class="pl_n alt" data-n="1">1:1</button><button class="pl_n alt" data-n="2">2:1</button>
+      <button class="pl_n alt" data-n="3">3:1</button><button class="pl_n alt" data-n="4">4:1</button>
+    </div>
+    <div class="ctrls">
+      <label>מטען (kg) <input type="range" id="pl_m" min="20" max="200" step="10" value="100"><output id="pl_m_v"></output></label>
+      <label>משכתי (%) <input type="range" id="pl_d" min="0" max="100" value="0"><output id="pl_d_v"></output></label>
+      <label>יעילות η <select id="pl_eta">
+        <option value="1">1.0 אידיאלי</option><option value="0.9" selected>0.9 גלגלת</option>
+        <option value="0.7">0.7 זולה</option><option value="0.5">0.5 קרבינר</option></select><span></span></label>
+      <div class="row"><button id="pl_go">הפעל</button></div>
+    </div>
+    <div class="read" id="plR"></div>
+  </div>
+  <div class="stage"><canvas id="plC" width="640" height="470"></canvas></div>
+</section>
+
+<!-- 8. fall factor -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">6</span> מקדם נפילה</h2>
+    <span class="formula">f = h / L</span>
+    <span class="formula">F<sub>max</sub> = mg + √((mg)² + 2·mg·k·f)</span>
+    <div class="ctrls">
+      <label>גובה מעל עיגון <input type="range" id="ff_c" min="1" max="10" step="0.5" value="4"><output id="ff_c_v"></output></label>
+      <label>נק' אבטחה <input type="range" id="ff_p" min="0" max="10" step="0.5" value="0"><output id="ff_p_v"></output></label>
+      <label>מסה (kg) <input type="range" id="ff_m" min="50" max="150" step="5" value="80"><output id="ff_m_v"></output></label>
+      <label>חבל <select id="ff_k"><option value="25000">דינמי — k ≈ 25 kN</option><option value="60000">סטטי — k ≈ 60 kN</option><option value="300000">דיינימה — k ≈ 300 kN</option></select><span></span></label>
+      <label>הילוך <select id="ff_sp"><option value="1">רגיל</option><option value="0.25" selected>איטי ×¼</option><option value="0.08">איטי מאוד</option></select><span></span></label>
+      <div class="row"><button id="ff_go">הפל!</button></div>
+    </div>
+    <div class="read" id="ffR"></div>
+  </div>
+  <div class="stage"><canvas id="ffC" width="800" height="560"></canvas></div>
+</section>
+
+<!-- 7. zipline: equipment-transport sandbox -->
+<section class="slide">
+  <div class="side">
+    <h2><span class="num">7</span> אומגה — ניוד ציוד</h2>
+    <p class="pt" id="tr_info"></p>
+    <div class="sbx">
+      <div class="rrow"><span>המטען תלוי על</span>
+        <button class="alt tr_su" data-su="sling">רצועה קבועה</button><button class="alt tr_su" data-su="r1">חבל ר' 1:1</button>
+        <button class="alt tr_su" data-su="r2">ר' 2:1</button><button class="alt tr_su" data-su="r3">ר' 3:1</button><button class="alt tr_su" data-su="r4">ר' 4:1</button><button class="alt tr_su" data-su="y">Y-פצל</button></div>
+      <div class="rrow"><span>חבלים נוספים</span>
+        <button class="alt" id="tr_hasN">+ חבל רגיל (לעליון)</button><button class="alt" id="tr_hasC">+ בלם נגדי (לתחתון)</button></div>
+    </div>
+    <div class="ctrls">
+      <label>שיפוע θ <input type="range" id="tr_th" min="0" max="35" value="15"><output id="tr_th_v"></output></label>
+      <label>מטען (kg) <input type="range" id="tr_m" min="20" max="200" step="10" value="100"><output id="tr_m_v"></output></label>
+      <label>חיכוך אשכול μ <input type="range" id="tr_mu" min="0" max="0.6" step="0.01" value="0.05"><output id="tr_mu_v"></output></label>
+      <label>חיכוך בגלגלות <select id="tr_eta"><option value="1">η = 1 (אידיאלי)</option><option value="0.95">η = 0.95 (גלגלת טובה)</option><option value="0.9" selected>η = 0.9 (גלגלת)</option><option value="0.7">η = 0.7 (גלגלת זולה)</option><option value="0.5">η = 0.5 (קרבינר)</option></select><span></span></label>
+    </div>
+    <div class="ropes" id="tr_ropes"></div>
+    <p class="pt warn" id="tr_ns" style="display:none;font-size:.95rem">המערכת לא סטטית: האשכול נע לבד גם כשכל החבלים מוחזקים. אי אפשר למשוך או לשחרר עד שהיא יציבה. הוסיפו חבל או הגדילו את החיכוך.</p>
+    <div class="row"><button id="tr_frz">⏸ הקפא זמן</button><button class="alt" id="tr_fb">הצג כוחות על האשכול</button><button class="alt" id="tr_rs">אפס מיקום</button><button class="alt" id="tr_clr">נקה מסלול</button></div>
+    <div class="read" id="trR"></div>
+  </div>
+  <div class="stage"><canvas id="trC" width="640" height="630"></canvas></div>
+</section>
+
+<!-- exercises -->
+<section class="slide exs">
+  <h2><span class="num">8</span> תרגילים</h2>
+  <div class="exgrid">
+<div class="ex">
+  <div class="tag">תרגיל 1 — עיגון V</div>
+  <svg viewBox="0 0 320 150"><line x1="40" y1="20" x2="280" y2="20" class="beam"/>
+    <line x1="90" y1="20" x2="160" y2="79" class="sling"/><line x1="230" y1="20" x2="160" y2="79" class="sling"/>
+    <circle cx="90" cy="20" r="5"/><circle cx="230" cy="20" r="5"/>
+    <path d="M143.2 64.9 A22 22 0 0 1 176.8 64.9" class="ang"/><text x="160" y="48" class="lbl o">100°</text>
+    <text x="108" y="62" class="lbl">T?</text><text x="212" y="62" class="lbl">T?</text>
+    <line x1="160" y1="79" x2="160" y2="100" class="thin"/><rect x="132" y="100" width="56" height="34" class="box"/><text x="160" y="122" class="lbl">150 kg</text></svg>
+  <div class="q">מטען <b>150 kg</b> על שתי רצועות, <b>100°</b> ביניהן.<br>מה המתיחות בכל רצועה? ומה ב־<b>60°</b>?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans"><span class="f">W = 1,470 N</span><br>100°: <span class="f">T = 1470 / (2·cos50°) ≈ 1,143 N</span> — יותר מ־75% מהמשקל<br>60°: <span class="f">T = 1470 / (2·cos30°) ≈ 849 N</span></div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 2 — גלגלת הפניה בעיגון</div>
+  <svg viewBox="0 0 320 210"><line x1="30" y1="15" x2="130" y2="15" class="beam"/><line x1="80" y1="15" x2="80" y2="50" class="thin"/>
+    <path d="M66 170 L66 50 A14 14 0 0 1 94 50 L94 150" class="rope"/><circle cx="80" cy="50" r="11" class="pul"/>
+    <rect x="44" y="170" width="44" height="28" class="box"/><text x="66" y="189" class="lbl s">100 kg</text>
+    <line x1="108" y1="120" x2="108" y2="165" class="arr g"/><text x="112" y="40" class="lbl o">F?</text><text x="20" y="110" class="lbl">(א)</text>
+    <line x1="170" y1="15" x2="230" y2="15" class="beam"/><line x1="200" y1="15" x2="240" y2="60" class="thin"/>
+    <path d="M226 170 L226 60 A14 14 0 0 1 240 46 L305 46" class="rope"/><circle cx="240" cy="60" r="11" class="pul"/>
+    <rect x="204" y="170" width="44" height="28" class="box"/><text x="226" y="189" class="lbl s">100 kg</text>
+    <line x1="265" y1="30" x2="305" y2="30" class="arr g"/><text x="200" y="45" class="lbl o">F?</text><text x="180" y="110" class="lbl">(ב)</text></svg>
+  <div class="q">החבל עובר בגלגלת בעיגון ומחזיק <b>100 kg</b>.<br>מה הכוח על העיגון כשהקטעים מקבילים (א)? וכשהזווית ביניהם <b>90°</b> (ב)?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans">בשני הקטעים <span class="f">T = 980 N</span><br>(א) <span class="f">F = 2·980 = 1,960 N</span> — העיגון מרגיש <b>כפול</b> מהמטען<br>(ב) <span class="f">F = √2·980 ≈ 1,386 N</span>, באלכסון (45°)</div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 3 — ארגז על מדרון</div>
+  <svg viewBox="0 0 320 200"><polygon points="40,185 260,185 260,31" class="hill"/><line x1="20" y1="185" x2="300" y2="185" class="ground"/>
+    <path d="M75 185 A35 35 0 0 0 68.7 164.9" class="ang"/><text x="92" y="178" class="lbl o">35°</text>
+    <g transform="translate(150,108) rotate(-35)"><rect x="-24" y="-30" width="48" height="30" class="box"/><text x="0" y="-10" class="lbl s">40 kg</text>
+      <line x1="24" y1="-15" x2="75" y2="-15" class="arr g"/><text x="92" y="-11" class="lbl gr">P?</text></g>
+    <text x="215" y="175" class="lbl">μs = 0.6</text></svg>
+  <div class="q">ארגז <b>40 kg</b> על מדרון <b>35°</b>, <span class="f">μs = 0.6</span>.<br>(א) האם יחליק לבד? (ב) מה הכוח P המינימלי כדי שלא יחליק? (ג) כמה כוח צריך כדי להתחיל לגרור אותו למעלה?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans"><span class="f">mg·sin35° = 225 N &nbsp; N = mg·cos35° = 321 N &nbsp; μs·N = 193 N</span><br>(א) <span class="f">225 &gt; 193</span> ⇐ מחליק (<span class="f">tan35° = 0.70 &gt; 0.6</span>)<br>(ב) <span class="f">P = 225 − 193 ≈ 32 N</span> — החיכוך עוזר<br>(ג) <span class="f">P &gt; 225 + 193 ≈ 418 N</span> — החיכוך מפריע</div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 4 — חיכוך סטטי</div>
+  <svg viewBox="0 0 320 175"><line x1="20" y1="140" x2="300" y2="140" class="ground"/>
+    <rect x="140" y="80" width="90" height="60" class="box"/><text x="185" y="115" class="lbl">40 kg</text>
+    <line x1="60" y1="110" x2="136" y2="110" class="arr g"/><text x="95" y="100" class="lbl gr">150 N</text>
+    <line x1="215" y1="152" x2="160" y2="152" class="arr r"/><text x="232" y="157" class="lbl rd">f?</text>
+    <text x="80" y="168" class="lbl s">μs = 0.5 · μk = 0.3</text></svg>
+  <div class="q">דוחפים ארגז <b>40 kg</b> בכוח <b>150 N</b>.<br>(א) מה כוח החיכוך? (ב) כמה כוח צריך כדי להזיז אותו? (ג) כמה כדי שימשיך לנוע במהירות קבועה?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans"><span class="f">N = 392 N &nbsp; μs·N = 196 N</span><br>(א) לא זז ⇐ <span class="f">f = 150 N</span> (לא 196!)<br>(ב) <span class="f">&gt; 196 N</span> &nbsp; (ג) <span class="f">μk·N ≈ 118 N</span></div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 5 — גרירת אלונקה</div>
+  <svg viewBox="0 0 320 200"><polygon points="30,185 290,185 290,64" class="hill"/><line x1="15" y1="185" x2="305" y2="185" class="ground"/>
+    <path d="M65 185 A35 35 0 0 0 61.7 170.2" class="ang"/><text x="82" y="178" class="lbl o">25°</text>
+    <g transform="translate(121,142.6) rotate(-25)"><rect x="-32" y="-14" width="64" height="14" rx="4" class="box"/><text x="0" y="-20" class="lbl s">100 kg</text></g>
+    <line x1="145" y1="124" x2="280" y2="61" class="rope"/><circle cx="284" cy="58" r="6"/><text x="262" y="42" class="lbl o">3:1</text>
+    <text x="215" y="175" class="lbl">μk = 0.35</text></svg>
+  <div class="q">אלונקה <b>100 kg</b> נגררת במהירות קבועה במעלה מדרון <b>25°</b>.<br>(א) כמה כוח לאורך המדרון? (ב) עם 3:1 אידיאלי? עם <span class="f">η = 0.9</span>?<br>(ג) כמה חבל מושכים כדי לקדם 10 m? כמה עבודה?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans">(א) <span class="f">980·(sin25° + 0.35·cos25°) = 980·0.74 ≈ 725 N</span><br>(ב) <span class="f">725/3 ≈ 242 N</span> | <span class="f">MA = 0.9+0.81+0.729 = 2.44 ⇒ ≈ 297 N</span><br>(ג) <span class="f">3·10 = 30 m</span> | <span class="f">725·10 = 242·30 ≈ 7,250 J</span></div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 6 — מערכת 4:1</div>
+  <svg viewBox="0 0 320 215"><line x1="80" y1="20" x2="240" y2="20" class="beam"/>
+    <line x1="145" y1="20" x2="145" y2="50" class="thin"/><line x1="205" y1="20" x2="205" y2="50" class="thin"/>
+    <path d="M100 22 L100 140 A15 15 0 0 0 130 140 L130 50 A15 15 0 0 1 160 50 L160 140 A15 15 0 0 0 190 140 L190 50 A15 15 0 0 1 220 50 L220 150" class="rope"/>
+    <circle cx="145" cy="50" r="11" class="pul"/><circle cx="205" cy="50" r="11" class="pul"/>
+    <line x1="115" y1="140" x2="175" y2="140" class="thin"/><line x1="145" y1="140" x2="145" y2="165" class="thin"/>
+    <circle cx="115" cy="140" r="11" class="pul m"/><circle cx="175" cy="140" r="11" class="pul m"/>
+    <rect x="110" y="165" width="70" height="36" class="box"/><text x="145" y="188" class="lbl">120 kg</text>
+    <circle cx="220" cy="156" r="7" class="hand"/><line x1="238" y1="125" x2="238" y2="175" class="arr g"/><text x="258" y="155" class="lbl gr">F?</text></svg>
+  <div class="q">מרימים <b>120 kg</b> במערכת <b>4:1</b>.<br>(א) כמה כוח צריך (אידיאלי)? ועם גלגלות <span class="f">η = 0.9</span>?<br>(ב) כמה חבל מושכים כדי להרים את המטען <b>2 m</b>? (ג) הראו שהעבודה שווה בשני הצדדים.</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans"><span class="f">W = 1,176 N</span><br>(א) <span class="f">1176/4 = 294 N</span> | <span class="f">MA = 0.9+0.81+0.729+0.656 = 3.10 ⇒ ≈ 380 N</span><br>(ב) <span class="f">4·2 = 8 m</span><br>(ג) <span class="f">294·8 = 1176·2 = 2,352 J</span></div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 7 — כריכה סביב עץ</div>
+  <svg viewBox="0 0 320 210"><circle cx="160" cy="95" r="34" class="tree"/>
+    <circle cx="160" cy="95" r="39" class="wrap"/><circle cx="160" cy="95" r="44" class="wrap"/>
+    <line x1="121" y1="95" x2="121" y2="165" class="rope"/><rect x="99" y="165" width="44" height="28" class="box"/><text x="121" y="184" class="lbl s">100 kg</text>
+    <line x1="116" y1="95" x2="116" y2="30" class="rope"/><line x1="98" y1="60" x2="98" y2="20" class="arr g"/><text x="80" y="45" class="lbl gr">T?</text>
+    <text x="255" y="90" class="lbl">2 סיבובים</text><text x="255" y="112" class="lbl">η = 0.5</text></svg>
+  <div class="q">מטען <b>100 kg</b>, החבל כרוך <b>2 סיבובים</b> סביב עץ, יעילות <span class="f">η = 0.5</span> לכל חצי סיבוב.<br>באיזה כוח צריך להחזיק את הקצה?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans">2 סיבובים = <b>4 חצאי סיבוב</b>, כל אחד <span class="f">× 0.5</span>:<br><span class="f">980 → 490 → 245 → 123 → 61 N</span><br>כ־6 kg ביד</div>
+</div>
+
+<div class="ex">
+  <div class="tag">תרגיל 8 — מקדם נפילה</div>
+  <svg viewBox="0 0 320 230"><line x1="30" y1="10" x2="30" y2="225" class="wall"/>
+    <circle cx="36" cy="150" r="6"/><line x1="36" y1="150" x2="58" y2="86" class="rope"/><circle cx="58" cy="86" r="8" class="climber"/>
+    <line x1="85" y1="150" x2="85" y2="86" class="dim"/><text x="108" y="123" class="lbl o">4 m</text><text x="60" y="215" class="lbl">(א)</text>
+    <line x1="190" y1="10" x2="190" y2="225" class="wall"/>
+    <circle cx="196" cy="210" r="6"/><circle cx="196" cy="82" r="5" class="bolt"/>
+    <polyline points="196,210 196,82 218,50" class="rope"/><circle cx="218" cy="50" r="8" class="climber"/>
+    <line x1="265" y1="210" x2="265" y2="50" class="dim"/><text x="292" y="135" class="lbl o">10 m</text>
+    <line x1="240" y1="210" x2="240" y2="82" class="dim"/><text x="252" y="150" class="lbl o">8 m</text>
+    <text x="215" y="225" class="lbl">(ב)</text></svg>
+  <div class="q">(א) <b>4 m</b> מעל העיגון, בלי נקודות ביניים. (ב) <b>10 m</b> מעל המאבטח, נקודה אחרונה ב־<b>8 m</b>.<br>מה מקדם הנפילה בכל מקרה? מה הכוח המקסימלי (80 kg, חבל דינמי, <span class="f">k ≈ 25 kN</span>)?</div>
+  <button class="alt">הצג פתרון</button>
+  <div class="ans">(א) <span class="f">h = 8, L = 4 ⇒ f = 2 ⇒ F ≈ 9.7 kN</span><br>(ב) <span class="f">h = 4, L = 10 ⇒ f = 0.4 ⇒ F ≈ 4.8 kN</span></div>
+</div>
+  </div>
+</section>
+
+
+
+<script>
+const g = 9.8;
+const $ = id => document.getElementById(id);
+const val = id => +$(id).value;
+const fx = (v, d = 0) => (+v).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const deg = Math.PI / 180;
+const FONT = '14px "Segoe UI", Arial, sans-serif';
+
+function cv(id) {
+  const c = $(id), W = +c.getAttribute('width'), H = +c.getAttribute('height'), r = window.devicePixelRatio || 1;
+  c.width = W * r; c.height = H * r;
+  const x = c.getContext('2d'); x.setTransform(r, 0, 0, r, 0, 0);
+  return { c, x, W, H };
+}
+function arrow(x, x1, y1, x2, y2, col, lab, lw = 3) {
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  if (len < 2) return;
+  const ux = dx / len, uy = dy / len, hs = Math.min(12, len * 0.6);
+  x.save(); x.strokeStyle = col; x.fillStyle = col; x.lineWidth = lw; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2 - ux * hs * 0.7, y2 - uy * hs * 0.7); x.stroke();
+  x.beginPath(); x.moveTo(x2, y2);
+  x.lineTo(x2 - ux * hs - uy * hs * 0.45, y2 - uy * hs + ux * hs * 0.45);
+  x.lineTo(x2 - ux * hs + uy * hs * 0.45, y2 - uy * hs - ux * hs * 0.45);
+  x.closePath(); x.fill();
+  if (lab) {
+    x.font = 'bold ' + FONT;
+    const w = x.measureText(lab).width;
+    x.fillText(lab, x2 + ux * 10 - w / 2 + (Math.abs(ux) > 0.5 ? Math.sign(ux) * w / 2 : 0), y2 + uy * 12 + 5);
+  }
+  x.restore();
+}
+function line(x, x1, y1, x2, y2, col, lw = 1, dash) {
+  x.save(); x.strokeStyle = col; x.lineWidth = lw; if (dash) x.setLineDash(dash);
+  x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke(); x.restore();
+}
+function text(x, s, px, py, col = '#222', align = 'center', bold = false) {
+  x.save(); x.fillStyle = col; x.font = (bold ? 'bold ' : '') + FONT; x.textAlign = align; x.fillText(s, px, py); x.restore();
+}
+function hatch(x, x1, x2, y, up = true) {
+  line(x, x1, y, x2, y, '#555', 3);
+  for (let i = x1; i < x2; i += 12) line(x, i, y, i + (up ? 8 : -8), y + (up ? -8 : 8) * (up ? 1 : -1) * (up ? 1 : 1), '#999', 1);
+}
+// keep every slider's <output> in sync
+document.querySelectorAll('input[type=range]').forEach(el => {
+  const o = $(el.id + '_v'); const upd = () => { if (o) o.textContent = el.value; };
+  el.addEventListener('input', upd); upd();
+});
+function onInputs(ids, fn) { ids.forEach(id => $(id).addEventListener('input', fn)); }
+function canvasPos(c, W, H, e) {
+  const r = c.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+}
+
+/* ---------- 1. vectors: sum of two, or one split into x/y ---------- */
+(() => {
+  const { c, x, W, H } = cv('vecC');
+  const O = { x: 250, y: 270 };
+  const V = { A: { x: 160, y: 60 }, B: { x: -60, y: 140 } };
+  let drag = null, mode = 'sum';
+  const toC = v => ({ x: O.x + v.x, y: O.y - v.y });
+  const handles = () => mode === 'sum' ? ['A', 'B'] : ['A'];
+  function angArc(v, r, col, name) {
+    const t = Math.atan2(v.y, v.x);
+    if (Math.hypot(v.x, v.y) < 5 || Math.abs(t) < 0.02) return;
+    x.beginPath(); x.arc(O.x, O.y, r, Math.min(0, -t), Math.max(0, -t)); x.strokeStyle = col; x.lineWidth = 2; x.stroke();
+    text(x, name + ' = ' + Math.round(t / deg) + '°', O.x + (r + 26) * Math.cos(-t / 2), O.y + (r + 26) * Math.sin(-t / 2) + 5, col, 'center', true);
+  }
+  function draw() {
+    x.clearRect(0, 0, W, H);
+    for (let i = O.x % 20; i < W; i += 20) line(x, i, 0, i, H, '#f0f0f0');
+    for (let j = O.y % 20; j < H; j += 20) line(x, 0, j, W, j, '#f0f0f0');
+    line(x, 0, O.y, W, O.y, '#aaa', 1.5); line(x, O.x, 0, O.x, H, '#aaa', 1.5);
+    text(x, 'x', W - 10, O.y - 6, '#888'); text(x, 'y', O.x + 10, 14, '#888');
+    const A = V.A, a = toC(A);
+    if (mode === 'dec') {
+      const m = Math.hypot(A.x, A.y), t = Math.atan2(A.y, A.x);
+      line(x, a.x, a.y, O.x, a.y, '#ccc', 1.5, [5, 4]);
+      arrow(x, O.x, O.y, O.x, a.y, '#dcc6ea', 'Fy', 2.5);
+      if (Math.abs(A.x) > 8 && Math.abs(A.y) > 8) {   // right-angle mark where Fx meets Fy
+        const sx = -Math.sign(A.x) * 10, sy = A.y > 0 ? -10 : 10;
+        x.strokeStyle = '#666'; x.lineWidth = 1; x.beginPath(); x.moveTo(a.x + sx, O.y); x.lineTo(a.x + sx, O.y + sy); x.lineTo(a.x, O.y + sy); x.stroke();
+      }
+      arrow(x, O.x, O.y, a.x, O.y, '#1a9a4a', 'Fx', 4);
+      arrow(x, a.x, O.y, a.x, a.y, '#8e44ad', 'Fy', 4);
+      arrow(x, O.x, O.y, a.x, a.y, '#1f6fd1', 'F', 4.5);
+      angArc(A, 45, '#e07b00', 'θ');
+      x.beginPath(); x.arc(a.x, a.y, 7, 0, 7); x.strokeStyle = '#333'; x.lineWidth = 1; x.stroke();
+      $('vecR').innerHTML = `<span class="f">|F| = <b>${fx(m)} N</b> &nbsp; θ = <b>${fx(t / deg)}°</b></span><br>` +
+        `<span class="f" style="color:#1a9a4a">Fx = F·cos θ = ${fx(m)}·${fx(Math.cos(t), 2)} = <b>${fx(A.x)} N</b></span><br>` +
+        `<span class="f" style="color:#8e44ad">Fy = F·sin θ = ${fx(m)}·${fx(Math.sin(t), 2)} = <b>${fx(A.y)} N</b></span><br>` +
+        `<span class="f">√(Fx² + Fy²) = ${fx(m)} N</span>`;
+      return;
+    }
+    const B = V.B, R = { x: A.x + B.x, y: A.y + B.y };
+    const b = toC(B), r = toC(R);
+    line(x, a.x, a.y, r.x, r.y, '#bbb', 1.5, [6, 5]); line(x, b.x, b.y, r.x, r.y, '#bbb', 1.5, [6, 5]);
+    line(x, r.x, r.y, r.x, O.y, '#7fc79a', 1.5, [4, 4]); line(x, r.x, r.y, O.x, r.y, '#7fc79a', 1.5, [4, 4]);
+    arrow(x, O.x, O.y + 0.5, r.x, O.y + 0.5, '#7fc79a', 'Rx', 2.5);
+    arrow(x, O.x, O.y, O.x, r.y, '#7fc79a', 'Ry', 2.5);
+    angArc(A, 34, '#1f6fd1', 'θA'); angArc(R, 62, '#1a9a4a', 'θR'); angArc(B, 90, '#e07b00', 'θB');
+    arrow(x, O.x, O.y, a.x, a.y, '#1f6fd1', 'A', 3.5);
+    arrow(x, O.x, O.y, b.x, b.y, '#e07b00', 'B', 3.5);
+    arrow(x, O.x, O.y, r.x, r.y, '#1a9a4a', 'R', 4);
+    for (const q of [a, b]) { x.beginPath(); x.arc(q.x, q.y, 7, 0, 7); x.strokeStyle = '#333'; x.lineWidth = 1; x.stroke(); }
+    const row = (n, v, col) => {
+      const m = Math.hypot(v.x, v.y), t = Math.atan2(v.y, v.x) / deg;
+      return `<span style="color:${col}"><b>${n}</b></span>: <span class="f">|${n}| = ${fx(m)} N, θ = ${fx(t)}°, ${n}x = ${fx(v.x)}, ${n}y = ${fx(v.y)}</span>`;
+    };
+    $('vecR').innerHTML = row('A', A, '#1f6fd1') + '<br>' + row('B', B, '#e07b00') + '<br>' + row('R', R, '#1a9a4a');
+  }
+  c.addEventListener('pointerdown', e => {
+    const q = canvasPos(c, W, H, e);
+    for (const k of handles()) { const t = toC(V[k]); if (Math.hypot(q.x - t.x, q.y - t.y) < 18) { drag = k; c.setPointerCapture(e.pointerId); } }
+  });
+  c.addEventListener('pointermove', e => {
+    const q = canvasPos(c, W, H, e);
+    if (!drag) {
+      c.style.cursor = handles().some(k => { const t = toC(V[k]); return Math.hypot(q.x - t.x, q.y - t.y) < 18; }) ? 'grab' : 'default';
+      return;
+    }
+    V[drag] = { x: Math.round((q.x - O.x) / 5) * 5, y: Math.round((O.y - q.y) / 5) * 5 };
+    draw();
+  });
+  c.addEventListener('pointerup', () => drag = null);
+  document.querySelectorAll('.vec_m').forEach(btn => btn.onclick = () => {
+    mode = btn.dataset.m;
+    document.querySelectorAll('.vec_m').forEach(q => q.classList.toggle('on', q === btn));
+    $('vecHint').textContent = mode === 'sum' ? 'גררו את A ו־B' : 'גררו את F';
+    draw();
+  });
+  draw();
+})();
+
+/* ---------- 1b. anchor: 2 or 3 legs, independent angles ---------- */
+(() => {
+  const { x, W, H } = cv('anC');
+  let legs = 2;
+  // legs of equal length and stiffness meeting at the master point (exact statics for 2 legs,
+  // stretch-based load sharing for 3); a leg that would go slack is dropped and the rest re-solved
+  function solve(angs, Wt) {
+    const act = angs.map(() => true);
+    for (let it = 0; it < 4; it++) {
+      let a = 0, b = 0, c = 0;
+      angs.forEach((t, i) => { if (!act[i]) return; const ux = Math.sin(t), uy = Math.cos(t); a += ux * ux; b += ux * uy; c += uy * uy; });
+      const det = a * c - b * b;
+      const dx = Math.abs(det) < 1e-9 ? 0 : -b * Wt / det, dy = Math.abs(det) < 1e-9 ? Wt / c : a * Wt / det;
+      const T = angs.map((t, i) => act[i] ? Math.sin(t) * dx + Math.cos(t) * dy : 0);
+      if (T.every(v => v >= -1e-6)) return T.map(v => Math.max(0, v));
+      T.forEach((v, i) => { if (v < 0) act[i] = false; });
+    }
+    return angs.map(() => 0);
+  }
+  window.__anchor = { solve, get legs() { return legs; } };
+  function draw() {
+    const tri = legs === 'tri';   // one sling through the master point + a segment joining the anchors: angles must match
+    if (tri) $('an_eq').checked = true;
+    if ($('an_eq').checked) { $('an_a2').value = $('an_a1').value; $('an_a2_v').textContent = $('an_a1').value; }
+    const d1 = val('an_a1'), d2 = val('an_a2'), m = val('an_m'), Wt = m * g, L = 190;
+    $('an_a1_v').textContent = d1; $('an_a2_v').textContent = d2;
+    const angs = legs === 3 ? [-d1 * deg, 0, d2 * deg] : [-d1 * deg, d2 * deg];
+    const T = solve(angs, Wt);
+    x.clearRect(0, 0, W, H);
+    const M = { x: 320, y: 30 + L * Math.max(...angs.map(Math.cos)) };
+    // angle arcs between neighbouring legs
+    for (let i = 0; i + 1 < angs.length; i++) {
+      const s0 = angs[i] - Math.PI / 2, s1 = angs[i + 1] - Math.PI / 2, r = 58 + i * 14;
+      if (s1 - s0 < 0.02) continue;
+      x.beginPath(); x.arc(M.x, M.y, r, s0, s1); x.strokeStyle = '#e07b00'; x.lineWidth = 2; x.stroke();
+      const mid = (s0 + s1) / 2;
+      text(x, Math.round((angs[i + 1] - angs[i]) / deg) + '°', M.x + (r + 16) * Math.cos(mid), M.y + (r + 16) * Math.sin(mid) + 5, '#e07b00', 'center', true);
+    }
+    const k = 70 / Wt;
+    const anch = angs.map(t => ({ x: M.x + L * Math.sin(t), y: M.y - L * Math.cos(t) }));
+    let Fa = 0;
+    if (tri) {
+      line(x, anch[0].x, anch[0].y, anch[1].x, anch[1].y, '#8a6d3b', 4);
+      anch.forEach((A, i) => {
+        const o = anch[1 - i], dl = Math.hypot(o.x - A.x, o.y - A.y) || 1;
+        const fx_ = T[i] * ((M.x - A.x) / L + (o.x - A.x) / dl), fy_ = T[i] * ((M.y - A.y) / L + (o.y - A.y) / dl);
+        Fa = Math.hypot(fx_, fy_);
+        const s = Math.min(1, 165 / (Fa * k));
+        arrow(x, A.x, A.y, A.x + fx_ * k * s, A.y + fy_ * k * s, '#c62828', 'F' + (i + 1), 3);
+      });
+    }
+    angs.forEach((t, i) => {
+      const A = anch[i];
+      line(x, A.x, A.y, M.x, M.y, T[i] > 0 ? '#8a6d3b' : '#bbb', 4, T[i] > 0 ? null : [6, 5]);
+      x.fillStyle = '#b9b2a6'; x.fillRect(A.x - 16, A.y - 15, 32, 9);
+      x.beginPath(); x.arc(A.x, A.y, 6, 0, 7); x.fillStyle = '#333'; x.fill();
+      const col = T[i] > Wt * 1.001 ? '#c62828' : '#1a9a4a', Tl = Math.min(T[i] * k, 165);
+      arrow(x, M.x, M.y, M.x + Math.sin(t) * Tl, M.y - Math.cos(t) * Tl, col, 'T' + (i + 1), 3);
+    });
+    x.fillStyle = '#d7dde3'; x.fillRect(M.x - 32, M.y + 18, 64, 34); x.strokeStyle = '#555'; x.lineWidth = 2; x.strokeRect(M.x - 32, M.y + 18, 64, 34);
+    line(x, M.x, M.y, M.x, M.y + 18, '#555', 2);
+    text(x, m + ' kg', M.x, M.y + 40, '#333', 'center', true);
+    arrow(x, M.x + 48, M.y, M.x + 48, M.y + 70, '#444', 'W', 3);
+    const rows = T.map((v, i) => `<span class="f">T${i + 1} = <b>${fx(v)} N</b> (${fx(v / Wt * 100)}%)</span>`).join('<br>');
+    const ang = legs === 3 ? `זוויות: <b>${d1}°</b> ו־<b>${d2}°</b>` : `זווית בין הרגליים: <b>${d1 + d2}°</b>`;
+    const triTxt = tri ? `<br><span class="warn">כוח על כל עיגון: F = ${fx(Fa)} N (${fx(Fa / Wt * 100)}%)</span> — פי ${fx(Fa / T[0], 2)} מ־V רגיל` : '';
+    $('anR').innerHTML = `<span class="f">W = ${fx(Wt)} N</span> &nbsp;|&nbsp; ${ang}<br>${rows}${triTxt}` +
+      (T.some(v => v > Wt * 1.001) ? '<br><span class="warn">רגל אחת נושאת יותר מכל המשקל!</span>' : '') +
+      (T.some(v => v === 0) ? '<br><span class="warn">רגל רפויה — לא נושאת כלום</span>' : '') +
+      (legs === 3 ? '<br><span style="font-size:.85rem;color:#666">בהנחה שהרצועות זהות באורך ובחומר</span>' : '');
+  }
+  $('an_a2').addEventListener('input', () => { if ($('an_eq').checked) $('an_a1').value = $('an_a2').value; });
+  onInputs(['an_a1', 'an_a2', 'an_m'], draw);
+  $('an_eq').onchange = draw;
+  document.querySelectorAll('.an_n').forEach(b => b.onclick = () => {
+    legs = b.dataset.n === 'tri' ? 'tri' : +b.dataset.n; document.querySelectorAll('.an_n').forEach(q => q.classList.toggle('on', q === b)); draw();
+  });
+  draw();
+})();
+
+/* ---------- 2. Newton ---------- */
+(() => {
+  const { x, W, H } = cv('nwC');
+  let pos = 0, v = 0, t = 0, run = false, last = 0;
+  const PXM = 40, G = 170;
+  function draw() {
+    const F = val('nw_F'), m = val('nw_m'), a = F / m;
+    x.clearRect(0, 0, W, H);
+    x.fillStyle = '#e6f2fa'; x.fillRect(0, G, W, H - G); line(x, 0, G, W, G, '#7aa7c7', 2);
+    text(x, 'קרח — ללא חיכוך', W - 70, G + 30, '#7aa7c7');
+    const off = (pos * PXM) % PXM;
+    for (let i = -off; i < W; i += PXM) line(x, i, G, i, G + 6, '#7aa7c7');
+    const bx = ((pos * PXM + W / 2 + 30) % (W + 60)) - 30, bw = 30 + m * 0.5, bh = 26 + m * 0.35;
+    x.fillStyle = '#c9a26b'; x.fillRect(bx - bw / 2, G - bh, bw, bh); x.strokeStyle = '#7a5a2e'; x.lineWidth = 2; x.strokeRect(bx - bw / 2, G - bh, bw, bh);
+    text(x, m + ' kg', bx, G - bh / 2 + 5, '#3a2a10', 'center', true);
+    const cy = G - bh / 2, k = 55 / (m * g);
+    arrow(x, bx + bw / 2, cy, bx + bw / 2 + Math.min(F * 0.6, 260), cy, '#1a9a4a', 'F', 3.5);
+    arrow(x, bx, cy, bx, cy + 38, '#444', 'mg', 2.5);
+    arrow(x, bx - 8, cy - bh / 2, bx - 8, cy - bh / 2 - 38, '#1f6fd1', 'N', 2.5);
+    $('nwR').innerHTML = `<span class="f">a = F / m = ${F} / ${m} = <b>${fx(a, 2)} m/s²</b></span><br><span class="f">t = ${fx(t, 1)} s &nbsp;|&nbsp; v = ${fx(v, 1)} m/s &nbsp;|&nbsp; x = ${fx(pos, 1)} m</span>` +
+      '<br><span class="muted">mg ו־N מתקזזים (אין תאוצה אנכית), ולכן רק F קובע את התאוצה. בלי F, הארגז ימשיך באותה מהירות לנצח — חוק ראשון.</span>';
+  }
+  function step(ts) {
+    if (!run) return;
+    const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
+    const a = val('nw_F') / val('nw_m');
+    v += a * dt; pos += v * dt; t += dt;
+    draw(); requestAnimationFrame(step);
+  }
+  $('nw_go').onclick = () => { run = !run; $('nw_go').textContent = run ? 'עצור' : 'הפעל'; if (run) { last = performance.now(); requestAnimationFrame(step); } };
+  $('nw_rs').onclick = () => { pos = v = t = 0; draw(); };
+  onInputs(['nw_F', 'nw_m'], draw); draw();
+})();
+
+/* ---------- 3. slope ---------- */
+(() => {
+  const { x, W, H } = cv('spC');
+  const Lm = 8; let s = 4, v = 0, run = false, last = 0;
+  const B0 = { x: 50, y: 335 };
+  function forces() {
+    const th = val('sp_th') * deg, m = val('sp_m'), ms = val('sp_ms'), mk = Math.min(val('sp_mk'), ms), P = val('sp_P');
+    const N = m * g * Math.cos(th), G = m * g * Math.sin(th), net = P - G;
+    let f, a, state;
+    if (v === 0) {
+      if (Math.abs(net) <= ms * N + 1e-9) { f = -net; a = 0; state = 'static'; }
+      else { const sg = Math.sign(net); f = -sg * mk * N; a = (net + f) / m; state = sg > 0 ? 'up' : 'down'; }
+    } else { f = -Math.sign(v) * mk * N; a = (net + f) / m; state = v > 0 ? 'up' : 'down'; }
+    return { th, m, ms, mk, P, N, G, net, f, a, state };
+  }
+  function draw() {
+    const F = forces(), th = F.th;
+    const Lpx = Math.min(520, 290 / Math.max(Math.sin(th), 0.01)), pxm = Lpx / Lm;
+    const u = { x: Math.cos(th), y: -Math.sin(th) }, n = { x: -Math.sin(th), y: -Math.cos(th) };
+    const T = { x: B0.x + u.x * Lpx, y: B0.y + u.y * Lpx };
+    x.clearRect(0, 0, W, H);
+    x.fillStyle = '#efe6d6'; x.beginPath(); x.moveTo(B0.x, B0.y); x.lineTo(T.x, T.y); x.lineTo(T.x, B0.y); x.closePath(); x.fill();
+    line(x, 10, B0.y, W - 10, B0.y, '#555', 2); line(x, B0.x, B0.y, T.x, T.y, '#6b5432', 3);
+    if (th > 0.01) {
+      x.beginPath(); x.arc(B0.x, B0.y, 50, -th, 0); x.strokeStyle = '#e07b00'; x.lineWidth = 2; x.stroke();
+      text(x, 'θ', B0.x + 62 * Math.cos(th / 2), B0.y - 62 * Math.sin(th / 2) + 5, '#e07b00', 'center', true);
+    }
+    const bw = 54, bh = 34, sp = s * pxm;
+    const C = { x: B0.x + u.x * sp + n.x * bh / 2, y: B0.y + u.y * sp + n.y * bh / 2 };
+    // rope to top pulley
+    if (F.P > 0) {
+      const R0 = { x: C.x + u.x * bw / 2, y: C.y + u.y * bw / 2 };
+      const Pt = { x: T.x + n.x * bh / 2, y: T.y + n.y * bh / 2 };
+      line(x, R0.x, R0.y, Pt.x, Pt.y, '#8a6d3b', 2.5);
+      x.beginPath(); x.arc(Pt.x, Pt.y, 8, 0, 7); x.fillStyle = '#666'; x.fill();
+    }
+    x.save(); x.translate(C.x, C.y); x.rotate(-th);
+    x.fillStyle = '#c9a26b'; x.fillRect(-bw / 2, -bh / 2, bw, bh); x.strokeStyle = '#7a5a2e'; x.lineWidth = 2; x.strokeRect(-bw / 2, -bh / 2, bw, bh);
+    x.restore();
+    const k = 85 / (F.m * g);
+    const ang = (vec, len) => ({ x: C.x + vec.x * len, y: C.y + vec.y * len });
+    let p = ang({ x: -u.x, y: -u.y }, F.G * k); line(x, C.x, C.y, p.x, p.y, '#999', 2, [5, 4]);
+    text(x, 'mg·sinθ', p.x - 30, p.y + 4, '#888');
+    p = ang({ x: -n.x, y: -n.y }, F.N * k); line(x, C.x, C.y, p.x, p.y, '#999', 2, [5, 4]);
+    text(x, 'mg·cosθ', p.x + 38, p.y + 14, '#888');
+    arrow(x, C.x, C.y, C.x, C.y + F.m * g * k, '#444', 'mg', 3);
+    p = ang(n, F.N * k); arrow(x, C.x, C.y, p.x, p.y, '#1f6fd1', 'N', 3);
+    const fb = { x: C.x - n.x * bh / 2, y: C.y - n.y * bh / 2 };
+    if (Math.abs(F.f) > 0.5) arrow(x, fb.x, fb.y, fb.x + u.x * F.f * k, fb.y + u.y * F.f * k, '#c62828', 'f', 3);
+    if (F.P > 0) { p = { x: C.x + u.x * bw / 2, y: C.y + u.y * bw / 2 }; arrow(x, p.x, p.y, p.x + u.x * F.P * k, p.y + u.y * F.P * k, '#1a9a4a', 'P', 3); }
+    // readout
+    const msN = F.ms * F.N;
+    const st = { static: '<span class="ok">נייח — החיכוך הסטטי מאזן את הכוחות</span>', up: '<b>נע במעלה המדרון</b>', down: '<span class="warn">מחליק במורד</span>' }[F.state];
+    const startUp = F.G + msN, holdMin = Math.max(0, F.G - msN);
+    $('spR').innerHTML =
+      `<span class="f">mg = ${fx(F.m * g)} N &nbsp;|&nbsp; mg·sinθ = ${fx(F.G)} N &nbsp;|&nbsp; N = mg·cosθ = ${fx(F.N)} N &nbsp;|&nbsp; μs·N = ${fx(msN)} N (חיכוך סטטי מקסימלי)</span><br>` +
+      `מצב: ${st} &nbsp;|&nbsp; <span class="f">f = ${fx(Math.abs(F.f))} N, a = ${fx(F.a, 2)} m/s², v = ${fx(v, 2)} m/s</span><br>` +
+      `<span class="f">tan θ = ${fx(Math.tan(th), 2)}</span> ${Math.tan(th) > F.ms ? '&gt;' : '≤'} <span class="f">μs = ${F.ms}</span> ⇐ בלי משיכה הגוש ${Math.tan(th) > F.ms ? 'מחליק' : 'נשאר במקום'}.<br>` +
+      `כדי <b>להתחיל לגרור למעלה</b> צריך <span class="f">P &gt; mg·sinθ + μs·N = ${fx(startUp)} N</span>; ` +
+      (holdMin > 0 ? `כדי <b>שלא יחליק</b> מספיק <span class="f">P ≥ mg·sinθ − μs·N = ${fx(holdMin)} N</span>.` : 'הגוש מחזיק את עצמו גם בלי משיכה.') +
+      (val('sp_mk') > F.ms ? '<br><span class="muted">(μk לא יכול להיות גדול מ־μs — נעשה שימוש ב־μk = μs)</span>' : '');
+  }
+  function step(ts) {
+    if (!run) return;
+    const dt = Math.min(0.03, (ts - last) / 1000); last = ts;
+    const F = forces();
+    if (v === 0) { if (F.state !== 'static') v = F.a * dt; }
+    else { const nv = v + F.a * dt; v = Math.sign(nv) !== Math.sign(v) ? 0 : nv; }
+    s += v * dt;
+    if (s < 0.5) { s = 0.5; v = 0; run = false; }
+    if (s > Lm - 0.5) { s = Lm - 0.5; v = 0; run = false; }
+    if (!run) $('sp_go').textContent = 'שחרר';
+    draw(); if (run) requestAnimationFrame(step);
+  }
+  $('sp_go').onclick = () => { run = !run; $('sp_go').textContent = run ? 'עצור' : 'שחרר'; if (run) { last = performance.now(); requestAnimationFrame(step); } };
+  $('sp_rs').onclick = () => { s = 4; v = 0; run = false; $('sp_go').textContent = 'שחרר'; draw(); };
+  onInputs(['sp_th', 'sp_m', 'sp_ms', 'sp_mk', 'sp_P'], () => { v = 0; draw(); }); draw();
+})();
+
+/* ---------- 4. friction ramp ---------- */
+(() => {
+  const A = cv('frC'), Gc = cv('frG');
+  let F = 0, moving = false, v = 0, pos = 0, trace = [], run = false, last = 0;
+  const p = () => { const m = val('fr_m'), ms = val('fr_ms'), mk = Math.min(val('fr_mk'), ms); return { m, ms, mk, N: m * g }; };
+  function fric(P) { return moving ? P.mk * P.N : (F <= P.ms * P.N ? F : P.mk * P.N); }
+  function draw() {
+    const P = p(), f = fric(P), x = A.x;
+    x.clearRect(0, 0, A.W, A.H);
+    const G = 115; line(x, 0, G, A.W, G, '#555', 2);
+    for (let i = -((pos * 40) % 20); i < A.W; i += 20) line(x, i, G, i - 8, G + 8, '#aaa');
+    const bx = 160 + ((pos * 40) % 400), bw = 70, bh = 46;
+    x.fillStyle = '#c9a26b'; x.fillRect(bx - bw / 2, G - bh, bw, bh); x.strokeStyle = '#7a5a2e'; x.lineWidth = 2; x.strokeRect(bx - bw / 2, G - bh, bw, bh);
+    const k = 110 / (P.ms * P.N);
+    arrow(x, bx + bw / 2, G - bh / 2, bx + bw / 2 + F * k, G - bh / 2, '#1a9a4a', 'F', 3.5);
+    if (f > 0.5) arrow(x, bx - bw / 2, G - 4, bx - bw / 2 - f * k, G - 4, '#c62828', 'f', 3.5);
+    text(x, moving ? 'זז!' : 'נייח', bx, G - bh - 8, moving ? '#c62828' : '#1a9a4a', 'center', true);
+    // graph
+    const y = Gc.x, gw = Gc.W, gh = Gc.H, L = 60, Bm = 210, Fmax = 1.6 * P.ms * P.N, fmax = 1.25 * P.ms * P.N;
+    const X = F_ => L + F_ / Fmax * (gw - L - 20), Y = f_ => Bm - f_ / fmax * (Bm - 15);
+    y.clearRect(0, 0, gw, gh);
+    line(y, L, Bm, gw - 10, Bm, '#555', 1.5); line(y, L, Bm, L, 8, '#555', 1.5);
+    text(y, 'כוח מופעל F →', gw - 70, Bm + 30, '#555'); text(y, 'חיכוך f', 30, 18, '#555');
+    line(y, L, Y(P.ms * P.N), gw - 10, Y(P.ms * P.N), '#c62828', 1, [5, 4]);
+    text(y, 'μs·N = ' + fx(P.ms * P.N) + ' N', gw - 20, Y(P.ms * P.N) - 5, '#c62828', 'right');
+    line(y, L, Y(P.mk * P.N), gw - 10, Y(P.mk * P.N), '#e07b00', 1, [5, 4]);
+    text(y, 'μk·N = ' + fx(P.mk * P.N) + ' N', gw - 20, Y(P.mk * P.N) + 16, '#e07b00', 'right');
+    line(y, X(0), Y(0), X(P.ms * P.N), Y(P.ms * P.N), '#ddd', 1, [2, 4]);
+    text(y, 'f = F', X(P.ms * P.N * 0.5) - 18, Y(P.ms * P.N * 0.5) - 6, '#aaa');
+    y.strokeStyle = '#234e6c'; y.lineWidth = 3; y.beginPath();
+    trace.forEach((q, i) => i ? y.lineTo(X(q[0]), Y(q[1])) : y.moveTo(X(q[0]), Y(q[1]))); y.stroke();
+    if (trace.length) { const q = trace[trace.length - 1]; y.beginPath(); y.arc(X(q[0]), Y(q[1]), 5, 0, 7); y.fillStyle = '#234e6c'; y.fill(); }
+    $('frR').innerHTML = `<span class="f">N = ${fx(P.N)} N &nbsp;|&nbsp; F = ${fx(F)} N &nbsp;|&nbsp; f = ${fx(f)} N &nbsp;|&nbsp; ΣF = ${fx(F - f)} N</span> &nbsp;|&nbsp; ` +
+      (moving ? `זז: <span class="f">a = (F − μk·N)/m = ${fx((F - f) / P.m, 2)} m/s²</span>` : 'נייח: החיכוך שווה ל־F, ולכן ΣF = 0');
+  }
+  function step(ts) {
+    if (!run) return;
+    const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
+    const P = p();
+    F = Math.min(F + 1.6 * P.ms * P.N / 7 * dt, 1.6 * P.ms * P.N);
+    if (!moving && F > P.ms * P.N) moving = true;
+    const f = fric(P);
+    if (moving) { v += (F - f) / P.m * dt; pos += v * dt; }
+    trace.push([F, f]);
+    if (F >= 1.6 * P.ms * P.N) { run = false; $('fr_go').textContent = 'הפעל'; }
+    draw(); if (run) requestAnimationFrame(step);
+  }
+  const reset = () => { F = 0; moving = false; v = 0; pos = 0; trace = []; run = false; $('fr_go').textContent = 'הפעל'; draw(); };
+  $('fr_go').onclick = () => { if (F >= 1.6 * p().ms * p().N - 1e-6) reset(); run = !run; $('fr_go').textContent = run ? 'עצור' : 'הפעל'; if (run) { last = performance.now(); requestAnimationFrame(step); } };
+  $('fr_rs').onclick = reset;
+  onInputs(['fr_m', 'fr_ms', 'fr_mk'], reset); draw();
+})();
+
+/* ---------- 4b. capstan ---------- */
+(() => {
+  const { x, W, H } = cv('cpC');
+  function draw() {
+    const n = val('cp_n'), eta = val('cp_mu'), mu = -Math.log(eta) / Math.PI, m = val('cp_m'), Tl = m * g, phi = 2 * Math.PI * n, Th = Tl * Math.exp(-mu * phi);
+    x.clearRect(0, 0, W, H);
+    const cx = 300, cy = 150, R = 48;
+    x.fillStyle = '#8d6e4a'; x.beginPath(); x.arc(cx, cy, R - 3, 0, 7); x.fill();
+    x.fillStyle = '#a7865f'; x.beginPath(); x.arc(cx, cy, R - 14, 0, 7); x.fill();
+    // load strand
+    line(x, cx - R, cy, cx - R, 245, '#c0392b', 4);
+    x.fillStyle = '#d7dde3'; x.fillRect(cx - R - 25, 245, 50, 40); x.strokeStyle = '#555'; x.strokeRect(cx - R - 25, 245, 50, 40);
+    text(x, m + ' kg', cx - R, 270, '#333', 'center', true);
+    // spiral wrap, colour fades as tension drops
+    const steps = Math.max(2, Math.ceil(phi / 0.05));
+    let px = cx - R, py = cy;
+    for (let i = 1; i <= steps; i++) {
+      const t = phi * i / steps, a = Math.PI + t, r = R + 5 * t / (2 * Math.PI);
+      const nx = cx + r * Math.cos(a), ny = cy + r * Math.sin(a), frac = Math.exp(-mu * t);
+      line(x, px, py, nx, ny, `rgb(${Math.round(60 + 132 * frac)},${Math.round(150 - 93 * frac)},${Math.round(80 - 37 * frac)})`, 4);
+      px = nx; py = ny;
+    }
+    const ae = Math.PI + phi, tx = -Math.sin(ae), ty = Math.cos(ae);
+    const ex = px + tx * 70, ey = py + ty * 70;
+    line(x, px, py, ex, ey, '#3c9650', 4);
+    arrow(x, ex, ey, ex + tx * 35, ey + ty * 35, '#3c9650', 'T hold', 3);
+    arrow(x, cx - R - 40, cy + 20, cx - R - 40, cy + 85, '#c0392b', 'T load', 3);
+    text(x, 'n = ' + n, cx + R + 20, cy + 5, '#234e6c', 'left', true);
+    const chain = [fx(Tl)];
+    for (let i = 1, t = Tl; i <= Math.floor(n * 2 + 1e-9); i++) { t *= eta; chain.push(fx(t)); }
+    $('cpR').innerHTML = `כל חצי סיבוב: <b class="f">× ${eta}</b><br><span class="f">${chain.join(' → ')}${(n * 2) % 1 ? ' → …' : ''} N</span><br>` +
+      `T<sub>hold</sub> = <b class="f">${fx(Th)} N</b> (≈ ${fx(Th / g, 1)} kg ביד)`;
+  }
+  onInputs(['cp_n', 'cp_mu', 'cp_m'], draw); draw();
+})();
+
+/* ---------- 5. pulleys ---------- */
+(() => {
+  const { x, W, H } = cv('plC');
+  let n = 2, run = false, dir = 1, last = 0;
+  const yTop = 70, gap = 40, R = gap / 2, x0 = 200, PXM = 100;
+  function draw() {
+    const pct = val('pl_d') / 100, m = val('pl_m'), eta = +$('pl_eta').value, Wt = m * g;
+    const dmax = 170 / n, dPx = dmax * pct;
+    const yBot0 = 300, yBot = yBot0 - dPx, yHand0 = 200, yHand = yHand0 + n * dPx;
+    const xs = i => x0 + i * gap;
+    let MA = 0; for (let k = 1; k <= n; k++) MA += Math.pow(eta, k);
+    const F = Wt / MA;
+    let MAd = 0; for (let k = 1; k <= n; k++) MAd += Math.pow(eta, -k);
+    const Fmin = Wt / MAd;   // lowering direction: friction helps hold
+    x.clearRect(0, 0, W, H);
+    // anchor beam
+    line(x, x0 - 50, 28, xs(n) + 50, 28, '#555', 5);
+    for (let i = x0 - 50; i < xs(n) + 50; i += 12) line(x, i, 28, i + 9, 18, '#aaa');
+    text(x, 'עיגון', xs(n) + 80, 33, '#555', 'center', true);
+    // ghost of start positions
+    x.save(); x.globalAlpha = 0.25;
+    x.strokeStyle = '#555'; x.setLineDash([4, 4]);
+    x.strokeRect(xs(0) - 15, yBot0 + R + 12, xs(n - 1) - xs(0) + 30, 50);
+    x.restore();
+    // build rope path from the tied end, tracking arc start lengths (for pulley rotation)
+    const tiedTop = n % 2 === 0;
+    const pulleys = [];
+    let sLen = 0;
+    x.beginPath();
+    let yCur = tiedTop ? 32 : yBot + R + 12;
+    x.moveTo(xs(0), yCur);
+    for (let i = 0; i < n; i++) {
+      const goingUp = tiedTop ? i % 2 === 1 : i % 2 === 0;
+      const yEnd = goingUp ? yTop : yBot;
+      x.lineTo(xs(i), yEnd); sLen += Math.abs(yEnd - yCur);
+      const cxp = (xs(i) + xs(i + 1)) / 2;
+      pulleys.push({ x: cxp, y: yEnd, top: goingUp, s: sLen, moving: !goingUp });
+      if (goingUp) x.arc(cxp, yTop, R, Math.PI, 0, false); else x.arc(cxp, yBot, R, Math.PI, 0, true);
+      sLen += Math.PI * R; yCur = yEnd;
+    }
+    x.lineTo(xs(n), yHand);
+    x.lineCap = 'round';
+    x.strokeStyle = '#c9a26b'; x.lineWidth = 5; x.stroke();
+    x.strokeStyle = '#7a3b12'; x.lineWidth = 5; x.setLineDash([8, 16]); x.lineDashOffset = 0; x.stroke(); x.setLineDash([]);
+    // pulleys
+    for (const p of pulleys) {
+      x.beginPath(); x.arc(p.x, p.y, R - 4, 0, 7); x.fillStyle = p.moving ? '#ffe0b3' : '#dfe6ec'; x.fill();
+      x.strokeStyle = '#555'; x.lineWidth = 2; x.stroke();
+      const rot = (p.top ? -1 : 1) * p.s / R;
+      for (let q = 0; q < 3; q++) { const a = rot + q * 2 * Math.PI / 3; line(x, p.x, p.y, p.x + (R - 6) * Math.cos(a), p.y + (R - 6) * Math.sin(a), '#555', 1.5); }
+      x.beginPath(); x.arc(p.x, p.y, 3, 0, 7); x.fillStyle = '#333'; x.fill();
+      if (p.top) line(x, p.x, p.y, p.x, 28, '#555', 2);
+    }
+    // moving block + load
+    const bl = xs(0) - 15, br = Math.max(xs(n - 1), xs(0)) + 15;
+    const lyTop = yBot + R + 12;
+    if (n > 1) line(x, bl + 15, yBot, br - 15, yBot, '#555', 2);
+    for (const p of pulleys) if (!p.top) line(x, p.x, p.y, p.x, lyTop, '#555', 2);
+    x.fillStyle = '#d7dde3'; x.fillRect(bl, lyTop, br - bl, 50); x.strokeStyle = '#555'; x.lineWidth = 2; x.strokeRect(bl, lyTop, br - bl, 50);
+    text(x, m + ' kg', (bl + br) / 2, lyTop + 30, '#333', 'center', true);
+    // strand tensions
+    for (let i = 0; i < n; i++) {
+      const T = F * Math.pow(eta, n - i);
+      text(x, fx(T) + ' N', xs(i) - 4, (yTop + yBot) / 2 + (i % 2) * 18, '#234e6c', 'right');
+    }
+    // hand + pull arrow
+    x.beginPath(); x.arc(xs(n), yHand + 8, 9, 0, 7); x.fillStyle = '#f2c79a'; x.fill(); x.strokeStyle = '#8a5a2b'; x.stroke();
+    arrow(x, xs(n) + 22, yHand - 10, xs(n) + 22, yHand + 45, '#1a9a4a', 'F = ' + fx(F) + ' N', 3);
+    // distance markers
+    const mx = 90;
+    if (dPx > 1) { arrow(x, mx, yBot0 + R + 12, mx, lyTop, '#e07b00', '', 2.5); text(x, 'd = ' + fx(dPx / PXM, 2) + ' m', mx - 8, (yBot0 + lyTop) / 2 + 20, '#e07b00', 'right', true); }
+    const hx = xs(n) + 110;
+    if (dPx > 1) { arrow(x, hx, yHand0, hx, yHand, '#1a9a4a', '', 2.5); text(x, fx(n * dPx / PXM, 2) + ' m', hx + 8, (yHand0 + yHand) / 2, '#1a9a4a', 'left', true); }
+    text(x, 'n = ' + n + ' קטעים מחזיקים את הגלגלת הנעה', W / 2, H - 10, '#234e6c', 'center', true);
+    const d = dPx / PXM, Win = F * n * d, Wout = Wt * d;
+    $('plR').innerHTML =
+      `יתרון תאורטי <b>${n}:1</b> &nbsp;|&nbsp; יתרון אמיתי (η = ${eta}): <span class="f">MA = ${Array.from({ length: n }, (_, k) => 'η' + (k ? '<sup>' + (k + 1) + '</sup>' : '')).join(' + ')} = <b>${fx(MA, 2)}</b></span><br>` +
+      `<span class="f">W = ${fx(Wt)} N &nbsp;→&nbsp; F = W / MA = <b>${fx(F)} N</b></span><br>` +
+      `המטען עלה <b>${fx(d, 2)} m</b>, &nbsp; המושך משך <b>${fx(n * d, 2)} m</b> חבל (פי ${n}).<br>` +
+      `עבודה שהושקעה: <span class="f">F·(n·d) = ${fx(F)}·${fx(n * d, 2)} = <b>${fx(Win)} J</b></span> &nbsp;|&nbsp; עבודה על המטען: <span class="f">W·d = ${fx(Wt)}·${fx(d, 2)} = <b>${fx(Wout)} J</b></span>` +
+      `<br><b>טווח סטטי</b> (המטען עומד): <span class="f">${fx(Fmin)} N ≤ F ≤ ${fx(F)} N</span>` +
+      (eta < 1 ? ' — פחות ⇐ יורד, יותר ⇐ עולה' : ' — בלי חיכוך אין טווח') +
+      (eta < 1 && d > 0 ? ` &nbsp;<span class="muted">— ההפרש (${fx(Win - Wout)} J) הלך לחום בגלגלות</span>` : '');
+  }
+  document.querySelectorAll('.pl_n').forEach(b => b.onclick = () => {
+    n = +b.dataset.n; document.querySelectorAll('.pl_n').forEach(q => q.classList.toggle('on', q === b)); draw();
+  });
+  document.querySelector('.pl_n[data-n="2"]').classList.add('on');
+  function step(ts) {
+    if (!run) return;
+    const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
+    let v = val('pl_d') + dir * 18 * dt;
+    if (v >= 100) { v = 100; dir = -1; } if (v <= 0) { v = 0; dir = 1; }
+    $('pl_d').value = v; $('pl_d_v').textContent = Math.round(v);
+    draw(); requestAnimationFrame(step);
+  }
+  $('pl_go').onclick = () => { run = !run; $('pl_go').textContent = run ? 'עצור' : 'הפעל'; if (run) { last = performance.now(); requestAnimationFrame(step); } };
+  onInputs(['pl_m', 'pl_d'], draw); $('pl_eta').onchange = draw; draw();
+})();
+
+/* ---------- 6. fall factor: simulated rope dynamics ---------- */
+(() => {
+  const { x, W, H } = cv('ffC');
+  const AY = 250, PXM = 20, WX = 300, CX = WX + 30;
+  const GR = { x: 548, y: 300, w: 232, h: 200 };   // force–time graph
+  let sim = null, raf = null, last = 0;
+  function calc() {
+    const c = val('ff_c'); let p = val('ff_p'); if (p > c) { p = c; $('ff_p').value = p; $('ff_p_v').textContent = p; }
+    const m = val('ff_m'), k = +$('ff_k').value, h = 2 * (c - p), L = c, f = h / L, mg = m * g;
+    const F = mg + Math.sqrt(mg * mg + 2 * mg * k * f), xmax = F * L / k;
+    return { c, p, m, k, h, L, f, mg, F, xmax, kr: k / L };
+  }
+  const Y = hm => AY - hm * PXM;
+  // rope state for a climber at height y (m): path = belay → pivot → climber
+  const rope = (S, y) => { const path = S.p + Math.abs(y - S.p); return { path, e: path - S.L }; };
+
+  function badge(S) {
+    const col = S.f >= 1 ? '#c62828' : S.f >= 0.5 ? '#e07b00' : '#1a9a4a';
+    x.save(); x.fillStyle = '#fff'; x.strokeStyle = col; x.lineWidth = 3;
+    x.beginPath(); x.roundRect(GR.x - 8, 22, GR.w + 16, 118, 14); x.fill(); x.stroke(); x.restore();
+    text(x, 'מקדם נפילה', GR.x + GR.w / 2, 48, '#555', 'center', true);
+    x.save(); x.fillStyle = col; x.font = 'bold 46px "Segoe UI", Arial, sans-serif'; x.textAlign = 'center';
+    x.fillText('f = ' + fx(S.f, 2), GR.x + GR.w / 2, 100); x.restore();
+    text(x, `h / L = ${fx(S.h, 1)} / ${fx(S.L, 1)}`, GR.x + GR.w / 2, 128, '#555');
+  }
+  function graph(S) {
+    const g0 = GR, tEnd = Math.max(Math.sqrt(2 * S.h / g) + 1.6, sim ? sim.t : 0), Fm = S.F * 1.15;
+    const X = t => g0.x + t / tEnd * g0.w, Yf = F => g0.y + g0.h - F / Fm * g0.h;
+    x.save(); x.fillStyle = '#fafafa'; x.fillRect(g0.x, g0.y, g0.w, g0.h); x.restore();
+    line(x, g0.x, g0.y + g0.h, g0.x + g0.w, g0.y + g0.h, '#555', 1.5); line(x, g0.x, g0.y, g0.x, g0.y + g0.h, '#555', 1.5);
+    text(x, 'כוח בחבל (kN)', g0.x + 4, g0.y - 8, '#555', 'left', true); text(x, 't (s)', g0.x + g0.w, g0.y + g0.h + 18, '#555', 'right');
+    line(x, g0.x, Yf(S.F), g0.x + g0.w, Yf(S.F), '#c62828', 1.5, [6, 4]);
+    text(x, 'נוסחה ' + fx(S.F / 1000, 1), g0.x + g0.w - 4, Yf(S.F) - 6, '#c62828', 'right');
+    line(x, g0.x, Yf(S.mg), g0.x + g0.w, Yf(S.mg), '#999', 1, [3, 4]);
+    text(x, 'mg', g0.x + g0.w - 4, Yf(S.mg) - 4, '#999', 'right');
+    if (!sim || !sim.hist.length) return;
+    x.save(); x.strokeStyle = '#234e6c'; x.lineWidth = 2.5; x.beginPath();
+    sim.hist.forEach(([t, F], i) => { const px = X(Math.min(t, tEnd)), py = Yf(F); i ? x.lineTo(px, py) : x.moveTo(px, py); });
+    x.stroke(); x.restore();
+    if (sim.peak > 0) {
+      x.beginPath(); x.arc(X(Math.min(sim.tPeak, tEnd)), Yf(sim.peak), 5, 0, 7); x.fillStyle = '#c62828'; x.fill();
+    }
+  }
+  function draw() {
+    const S = calc(), yc = sim ? sim.y : S.c, st = rope(S, yc), Fr = sim ? sim.F : 0;
+    x.clearRect(0, 0, W, H);
+    x.fillStyle = '#e9e4da'; x.fillRect(0, 0, WX, H); line(x, WX, 0, WX, H, '#8b8070', 3);
+    for (let hm = -14; hm <= 12; hm += 2) { line(x, WX - 8, Y(hm), WX, Y(hm), '#8b8070'); text(x, hm + ' m', WX - 12, Y(hm) + 5, '#8b8070', 'right'); }
+    x.beginPath(); x.arc(WX + 6, AY, 8, 0, 7); x.fillStyle = '#333'; x.fill();
+    text(x, 'עיגון / מאבטח', WX + 20, AY + 5, '#333', 'left', true);
+    if (S.p > 0) { x.beginPath(); x.arc(WX + 6, Y(S.p), 6, 0, 7); x.fillStyle = '#1f6fd1'; x.fill(); text(x, 'נקודת אבטחה', WX + 18, Y(S.p) + 5, '#1f6fd1', 'left'); }
+    x.save(); x.globalAlpha = 0.3; x.beginPath(); x.arc(CX, Y(S.c), 10, 0, 7); x.fillStyle = '#c62828'; x.fill(); x.restore();
+    // rope: thin when slack, thick and redder the harder it pulls
+    const tns = Math.min(1, Fr / S.F), taut = st.e > 0;
+    x.save(); x.lineWidth = taut ? 3 + 3 * tns : 2; x.strokeStyle = taut ? `rgb(${Math.round(122 + 100 * tns)},${Math.round(59 - 40 * tns)},${Math.round(18)})` : '#b8956a';
+    if (!taut) x.setLineDash([6, 4]);
+    x.beginPath(); x.moveTo(WX + 6, AY); if (S.p > 0) x.lineTo(WX + 6, Y(S.p)); x.lineTo(CX, Y(yc)); x.stroke(); x.restore();
+    x.beginPath(); x.arc(CX, Y(yc), 10, 0, 7); x.fillStyle = '#c62828'; x.fill();
+    if (sim && taut && Fr > 1) arrow(x, CX + 18, Y(yc), CX + 18, Y(yc) - Math.min(90, Fr / S.F * 90), '#c62828', 'F', 3);
+    if (sim) text(x, sim.phase, 150, 30, '#234e6c', 'center', true);
+    // dimension brackets
+    const bx = 420, low = 2 * S.p - S.c;
+    arrow(x, bx, Y(S.c), bx, Y(low), '#e07b00', '', 2.5);
+    text(x, 'h = ' + fx(S.h, 1) + ' m', bx + 8, (Y(S.c) + Y(low)) / 2 + 5, '#e07b00', 'left', true);
+    line(x, bx + 100, Y(0), bx + 100, Y(S.c), '#1a9a4a', 3);
+    text(x, 'L = ' + fx(S.L, 1) + ' m', bx + 106, (Y(0) + Y(S.c)) / 2 + 5, '#1a9a4a', 'left', true);
+    if (S.xmax * PXM > 2) { line(x, bx, Y(low), bx, Y(low - S.xmax), '#c62828', 3, [3, 3]); text(x, 'מתיחה ' + fx(S.xmax, 2) + ' m', bx + 8, Y(low - S.xmax / 2) + 5, '#c62828', 'left'); }
+    badge(S); graph(S);
+    const kN = S.F / 1000;
+    const verdict = kN > 12 ? '<span class="warn">כוח מסוכן</span>' : kN > 6 ? '<span style="color:#e07b00;font-weight:bold">כוח גבוה</span>' : '<span class="ok">כוח סביר</span>';
+    $('ffR').innerHTML =
+      `<span class="f">h = 2·(${S.c} − ${S.p}) = ${fx(S.h, 1)} m &nbsp;|&nbsp; L = ${S.L} m &nbsp;|&nbsp; f = h/L = <b>${fx(S.f, 2)}</b></span><br>` +
+      `נוסחה: <span class="f">F<sub>max</sub> = <b>${fx(kN, 1)} kN</b></span> (≈ ${fx(S.F / S.mg, 1)}× משקל הגוף) — ${verdict}` +
+      (sim ? `<br>סימולציה: <span class="f">F = ${fx(sim.F / 1000, 2)} kN &nbsp;|&nbsp; שיא = <b>${fx(sim.peak / 1000, 2)} kN</b> &nbsp;|&nbsp; v = ${fx(Math.abs(sim.v), 1)} m/s &nbsp;|&nbsp; מתיחה = ${fx(Math.max(0, st.e), 2)} m</span>` : '');
+  }
+  function physics(S, dt) {
+    const st = rope(S, sim.y), side = sim.y < S.p ? 1 : -1;            // rope pulls the climber toward the pivot
+    const dpath = -side * sim.v;                                         // rate the rope path lengthens
+    let Fr = 0;
+    if (st.e > 0) {
+      Fr = S.kr * st.e;
+      if (dpath < 0) Fr = Math.max(0, Fr + sim.c * dpath);              // energy lost only while the rope springs back (hysteresis)
+    }
+    sim.v += (-g + side * Fr / S.m) * dt; sim.y += sim.v * dt; sim.t += dt; sim.F = Fr;
+    if (Fr > sim.peak) { sim.peak = Fr; sim.tPeak = sim.t; }
+    if (st.e > 0 && sim.tTaut === null) sim.tTaut = sim.t;
+  }
+  function step(now) {
+    raf = null;
+    const S = calc(), speed = +$('ff_sp').value;
+    let t = Math.min(0.05, (now - last) / 1000) * speed; last = now;
+    while (t > 1e-9) {
+      const dt = Math.min(2e-4, t); t -= dt; physics(S, dt);
+      if (sim.t - sim.lastRec >= 0.004) { sim.hist.push([sim.t, sim.F]); sim.lastRec = sim.t; }
+    }
+    sim.phase = sim.tTaut === null ? 'נפילה חופשית' : sim.t - sim.tTaut < 0.6 ? 'החבל בולם' : 'מתנדנד ונרגע';
+    draw();
+    const settled = sim.tTaut !== null && Math.abs(sim.v) < 0.03 && Math.abs(sim.F - S.mg) < 0.03 * S.mg;
+    if (settled || sim.t > 20) { sim.phase = 'נעצר'; draw(); return; }
+    raf = requestAnimationFrame(step);
+  }
+  function start() {
+    const S = calc();
+    if (raf) cancelAnimationFrame(raf);
+    sim = { y: S.c, v: 0, t: 0, F: 0, peak: 0, tPeak: 0, tTaut: null, hist: [[0, 0]], lastRec: 0, phase: '', c: 2 * 0.5 * Math.sqrt(S.kr * S.m) };
+    last = performance.now(); raf = requestAnimationFrame(step);
+  }
+  const reset = () => { if (raf) cancelAnimationFrame(raf); raf = null; sim = null; draw(); };
+  $('ff_go').onclick = start;
+  onInputs(['ff_c', 'ff_p', 'ff_m'], reset);
+  $('ff_k').onchange = reset;
+  draw();
+})();
+</script>
+<script>
+(() => {
+  const secs = [...document.querySelectorAll('.slide')];
+  secs.forEach((el, i) => el.id = 's' + i);
+  document.querySelectorAll('[data-go]').forEach(el => el.onclick = () => secs[+el.dataset.go].scrollIntoView());
+  document.querySelectorAll('.ex button').forEach(b => b.onclick = () => {
+    const a = b.nextElementSibling, on = a.classList.toggle('show');
+    b.textContent = on ? 'הסתר פתרון' : 'הצג פתרון';
+  });
+  // scale every canvas to fill its column while keeping its aspect ratio
+  document.querySelectorAll('.stage').forEach(st => {
+    const cs = [...st.querySelectorAll('canvas')], vh = (st.querySelector('.read') ? 58 : 76) / cs.length;
+    cs.forEach(c => { c.style.width = `min(100%, ${(vh * c.width / c.height).toFixed(1)}vh)`; c.style.maxHeight = 'none'; });
+  });
+})();
+</script>
+<script>
+/* ---------- how-to-solve: animated step-by-step walkthroughs (sections 1, 1b, 2, 3, 5) ---------- */
+(() => {
+  const BLUE = '#1f6fd1', ORG = '#e07b00', GRN = '#1a9a4a', DGRN = '#0b6b32', PUR = '#8e44ad', RED = '#c62828', MAIN = '#234e6c';
+  const ease = t => 1 - Math.pow(1 - Math.min(1, Math.max(0, t)), 3);
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const seg = (p, i, n) => Math.min(1, Math.max(0, p * n - i));   // i-th of n sub-phases
+  const heb = s => /[֐-׿]/.test(s);
+  function T(x, s, px, py, col, p = 1, size = 14, align = 'center') {
+    if (p <= 0) return;
+    x.save(); x.globalAlpha *= Math.min(1, p * 1.5); x.fillStyle = col; x.font = `bold ${size}px "Segoe UI", Arial, sans-serif`;
+    x.direction = heb(s) ? 'rtl' : 'ltr'; x.textAlign = align; x.fillText(s, px, py); x.restore();
+  }
+  function A(x, x1, y1, x2, y2, col, lab, p, lw = 3.5) { if (p > 0) arrow(x, x1, y1, lerp(x1, x2, p), lerp(y1, y2, p), col, p > 0.7 ? lab : '', lw); }
+  function Ln(x, x1, y1, x2, y2, col, p, lw = 1.5, dash = [5, 4]) { if (p > 0) line(x, x1, y1, lerp(x1, x2, p), lerp(y1, y2, p), col, lw, dash); }
+  function Arc(x, cx, cy, r, a0, a1, col, p) {
+    if (p <= 0) return;
+    const e = lerp(a0, a1, p);
+    x.save(); x.beginPath(); x.arc(cx, cy, r, Math.min(a0, e), Math.max(a0, e)); x.strokeStyle = col; x.lineWidth = 2.5; x.stroke(); x.restore();
+  }
+  function Ring(x, cx, cy, r, col, p, now) {
+    if (p <= 0) return;
+    x.save(); x.strokeStyle = col; x.lineWidth = 3; x.setLineDash([7, 5]); x.lineDashOffset = -now / 30;
+    x.beginPath(); x.arc(cx, cy, r * (0.5 + 0.5 * p), 0, 7); x.stroke(); x.restore();
+  }
+  function Box(x, cx, cy, w, h, lab, ang = 0, alpha = 1, dashed = false) {
+    x.save(); x.globalAlpha *= alpha; x.translate(cx, cy); x.rotate(ang);
+    if (dashed) { x.setLineDash([5, 4]); x.strokeStyle = '#888'; x.lineWidth = 1.5; x.strokeRect(-w / 2, -h / 2, w, h); }
+    else { x.fillStyle = '#c9a26b'; x.fillRect(-w / 2, -h / 2, w, h); x.strokeStyle = '#7a5a2e'; x.lineWidth = 2; x.strokeRect(-w / 2, -h / 2, w, h); }
+    x.restore();
+    if (lab) T(x, lab, cx, cy + 5, '#3a2a10', alpha, 13);
+  }
+  function notes(x, ns, b) {
+    if (!ns.length) return;
+    const lh = 22, h = ns.length * lh + 14;
+    x.save(); x.fillStyle = 'rgba(255,255,255,.96)'; x.strokeStyle = '#d8dee4'; x.lineWidth = 1;
+    x.beginPath(); x.roundRect(b.x, b.y, b.w, h, 9); x.fill(); x.stroke(); x.restore();
+    ns.forEach((n, i) => {
+      const y = b.y + 24 + i * lh, h_ = heb(n.s);
+      x.save(); x.globalAlpha = Math.min(1, n.p * 1.5);
+      x.font = `${n.cur ? 'bold ' : ''}13px "Segoe UI", Arial, sans-serif`; x.fillStyle = n.cur ? MAIN : '#777';
+      x.direction = h_ ? 'rtl' : 'ltr'; x.textAlign = h_ ? 'right' : 'left';
+      x.fillText(n.s, h_ ? b.x + b.w - 10 : b.x + 10, y); x.restore();
+    });
+  }
+
+  function mount(secId, sc) {
+    const sec = $(secId), side = sec.querySelector('.side'), stage = sec.querySelector('.stage');
+    const tabs = document.createElement('div'); tabs.className = 'htabs';
+    tabs.innerHTML = '<button class="on">סימולציה</button><button>איך פותרים?</button>';
+    side.querySelector('h2').after(tabs);
+    const panel = document.createElement('div'); panel.className = 'hpanel';
+    panel.innerHTML = '<ol></ol>' +
+      '<div class="hnav"><button class="alt">→ הקודם</button><span></span><button class="alt">↻</button><button>הבא ←</button></div>';
+    tabs.after(panel);
+    const c = document.createElement('canvas'); c.className = 'hcanvas'; c.id = secId + '_how';
+    c.setAttribute('width', sc.W); c.setAttribute('height', sc.H); stage.prepend(c);
+    c.style.width = `min(100%, ${(70 * sc.W / sc.H).toFixed(1)}vh)`;
+    const { x, W, H } = cv(c.id);
+    let lis = [];
+    const [bp, cnt, br, bn] = panel.querySelector('.hnav').children;
+    function render() {
+      if (sc.build) sc.build();
+      const ol = panel.querySelector('ol');
+      ol.innerHTML = sc.steps.map(s => `<li>${s.t}</li>`).join('');
+      lis = [...ol.children]; lis.forEach((l, j) => l.onclick = () => go(j));
+    }
+    let cur = 0, t0 = 0, raf = null;
+    function go(i) {
+      cur = Math.max(0, Math.min(sc.steps.length - 1, i)); t0 = performance.now();
+      lis.forEach((l, j) => { l.classList.toggle('on', j === cur); l.classList.toggle('done', j < cur); });
+      cnt.textContent = `${cur + 1} / ${lis.length}`;
+      bp.disabled = cur === 0; bn.disabled = cur === lis.length - 1;
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
+    function frame(now) {
+      raf = null;
+      if (!sec.classList.contains('howmode')) return;
+      const p = ease((now - t0) / 1000);
+      sc.st = {}; const s0 = sc.steps[cur]; if (s0.pre) s0.pre(sc.st, p);
+      x.clearRect(0, 0, W, H);
+      sc.base(x, sc.st, now);
+      const ns = [];
+      sc.steps.forEach((s, j) => {
+        if (j > cur || (s.until !== undefined && cur > s.until)) return;
+        const pj = j === cur ? p : 1;
+        x.save(); if (j < cur) x.globalAlpha = 0.4;
+        if (s.draw) s.draw(x, pj, now);
+        x.restore();
+        [].concat(s.note || []).forEach(n => ns.push({ s: n, cur: j === cur, p: pj }));
+      });
+      notes(x, ns, sc.box);
+      raf = requestAnimationFrame(frame);
+    }
+    const [bSim, bHow] = tabs.children;
+    bSim.onclick = () => { sec.classList.remove('howmode'); bSim.classList.add('on'); bHow.classList.remove('on'); };
+    bHow.onclick = () => { sec.classList.add('howmode'); bHow.classList.add('on'); bSim.classList.remove('on'); if (sc.build) { render(); cur = 0; } go(cur); };
+    bp.onclick = () => go(cur - 1); bn.onclick = () => go(cur + 1); br.onclick = () => go(cur);
+    render(); go(0);
+  }
+
+  /* ===== 1. vectors: A = 100 N @30°, B = 50 N @120° ===== */
+  (() => {
+    const O = { x: 200, y: 290 }, k = 1.6, P = (a, b) => ({ x: O.x + a * k, y: O.y - b * k });
+    const a = P(86.6, 50), b = P(-25, 43.3), r = P(61.6, 93.3), ax = P(86.6, 0), bx = P(-25, 0), rx = P(61.6, 0);
+    mount('s1', {
+      W: 640, H: 380, box: { x: 412, y: 14, w: 220 },
+      base(x) { for (let i = O.x % 20; i < 405; i += 20) line(x, i, 0, i, 380, '#f3f3f3'); for (let j = O.y % 20; j < 380; j += 20) line(x, 0, j, 405, j, '#f3f3f3'); },
+      steps: [
+        { t: 'ציירו צירים: <b>x</b> ימינה, <b>y</b> למעלה.', draw(x, p) {
+          Ln(x, O.x, O.y, 395, O.y, '#888', p, 2, null); Ln(x, O.x, O.y, 40, O.y, '#888', p, 2, null);
+          Ln(x, O.x, O.y, O.x, 15, '#888', p, 2, null); Ln(x, O.x, O.y, O.x, 370, '#888', p, 2, null);
+          T(x, 'x', 395, O.y - 8, '#888', p); T(x, 'y', O.x + 12, 22, '#888', p); } },
+        { t: 'לכל כוח רשמו <b>גודל</b> ו<b>זווית</b> מציר x.', note: ['A = 100 N, θ = 30°', 'B = 50 N, θ = 120°'], draw(x, p) {
+          A(x, O.x, O.y, a.x, a.y, BLUE, 'A', p, 4); A(x, O.x, O.y, b.x, b.y, ORG, 'B', p, 4);
+          Arc(x, O.x, O.y, 42, 0, -30 * deg, BLUE, p); T(x, '30°', O.x + 62, O.y - 10, BLUE, p);
+          Arc(x, O.x, O.y, 30, 0, -120 * deg, ORG, p); T(x, '120°', O.x + 4, O.y - 40, ORG, p); } },
+        { t: 'פרקו כל כוח: <span class="f">Fx = F·cos θ</span>, <span class="f">Fy = F·sin θ</span>.',
+          note: ['Ax = 100·cos30° = 86.6', 'Ay = 100·sin30° = 50', 'Bx = 50·cos120° = −25', 'By = 50·sin120° = 43.3'], draw(x, p) {
+          const p1 = seg(p, 0, 2), p2 = seg(p, 1, 2);
+          A(x, O.x, O.y, ax.x, ax.y, GRN, 'Ax', p1); A(x, ax.x, ax.y, a.x, a.y, PUR, 'Ay', p1);
+          A(x, O.x, O.y, bx.x, bx.y, GRN, 'Bx', p2); A(x, bx.x, bx.y, b.x, b.y, PUR, 'By', p2); } },
+        { t: 'שימו לב לסימן: שמאלה או למטה = <b>מינוס</b>.', note: 'Bx = −25 ⇐ שמאלה = מינוס', draw(x, p, now) {
+          Ring(x, O.x - 20, O.y, 26, RED, p, now); T(x, '−', O.x - 20, O.y + 48, RED, p, 26); } },
+        { t: 'חברו את רכיבי x: <span class="f">Rx = Ax + Bx</span>.', note: 'Rx = 86.6 + (−25) = 61.6', draw(x, p) {
+          const y0 = O.y + 26, p1 = seg(p, 0, 3), p2 = seg(p, 1, 3), p3 = seg(p, 2, 3);
+          A(x, O.x, y0, ax.x, y0, GRN, '', p1, 3); A(x, ax.x, y0 + 9, rx.x, y0 + 9, GRN, '', p2, 3);
+          A(x, O.x, y0 + 30, rx.x, y0 + 30, DGRN, 'Rx', p3, 5); } },
+        { t: 'חברו את רכיבי y: <span class="f">Ry = Ay + By</span>.', note: 'Ry = 50 + 43.3 = 93.3', draw(x, p) {
+          const x0 = O.x - 100, p1 = seg(p, 0, 3), p2 = seg(p, 1, 3), p3 = seg(p, 2, 3);
+          A(x, x0, O.y, x0, a.y, PUR, '', p1, 3); A(x, x0 + 9, a.y, x0 + 9, r.y, PUR, '', p2, 3);
+          A(x, x0 - 24, O.y, x0 - 24, r.y, '#5b2c6f', 'Ry', p3, 5); } },
+        { t: 'גודל השקול (פיתגורס): <span class="f">R = √(Rx² + Ry²)</span>.', note: 'R = √(61.6² + 93.3²) ≈ 112 N', draw(x, p) {
+          Ln(x, rx.x, rx.y, r.x, r.y, '#aaa', p); Ln(x, O.x, r.y, r.x, r.y, '#aaa', p);
+          A(x, O.x, O.y, r.x, r.y, DGRN, 'R', p, 5.5); } },
+        { t: 'כיוון: <span class="f">tan θ = Ry / Rx</span>.', note: 'tan θ = 93.3 / 61.6 ⇒ θ ≈ 57°', draw(x, p) {
+          Arc(x, O.x, O.y, 70, 0, -56.6 * deg, DGRN, p); T(x, 'θ = 57°', O.x + 50, O.y - 88, DGRN, p, 15); } },
+      ],
+    });
+  })();
+
+  /* ===== 1b. anchor: walkthrough rebuilt from the simulation's current setup ===== */
+  (() => {
+    const sc = { W: 640, H: 380, box: { x: 396, y: 14, w: 236 } };
+    sc.build = () => {
+      const an = window.__anchor, legs = an.legs, tri = legs === 'tri', three = legs === 3;
+      const d1 = val('an_a1'), d2 = val('an_a2'), m = val('an_m'), Wt = m * g;
+      const degs = three ? [d1, 0, d2] : [d1, d2], angs = degs.map((d, i) => (i === 0 ? -d : d) * deg);
+      const Tn = an.solve(angs, Wt), sym = !three && d1 === d2;
+      const nm = Tn.map((_, i) => 'T' + (i + 1)), last = nm.length - 1;
+      const L = 160, M = { x: 215, y: 30 + L * Math.max(...angs.map(Math.cos)) };
+      const dir = t => ({ x: Math.sin(t), y: -Math.cos(t) });
+      const anc = angs.map(t => ({ x: M.x + L * Math.sin(t), y: M.y - L * Math.cos(t) }));
+      const k = 95 / Wt, N = v => fx(v), pc = v => fx(v / Wt * 100) + '%';
+      const cosT = (i, d) => d ? `${nm[i]}·cos${d}°` : nm[i];
+      const maxI = Tn.indexOf(Math.max(...Tn));
+      sc.base = x => {
+        if (tri) line(x, anc[0].x, anc[0].y, anc[1].x, anc[1].y, '#8a6d3b', 4);
+        anc.forEach((q, i) => {
+          x.fillStyle = '#b9b2a6'; x.fillRect(q.x - 18, q.y - 16, 36, 9);
+          line(x, q.x, q.y, M.x, M.y, Tn[i] > 0 ? '#8a6d3b' : '#bbb', 4, Tn[i] > 0 ? null : [6, 5]);
+          x.beginPath(); x.arc(q.x, q.y, 6, 0, 7); x.fillStyle = '#333'; x.fill();
+        });
+        line(x, M.x, M.y, M.x, M.y + 18, '#555', 2);
+        x.fillStyle = '#d7dde3'; x.fillRect(M.x - 32, M.y + 18, 64, 34); x.strokeStyle = '#555'; x.lineWidth = 2; x.strokeRect(M.x - 32, M.y + 18, 64, 34);
+        T(x, m + ' kg', M.x, M.y + 40, '#333', 1, 13);
+      };
+      const S = [];
+      S.push({ t: 'מצאו את <b>נקודת המפגש</b>: שם כל הכוחות נפגשים.', draw(x, p, now) {
+        Ring(x, M.x, M.y, 20, ORG, p, now); T(x, 'נקודת מפגש', M.x - 120, M.y + 42, ORG, p); } });
+      S.push({ t: 'ציירו את הכוחות: <span class="f">W</span> למטה, <span class="f">T</span> לאורך כל רצועה.', note: `W = ${m}·9.8 = ${N(Wt)} N`, draw(x, p) {
+        A(x, M.x + 52, M.y, M.x + 52, M.y + 95, '#444', 'W', seg(p, 0, 2));
+        angs.forEach((t, i) => { const l = Math.min(Tn[i] * k, 150), d = dir(t); A(x, M.x, M.y, M.x + d.x * l, M.y + d.y * l, GRN, nm[i], seg(p, 1, 2)); }); } });
+      S.push({ t: 'מדדו לכל רצועה את הזווית <b>מהאנך</b>.', note: degs.map((d, i) => `${nm[i]}: ${d}°`).join('   '), draw(x, p) {
+        Ln(x, M.x, M.y, M.x, M.y - 150, '#999', p);
+        angs.forEach((t, i) => {
+          if (!degs[i]) return;
+          Arc(x, M.x, M.y, 70, -Math.PI / 2, t - Math.PI / 2, ORG, p);
+          const mid = t / 2 - Math.PI / 2; T(x, degs[i] + '°', M.x + 88 * Math.cos(mid), M.y + 88 * Math.sin(mid) + 5, ORG, p);
+        }); } });
+      S.push({ t: 'פרקו כל T: אנכי <span class="f">T·cos α</span>, אופקי <span class="f">T·sin α</span>.', note: ['אנכי: T·cos α', 'אופקי: T·sin α'], draw(x, p) {
+        angs.forEach((t, i) => {
+          const off = (i - last / 2) * 7;
+          A(x, M.x + off, M.y, M.x + off, M.y - Tn[i] * Math.cos(t) * k, PUR, '', p, 3);
+          if (degs[i]) A(x, M.x, M.y + off / 2, M.x + Tn[i] * Math.sin(t) * k, M.y + off / 2, GRN, '', p, 3);
+        });
+        T(x, 'T·cos', M.x + 30, M.y - 60, PUR, p, 12); T(x, 'T·sin', M.x - 70, M.y + 8, GRN, p, 12); } });
+      S.push({ t: '<b>אופקי</b>: אין תנועה הצידה ⇐ הרכיבים האופקיים מתקזזים.',
+        note: sym ? `${nm[0]}·sin${d1}° = ${nm[1]}·sin${d2}° ⇒ T1 = T2` : `${nm[0]}·sin${d1}° = ${nm[last]}·sin${d2}°`, draw(x, p, now) {
+          const hl = Tn[0] * Math.sin(angs[0]) * k, hr = Tn[last] * Math.sin(angs[last]) * k;
+          Ring(x, M.x + hl / 2, M.y, 13, GRN, p, now); Ring(x, M.x + hr / 2, M.y, 13, GRN, p, now);
+          T(x, sym ? '←  =  →' : '← שווים →', M.x - 105, M.y + 80, GRN, p, 18); } });
+      S.push({ t: '<b>אנכי</b>: הרכיבים האנכיים יחד מחזיקים את W.',
+        note: angs.map((t, i) => cosT(i, degs[i])).join(' + ') + ' = W', draw(x, p) {
+          const xx = M.x + 105; let y = M.y;
+          angs.forEach((t, i) => { const v = Tn[i] * Math.cos(t) * k; A(x, xx, y, xx, y - v, PUR, '', seg(p, i, angs.length + 1), 4); y -= v; });
+          A(x, xx + 22, M.y - 95, xx + 22, M.y, '#444', 'W', seg(p, angs.length, angs.length + 1), 4); } });
+      const valueLabels = (x, p) => angs.forEach((t, i) => {
+        const d = dir(t), sx = t < 0 ? -1 : 1;
+        T(x, N(Tn[i]) + ' N', M.x + d.x * 95 + sx * 42 + (t === 0 ? 40 : 0), M.y + d.y * 95, GRN, p, 15); });
+      if (sym) S.push({ t: 'פתרו: <span class="f">2·T·cos α = W ⇒ T = W / (2·cos α)</span>.', note: `T = ${N(Wt)} / (2·cos${d1}°) ≈ ${N(Tn[0])} N`, draw: valueLabels });
+      else if (!three) S.push({ t: 'פתרו את שתי המשוואות יחד.', note: d1 + d2 === 0 ? 'שתי הרגליים אנכיות ⇒ T = W/2' :
+        [`T1 = W·sin${d2}° / sin${d1 + d2}° ≈ ${N(Tn[0])} N`, `T2 = W·sin${d1}° / sin${d1 + d2}° ≈ ${N(Tn[1])} N`], draw: valueLabels });
+      else S.push({ t: '3 נעלמים ורק 2 משוואות ⇐ מניחים <b>רצועות זהות</b> שנמתחות יחד.', note: Tn.map((v, i) => `${nm[i]} ≈ ${N(v)} N (${pc(v)})`), draw: valueLabels });
+      const checks = [];
+      if (sym) checks.push(`${N(Tn[0])} ≥ ${N(Wt / 2)} = W/2 ✓`);
+      else checks.push(angs.map((t, i) => N(Tn[i] * Math.cos(t))).join(' + ') + ` ≈ ${N(Wt)} ✓`);
+      if (Tn.some(v => v > Wt * 1.001)) checks.push('רגל נושאת יותר מכל המשקל!');
+      if (Tn.some(v => v === 0)) checks.push('רגל רפויה: T = 0');
+      S.push({ t: sym ? 'בדיקה: תמיד <span class="f">T ≥ W/2</span>; ב־120° בין הרגליים <span class="f">T = W</span>.'
+                     : 'בדיקה: הציבו בחזרה. הרגל ה<b>תלולה</b> (זווית קטנה) נושאת יותר.', note: checks, draw(x, p) {
+        T(x, `${nm[maxI]} = ${pc(Tn[maxI])}`, M.x, Math.min(M.y + 130, 365), Tn[maxI] > Wt * 1.001 ? RED : ORG, p, 26); } });
+      if (tri) {
+        const F = anc.map((A_, i) => {
+          const o = anc[1 - i], dl = Math.hypot(o.x - A_.x, o.y - A_.y) || 1;
+          return { x: Tn[i] * ((M.x - A_.x) / L + (o.x - A_.x) / dl), y: Tn[i] * ((M.y - A_.y) / L + (o.y - A_.y) / dl) };
+        });
+        const Fa = Math.hypot(F[0].x, F[0].y);
+        S.push({ t: '<b>משולש</b>: על כל עיגון מחברים שני וקטורים, הרצועה למטה <u>וגם</u> הקטע העליון.',
+          note: [`F = T·(u↓ + u→) ≈ ${N(Fa)} N`, `פי ${fx(Fa / Tn[0], 2)} מעיגון V`], draw(x, p, now) {
+            Ring(x, M.x, anc[0].y, 22, ORG, p, now);
+            anc.forEach((A_, i) => A(x, A_.x, A_.y, A_.x + F[i].x * k, A_.y + F[i].y * k, RED, 'F', p, 4)); } });
+      }
+      sc.steps = S;
+    };
+    mount('s2', sc);
+  })();
+
+  /* ===== 2. Newton: 20 kg on ice, F = 100 N ===== */
+  (() => {
+    const C = { x: 200, y: 200 }, bw = 90, bh = 60, G = C.y + bh / 2;
+    mount('s3', {
+      W: 640, H: 380, box: { x: 410, y: 14, w: 222 },
+      base(x) {
+        x.fillStyle = '#e6f2fa'; x.fillRect(20, G, 390, 40); line(x, 20, G, 410, G, '#7aa7c7', 2);
+        Box(x, C.x, C.y, bw, bh, '20 kg');
+      },
+      steps: [
+        { t: 'בחרו <b>גוף אחד</b> וציירו אותו לבד.', draw(x, p, now) {
+          x.save(); x.globalAlpha *= p; x.strokeStyle = ORG; x.lineWidth = 3; x.setLineDash([7, 5]); x.lineDashOffset = -now / 30;
+          x.strokeRect(C.x - bw / 2 - 12, C.y - bh / 2 - 12, bw + 24, bh + 24); x.restore(); } },
+        { t: 'ציירו <b>כל</b> כוח: משקל <span class="f">mg</span>, נורמל <span class="f">N</span>, משיכה <span class="f">F</span>.', note: ['mg = 20·9.8 = 196 N', 'F = 100 N'], draw(x, p) {
+          A(x, C.x, C.y, C.x, C.y + 98, '#444', 'mg', seg(p, 0, 3)); A(x, C.x - 10, C.y - bh / 2, C.x - 10, C.y - bh / 2 - 98, BLUE, 'N', seg(p, 1, 3));
+          A(x, C.x + bw / 2, C.y, C.x + bw / 2 + 60, C.y, GRN, 'F', seg(p, 2, 3)); } },
+        { t: 'בחרו צירים: x בכיוון התנועה, y ניצב לו.', draw(x, p) { A(x, 330, 100, 390, 100, '#888', 'x', p, 2.5); A(x, 330, 100, 330, 40, '#888', 'y', p, 2.5); } },
+        { t: 'כתבו סכום כוחות בכל ציר.', note: ['ΣFx = F', 'ΣFy = N − mg'], draw(x, p, now) { Ring(x, C.x + bw / 2 + 30, C.y, 18, GRN, p, now); Ring(x, C.x - 5, C.y - bh / 2 - 50, 18, BLUE, p, now); } },
+        { t: 'ציר בלי תנועה ⇐ <span class="f">ΣF = 0</span>.', note: 'N = mg = 196 N', draw(x, p) { T(x, 'N = mg', C.x - 100, C.y - 50, BLUE, p, 18); } },
+        { t: 'במנוחה או במהירות קבועה ⇐ גם <span class="f">ΣFx = 0</span>.', until: 5, note: 'F = f ⇒ המהירות לא משתנה', draw(x, p) {
+          A(x, 90, 330, 150, 330, GRN, '', p, 4); A(x, 230, 330, 170, 330, RED, '', p, 4); T(x, 'ΣF = 0', 160, 362, '#555', p, 15); } },
+        { t: 'אחרת ⇐ <span class="f">ΣF = m·a</span>, והגוף מאיץ.', note: 'ΣFx = 100 = 20·a', draw(x, p) {
+          [30, 70, 125].forEach((d, i) => Box(x, C.x + d * p * p, C.y, bw, bh, '', 0, 0.5 - i * 0.12, true));
+          A(x, C.x + 20, C.y - 60, C.x + 85, C.y - 60, ORG, 'a', p); } },
+        { t: 'פתרו לנעלם ובדקו יחידות: <span class="f">kg, N, m/s²</span>.', note: 'a = 100 / 20 = 5 m/s²', draw(x, p) { T(x, 'a = 5 m/s²', C.x, 345, ORG, p, 26); } },
+      ],
+    });
+  })();
+
+  /* ===== 3. slope: 50 kg, 30°, μs = 0.4 ===== */
+  (() => {
+    const th = 30 * deg, u = { x: Math.cos(th), y: -Math.sin(th) }, n = { x: -Math.sin(th), y: -Math.cos(th) };
+    const B0 = { x: 30, y: 350 }, Lp = 400, top = { x: B0.x + u.x * Lp, y: B0.y + u.y * Lp };
+    const Pc = { x: B0.x + u.x * 220, y: B0.y + u.y * 220 }, C = { x: Pc.x + n.x * 18, y: Pc.y + n.y * 18 };
+    const at = (q, v, s) => ({ x: q.x + v.x * s, y: q.y + v.y * s });
+    const Av = (x, from, v, s, col, lab, p, lw) => { const e = at(from, v, s); A(x, from.x, from.y, e.x, e.y, col, lab, p, lw); };
+    mount('s4', {
+      W: 640, H: 380, box: { x: 412, y: 14, w: 220 },
+      base(x) {
+        x.fillStyle = '#efe6d6'; x.beginPath(); x.moveTo(B0.x, B0.y); x.lineTo(top.x, top.y); x.lineTo(top.x, B0.y); x.closePath(); x.fill();
+        line(x, 10, B0.y, 405, B0.y, '#555', 2); line(x, B0.x, B0.y, top.x, top.y, '#6b5432', 3);
+        x.beginPath(); x.arc(B0.x, B0.y, 50, -th, 0); x.strokeStyle = ORG; x.lineWidth = 2; x.stroke(); T(x, '30°', B0.x + 70, B0.y - 12, ORG);
+        Box(x, C.x, C.y, 60, 36, '50 kg', -th);
+      },
+      steps: [
+        { t: 'ציירו את הגוש ואת הכוחות: <span class="f">mg</span>, <span class="f">N</span>.', note: 'mg = 50·9.8 = 490 N', draw(x, p) {
+          A(x, C.x, C.y, C.x, C.y + 98, '#444', 'mg', seg(p, 0, 2)); Av(x, C, n, 85, BLUE, 'N', seg(p, 1, 2)); } },
+        { t: '<b>סובבו את הצירים</b>: אחד לאורך המדרון, אחד ניצב לו.', until: 1, draw(x, p) {
+          const f = -th * p, ex = { x: Math.cos(f), y: Math.sin(f) }, ey = { x: Math.sin(f), y: -Math.cos(f) };
+          Av(x, C, ex, 80, '#888', "x'", 1, 2.5); Av(x, C, ey, 80, '#888', "y'", 1, 2.5); } },
+        { t: 'פרקו את המשקל: לאורך <span class="f">mg·sinθ</span>, ניצב <span class="f">mg·cosθ</span>.', note: ['mg·sin30° = 245 N', 'mg·cos30° = 424 N'], draw(x, p) {
+          const mgT = { x: C.x, y: C.y + 98 }, s1 = at(C, u, -49), s2 = at(C, n, -85);
+          Av(x, C, u, -49, ORG, 'mg·sinθ', p, 3); Av(x, C, n, -85, '#7f8c8d', 'mg·cosθ', p, 3);
+          Ln(x, s1.x, s1.y, mgT.x, mgT.y, '#bbb', p); Ln(x, s2.x, s2.y, mgT.x, mgT.y, '#bbb', p); } },
+        { t: 'ניצב: אין תנועה ⇐ <span class="f">N = mg·cosθ</span>.', note: 'N = 424 N', draw(x, p, now) {
+          const q1 = at(C, n, 55), q2 = at(C, n, -55); Ring(x, q1.x, q1.y, 16, BLUE, p, now); Ring(x, q2.x, q2.y, 16, '#7f8c8d', p, now); } },
+        { t: 'חיכוך מקסימלי: <span class="f">f_max = μs·N</span>.', until: 7, note: 'f_max = 0.4·424 = 170 N', draw(x, p) { Av(x, Pc, u, 34, RED, 'f', p, 4); } },
+        { t: 'מה מושך במורד? <span class="f">mg·sinθ</span>.', note: 'במורד: 245 N', draw(x, p, now) { const q = at(C, u, -30); Ring(x, q.x, q.y, 20, ORG, p, now); } },
+        { t: 'השוו: במורד מול <span class="f">f_max</span>. גדול ⇐ <b>מחליק</b>.', until: 6, note: '245 > 170 ⇒ מחליק!', draw(x, p) {
+          [22, 50].forEach((d, i) => { const q = at(C, u, -d * p * p); Box(x, q.x, q.y, 60, 36, '', -th, 0.45 - i * 0.15, true); });
+          x.save(); x.globalAlpha *= p; x.fillStyle = ORG; x.fillRect(430, 300, 245 * 0.7 * p, 18); x.fillStyle = RED; x.fillRect(430, 326, 170 * 0.7 * p, 18); x.restore();
+          T(x, '245 N', 430 + 245 * 0.7 * p + 6, 314, ORG, p, 12, 'left'); T(x, '170 N', 430 + 170 * 0.7 * p + 6, 340, RED, p, 12, 'left'); } },
+        { t: 'כדי <b>להחזיק</b>: <span class="f">P = mg·sinθ − f_max</span> (החיכוך עוזר).', until: 7, note: 'להחזיק: P = 245 − 170 = 75 N', draw(x, p) { Av(x, at(C, u, 30), u, 15, GRN, 'P', p, 4); } },
+        { t: 'כדי <b>לגרור למעלה</b>: <span class="f">P = mg·sinθ + f_max</span> (החיכוך מפריע).', note: 'לגרור: P > 245 + 170 = 415 N', draw(x, p) {
+          Av(x, at(C, u, 30), u, 83, GRN, 'P', p, 4); Av(x, Pc, u, -34, RED, 'f', p, 4); } },
+      ],
+    });
+  })();
+
+  /* ===== 5. pulleys: 100 kg, 2:1, η = 0.9 ===== */
+  (() => {
+    const yTop = 80, yBot0 = 300, R = 20, xs = [170, 210, 250], yHand0 = 220;
+    mount('s7', {
+      W: 640, H: 470, box: { x: 400, y: 14, w: 232 },
+      base(x, st) {
+        const d = (st.lift || 0) * 40, yBot = yBot0 - d, yHand = yHand0 + 2 * d;
+        line(x, 130, 38, 290, 38, '#555', 5); for (let i = 130; i < 290; i += 12) line(x, i, 38, i + 9, 28, '#aaa');
+        line(x, 230, 38, 230, yTop, '#555', 2);
+        x.beginPath(); x.moveTo(xs[0], 40); x.lineTo(xs[0], yBot); x.arc(190, yBot, R, Math.PI, 0, true);
+        x.lineTo(xs[1], yTop); x.arc(230, yTop, R, Math.PI, 0, false); x.lineTo(xs[2], yHand);
+        x.strokeStyle = '#c9a26b'; x.lineWidth = 5; x.lineCap = 'round'; x.stroke();
+        for (const [px, py, mv] of [[230, yTop, 0], [190, yBot, 1]]) {
+          x.beginPath(); x.arc(px, py, R - 4, 0, 7); x.fillStyle = mv ? '#ffe0b3' : '#dfe6ec'; x.fill(); x.strokeStyle = '#555'; x.lineWidth = 2; x.stroke();
+        }
+        line(x, 190, yBot, 190, yBot + 32, '#555', 2);
+        x.fillStyle = '#d7dde3'; x.fillRect(150, yBot + 32, 80, 50); x.strokeStyle = '#555'; x.lineWidth = 2; x.strokeRect(150, yBot + 32, 80, 50);
+        T(x, '100 kg', 190, yBot + 62, '#333', 1, 13);
+        x.beginPath(); x.arc(xs[2], yHand + 8, 9, 0, 7); x.fillStyle = '#f2c79a'; x.fill(); x.strokeStyle = '#8a5a2b'; x.stroke();
+      },
+      steps: [
+        { t: 'מצאו את <b>הגלגלת הנעה</b>: זו שעולה עם המטען.', draw(x, p, now) { Ring(x, 190, yBot0, 32, ORG, p, now); T(x, 'גלגלת נעה', 95, yBot0 + 5, ORG, p); } },
+        { t: 'ספרו כמה קטעי חבל <b>מחזיקים</b> אותה ⇐ זה <span class="f">n</span>.', note: 'n = 2', draw(x, p) {
+          [xs[0], xs[1]].forEach((sx, i) => {
+            const q = seg(p, i, 2); Ln(x, sx, yBot0, sx, yTop, 'rgba(224,123,0,.45)', q, 11, null);
+            T(x, String(i + 1), sx + (i ? 16 : -16), 195, ORG, q, 20); }); } },
+        { t: 'גלגלת קבועה בעיגון רק <b>משנה כיוון</b>, ולא סופרים אותה.', draw(x, p, now) { Ring(x, 230, yTop, 32, '#888', p, now); T(x, 'רק כיוון', 315, yTop + 5, '#666', p); } },
+        { t: 'אידיאלי: אותה מתיחות בכל החבל ⇐ <span class="f">n·F = W</span>.', note: ['2·F = W', 'F = 980 / 2 = 490 N'], draw(x, p) {
+          A(x, xs[0], 290, xs[0], 235, GRN, 'F', seg(p, 0, 2)); A(x, xs[1], 290, xs[1], 235, GRN, 'F', seg(p, 0, 2));
+          A(x, 245, yBot0 + 40, 245, yBot0 + 100, '#444', 'W', seg(p, 1, 2)); A(x, 272, 200, 272, 250, GRN, 'F', seg(p, 1, 2)); } },
+        { t: 'מרחק: להרים <span class="f">d</span> ⇐ מושכים <span class="f">n·d</span> חבל.', until: 4, note: 'להרים 1 m ⇐ למשוך 2 m',
+          pre(st, p) { st.lift = p; }, draw(x, p) {
+            x.save(); x.setLineDash([5, 4]); x.strokeStyle = '#999'; x.strokeRect(150, yBot0 + 32, 80, 50);
+            x.beginPath(); x.arc(xs[2], yHand0 + 8, 9, 0, 7); x.stroke(); x.restore();
+            A(x, 125, yBot0 + 57, 125, yBot0 + 57 - 40 * p, ORG, 'd', p, 3); A(x, 290, yHand0 + 8, 290, yHand0 + 8 + 80 * p, GRN, '2d', p, 3); } },
+        { t: 'עבודה: <span class="f">F·(n·d) = W·d</span>. מרוויחים בכוח, משלמים במרחק.', until: 5, note: 'F·2d = W·d', draw(x, p) {
+          const u_ = 38;
+          x.save(); x.globalAlpha *= p; x.fillStyle = 'rgba(26,154,74,.3)'; x.strokeStyle = GRN; x.lineWidth = 2;
+          x.fillRect(420, 410 - u_, 2 * u_ * p, u_); x.strokeRect(420, 410 - u_, 2 * u_ * p, u_);
+          x.fillStyle = 'rgba(68,68,68,.2)'; x.strokeStyle = '#444'; x.fillRect(545, 410 - 2 * u_ * p, u_, 2 * u_ * p); x.strokeRect(545, 410 - 2 * u_ * p, u_, 2 * u_ * p); x.restore();
+          T(x, 'F × 2d', 458, 432, GRN, p, 13); T(x, '=', 520, 395, '#333', p, 22); T(x, 'W × d', 564, 432, '#444', p, 13); } },
+        { t: 'עם חיכוך: כל גלגלת מעבירה רק <span class="f">η</span> מהמתיחות.', note: 'F → F·0.9 → F·0.81', draw(x, p) {
+          T(x, 'F', xs[2] + 16, 160, GRN, seg(p, 0, 3), 15); T(x, 'F·η', xs[1] + 22, 150, '#4caf6e', seg(p, 1, 3), 14); T(x, 'F·η²', xs[0] - 26, 150, '#7fc79a', seg(p, 2, 3), 14); } },
+        { t: 'כוח להרמה: <span class="f">F_max = W / (η + η²)</span>.', note: 'F_max = 980 / 1.71 ≈ 573 N', draw(x, p) { T(x, '573 N', 318, 248, GRN, p, 16); } },
+        { t: 'להחזקה החיכוך עוזר: <span class="f">F_min = W / (1/η + 1/η²)</span>.', note: 'F_min = 980 / 2.35 ≈ 418 N', draw(x, p) { T(x, '418 N', 318, 272, BLUE, p, 16); } },
+        { t: '<b>טווח סטטי</b>: בין <span class="f">F_min</span> ל־<span class="f">F_max</span> המטען עומד.', note: '418 N ≤ F ≤ 573 N', draw(x, p) {
+          const X = v => 420 + (v - 300) / 400 * 200, y = 410;
+          line(x, 420, y, 620, y, '#999', 2);
+          x.save(); x.globalAlpha *= p; x.fillStyle = 'rgba(26,154,74,.35)'; x.fillRect(X(418), y - 12, (X(573) - X(418)) * p, 24); x.restore();
+          T(x, '418', X(418), y - 18, BLUE, p, 12); T(x, '573', X(573), y - 18, GRN, p, 12);
+          T(x, 'יורד', 440, y + 30, '#888', p, 12); T(x, 'עומד', (X(418) + X(573)) / 2, y + 30, GRN, p, 13); T(x, 'עולה', 605, y + 30, '#888', p, 12); } },
+      ],
+    });
+  })();
+})();
+</script>
+<script>
+/* ---------- 7. zipline sandbox: what the load hangs on + optional horizontal lines; friction can be the brake ---------- */
+(() => {
+  const { x, W, H } = cv('trC');
+  const A = { x: 80, y: 62 }, Lp = 500, Lm = 40, pxm = Lp / Lm, ETA = 0.3, V = 2.5, BOTTOM = 432, HANG = 2.2, HMIN = 1;
+  const BLUE = '#2f6db5', BROWN = '#b07a3c', GREEN = '#1a9a4a';
+  const PRESETS = {
+    hang: { su: 'sling', N: true, C: false, s: 12, h: HANG, t: 'המטען תלוי ישר על האשכול. בלי חבל הוא מחליק במורד. החבל הרגיל עובר בבלם בעיגון העליון ומחזיק את <span class="f">W·sinθ</span>.' },
+    r: { su: 'r1', N: false, C: true, s: 16, h: 4, t: "חבל ר' 1:1 נושא את כל W, ולכן מושך את האשכול למעלה ב־W. הבלם הנגדי לעיגון התחתון מחזיק את <span class=\"f\">W − W·sinθ</span>." },
+    ma: { su: 'r2', N: false, C: true, s: 16, h: 4, t: "רווח כוח 2:1: החבל מושך את האשכול רק ב־<span class=\"f\">W/2</span>, ולכן המטען נוטה יותר לרדת והבלם הנגדי עובד פחות." },
+    maonly: { su: 'r2', N: false, C: false, s: 16, h: 4, t: "רווח כוח <b>בלי חבל נגדי</b>: רק החיכוך מחזיק את האשכול. נסו למשוך ולשחרר: אם החיכוך מספיק, התנועה <b>אנכית</b>. אם לא, האשכול בורח והתנועה <b>אופקית</b>. שנו את μ ואת θ." },
+    y: { su: 'y', N: true, C: false, s: 14, h: 4, t: 'Y-פצל: החבל האנכי עובר באשכול ומעוגן בעיגון התחתון, ולכן הוא מושך לשני הצדדים ומתקזז. החבל הרגיל קובע את המיקום האופקי. כל חבל שולט בכיוון אחד.' },
+  };
+  let su = 'sling', hasN = true, hasC = false, act = { s: 0, n: 0, c: 0 }, s = 12, h = HANG, raf = null, last = 0, trail = [], note = '', mot = { sd: 0, hd: 0 }, frozen = false, showF = false;
+
+  const geo = () => {
+    const th = val('tr_th') * deg, u = { x: Math.cos(th), y: Math.sin(th) }, n = { x: -u.y, y: u.x };
+    return { th, u, n, B: { x: A.x + u.x * Lp, y: A.y + u.y * Lp }, T: { x: A.x + u.x * s * pxm, y: A.y + u.y * s * pxm } };
+  };
+  const nS = () => su[0] === 'r' ? +su[1] : 0;
+  const hMax = () => (BOTTOM - 34 - geo().T.y) / pxm;
+  const rate = a => [-V, 0, V][a + 1];            // pull shortens, pay out lengthens
+  function state() {
+    const th = val('tr_th') * deg, m = val('tr_m'), Wt = m * g, G = Wt * Math.sin(th), N = Wt * Math.cos(th), fm = val('tr_mu') * N, k = nS();
+    const eta = +$('tr_eta').value, e = act.s < 0 ? eta : act.s > 0 ? 1 / eta : 1;   // hauling loses tension at each pulley, lowering gains it
+    let sum = 0; for (let i = 1; i <= k; i++) sum += Math.pow(e, i);
+    const Th = k ? Wt / sum : 0;                                  // ר: the leg along the line to the upper operator
+    const TA = Wt / (e + e * e), TB = TA * e * e * e;             // Y: leg to the operator / leg tied at the lower anchor
+    const Fs = k ? G - Th : su === 'y' ? G - TA + TB : G;          // along-line push on the trolley (down-slope +)
+    const natural = Math.abs(Fs) > fm + 1e-9 ? Math.sign(Fs) * V : 0;
+    let lo = -Infinity, hi = Infinity;
+    if (hasN) hi = [-V, 0, V][act.n + 1];          // line to the upper anchor: limits motion away from it
+    if (hasC) lo = [V, 0, -V][act.c + 1];          // counter line to the lower anchor
+    const conflict = lo > hi;
+    let sd = conflict ? 0 : Math.min(Math.max(natural, lo), hi);
+    const bound = sd !== natural;
+    let hd = k ? (rate(act.s) - sd) / k : su === 'y' ? rate(act.s) / 2 : 0;
+    // tensions in the horizontal lines and friction
+    let Tn = 0, Tc = 0, f;
+    if (sd !== 0) { f = -fm * Math.sign(sd); if (bound) { const need = Fs + f; if (need > 0) Tn = need; else Tc = -need; } }
+    else { if (Math.abs(Fs) <= fm) f = -Fs; else { f = -Math.sign(Fs) * fm; const need = Fs + f; if (need > 0) Tn = need; else Tc = -need; } }
+    const list = [];
+    if (k) list.push({ lab: 'T', f: -Th, col: BLUE, name: `חבל ר' ${k}:1` });
+    if (su === 'y') list.push({ lab: 'T', f: -TA, col: BLUE, name: 'Y (לעליון)' }, { lab: 'T', f: TB, col: BLUE, name: 'Y (לתחתון)' });
+    if (hasN) list.push({ lab: 'H', f: -Tn, col: GREEN, name: 'חבל רגיל' });
+    if (hasC) list.push({ lab: 'C', f: Tc, col: BROWN, name: 'בלם נגדי' });
+    return { th, m, Wt, G, N, fm, k, Fs, natural, sd, hd, Tn, Tc, f, list, conflict, eta, Th, TA, TB };
+  }
+  function step(dt) {
+    const S = state(); let { sd, hd } = S; note = S.conflict ? 'החבלים מושכים זה נגד זה' : '';
+    if (s + sd * dt < 1 || s + sd * dt > Lm - 1) { sd = 0; if (S.k) hd = rate(act.s) / S.k; note = 'האשכול הגיע לקצה הקו'; }
+    const hm = hMax();
+    if (su !== 'sling' && (h + hd * dt > hm || h + hd * dt < HMIN)) {
+      note = h + hd * dt > hm ? 'המטען על הקרקע' : 'המטען הגיע לאשכול';
+      if (S.k && sd !== 0) sd = rate(act.s);      // rope length still fixes s once h is blocked
+      hd = 0;
+      if (s + sd * dt < 1 || s + sd * dt > Lm - 1) sd = 0;
+    }
+    s += sd * dt; if (su !== 'sling') h = Math.min(Math.max(h + hd * dt, HMIN), Math.max(HMIN, hMax()));
+    mot = { sd, hd };
+    const G_ = geo(), L = { x: G_.T.x, y: G_.T.y + (su === 'sling' ? HANG : h) * pxm };
+    const lt = trail[trail.length - 1]; if (!lt || Math.hypot(lt.x - L.x, lt.y - L.y) > 2) { trail.push(L); if (trail.length > 600) trail.shift(); }
+  }
+  function draw() {
+    const S = state(), G_ = geo(), { u, n, B } = G_, Tq = G_.T, off = (q, k) => ({ x: q.x + n.x * k, y: q.y + n.y * k });
+    const hh = su === 'sling' ? HANG : h, L = { x: Tq.x, y: Tq.y + hh * pxm };
+    x.clearRect(0, 0, W, H);
+    x.fillStyle = '#d9cfbf'; x.fillRect(0, A.y - 10, A.x - 10, BOTTOM - A.y + 10); x.fillRect(B.x + 10, B.y - 10, W, BOTTOM - B.y + 10);
+    if (trail.length > 1) { x.save(); x.strokeStyle = 'rgba(142,68,173,.45)'; x.lineWidth = 2.5; x.setLineDash([2, 4]); x.beginPath(); trail.forEach((q, i) => i ? x.lineTo(q.x, q.y + 20) : x.moveTo(q.x, q.y + 20)); x.stroke(); x.restore(); }
+    line(x, A.x, A.y, B.x, B.y, '#555', 4);
+    const lbl = (t, q, col, al = 'center') => text(x, t, q.x, q.y, col, al, true);
+    lbl('חבל נושא', { x: A.x + u.x * Lp * 0.75 - n.x * 18, y: A.y + u.y * Lp * 0.75 - n.y * 18 }, '#555');
+    for (const q of [A, B]) { x.beginPath(); x.arc(q.x, q.y, 6, 0, 7); x.fillStyle = '#333'; x.fill(); }
+    lbl('עיגון עליון', { x: A.x + 4, y: A.y - 26 }, '#333', 'left'); lbl('עיגון תחתון', { x: B.x, y: B.y - 18 }, '#333');
+    lbl('θ = ' + Math.round(S.th / deg) + '°', { x: A.x + 4, y: A.y - 46 }, '#e07b00', 'left');
+    const rope = (pts, col, w = 3) => { x.save(); x.strokeStyle = col; x.lineWidth = w; x.lineJoin = 'round'; x.beginPath(); pts.forEach((q, i) => i ? x.lineTo(q.x, q.y) : x.moveTo(q.x, q.y)); x.stroke(); x.restore(); };
+    const brake = q => { x.fillStyle = '#c62828'; x.fillRect(q.x - 7, q.y - 6, 14, 12); };
+    const hand = (q, t, col) => { x.beginPath(); x.arc(q.x, q.y, 9, 0, 7); x.fillStyle = '#f2c79a'; x.fill(); x.strokeStyle = '#8a5a2b'; x.lineWidth = 1.5; x.stroke(); lbl(t, { x: q.x, y: q.y + 26 }, col); };
+    const pulley = (q, mv) => { x.beginPath(); x.arc(q.x, q.y, 6, 0, 7); x.fillStyle = mv ? '#ffe0b3' : '#dfe6ec'; x.fill(); x.strokeStyle = '#555'; x.lineWidth = 2; x.stroke(); };
+    const hA1 = { x: A.x - 38, y: A.y + 240 }, hA2 = { x: A.x - 38, y: A.y + 150 }, hB = { x: Math.min(B.x + 38, W - 14), y: B.y + 70 };
+    // what the load hangs on
+    if (su === 'sling') line(x, Tq.x, Tq.y, L.x, L.y, '#555', 2.5);
+    else if (S.k) {
+      const sh = off(Tq, 10);
+      rope([hA1, off(A, -6), off(Tq, -6), sh], BLUE); brake(off(A, -6));
+      if (S.k === 1) rope([sh, L], BLUE);
+      else {   // k strands between the trolley and the block on the load
+        for (let i = 0; i < S.k; i++) { const d = (i - (S.k - 1) / 2) * 6; rope([{ x: sh.x + d, y: sh.y }, { x: L.x + d, y: L.y }], BLUE, 2.2); }
+        pulley(L, true);
+      }
+      pulley(sh, false); hand(hA1, `חבל ר' ${S.k}:1`, BLUE);
+    } else {
+      const s1 = off({ x: Tq.x - u.x * 9, y: Tq.y - u.y * 9 }, 10), s2 = off({ x: Tq.x + u.x * 9, y: Tq.y + u.y * 9 }, 10);
+      rope([hA1, off(A, 10), s1, { x: L.x - 6, y: L.y }], BLUE); rope([{ x: L.x + 6, y: L.y }, s2, off(B, 10)], BLUE);
+      brake(off(A, 10)); pulley(s1, false); pulley(s2, false); pulley(L, true);
+      x.beginPath(); x.arc(off(B, 10).x, off(B, 10).y, 4, 0, 7); x.fillStyle = BLUE; x.fill();
+      hand(hA1, 'חבל Y (אנכי)', BLUE);
+    }
+    if (hasN) { rope([off(Tq, -14), off(A, -14), hA2], GREEN); brake(off(A, -14)); hand(hA2, 'חבל רגיל', GREEN); }
+    if (hasC) { rope([off(Tq, 5), off(B, 5), hB], BROWN); brake(off(B, 5)); hand(hB, 'בלם נגדי', '#c62828'); }
+    // trolley + load
+    x.save(); x.translate(Tq.x, Tq.y); x.rotate(S.th); x.fillStyle = '#7f8c8d'; x.fillRect(-16, -9, 32, 12); x.restore();
+    for (const d of [-9, 9]) { x.beginPath(); x.arc(Tq.x + u.x * d - n.x * 2, Tq.y + u.y * d - n.y * 2, 4, 0, 7); x.fillStyle = '#333'; x.fill(); }
+    line(x, L.x, L.y, L.x, L.y + 6, '#555', 2);
+    x.fillStyle = '#d7dde3'; x.fillRect(L.x - 26, L.y + 6, 52, 28); x.strokeStyle = '#555'; x.lineWidth = 2; x.strokeRect(L.x - 26, L.y + 6, 52, 28);
+    text(x, S.m + ' kg', L.x, L.y + 25, '#333', 'center', true);
+    if (showF) {   // real forces on trolley + load, drawn at the trolley
+      const kf = 95 / S.Wt, o = { x: Tq.x, y: Tq.y };
+      arrow(x, o.x, o.y, o.x - n.x * S.N * kf, o.y - n.y * S.N * kf, '#8e44ad', 'N', 3.5);
+      arrow(x, o.x + 30, o.y, o.x + 30, o.y + S.Wt * kf, '#444', 'W', 3.5);
+      S.list.forEach((q, i) => { if (Math.abs(q.f) > 0.5) { const yo = -8 - 7 * i; arrow(x, o.x - n.x * yo, o.y - n.y * yo, o.x - n.x * yo + u.x * q.f * kf, o.y - n.y * yo + u.y * q.f * kf, q.col, q.lab, 3.5); } });
+      if (Math.abs(S.f) > 0.5) arrow(x, o.x + n.x * 6, o.y + n.y * 6, o.x + n.x * 6 + u.x * S.f * kf, o.y + n.y * 6 + u.y * S.f * kf, '#c62828', 'f', 3.5);
+    }
+    if (note) text(x, note, W - 14, 30, '#c62828', 'right', true);
+    if (frozen) {
+      x.save(); x.strokeStyle = '#1f6fd1'; x.lineWidth = 6; x.setLineDash([14, 8]); x.strokeRect(3, 3, W - 6, BOTTOM + 4);
+      x.fillStyle = 'rgba(31,111,209,.92)'; x.beginPath(); x.roundRect(W / 2 - 120, BOTTOM - 46, 240, 38, 10); x.fill();
+      x.fillStyle = '#fff'; x.font = 'bold 18px "Segoe UI", Arial, sans-serif'; x.textAlign = 'center'; x.direction = 'rtl';
+      x.fillText('⏸ הזמן קפוא', W / 2, BOTTOM - 21); x.restore();
+    } else text(x, '▶ הזמן רץ', 22, BOTTOM - 14, '#1a9a4a', 'left', true);
+    // ---- force panel (no N): forces joined tip-to-tail; green band = what friction can hold
+    const IB = { x: 12, y: 446, w: W - 24, h: 176 }, O2 = { x: IB.x + 175, y: IB.y + 26 }, kk = 118 / S.Wt;
+    x.save(); x.fillStyle = '#fbfcfd'; x.strokeStyle = '#d8dee4'; x.beginPath(); x.roundRect(IB.x, IB.y, IB.w, IB.h, 10); x.fill(); x.stroke(); x.restore();
+    line(x, O2.x - u.x * 150, O2.y - u.y * 150, O2.x + u.x * 150, O2.y + u.y * 150, '#bbb', 1.5);
+    const phi = Math.atan(val('tr_mu')), rot = (v, a) => ({ x: v.x * Math.cos(a) - v.y * Math.sin(a), y: v.x * Math.sin(a) + v.y * Math.cos(a) });
+    if (phi > 0.005) { const c1 = rot(n, phi), c2 = rot(n, -phi); x.save(); x.fillStyle = 'rgba(26,154,74,.13)'; x.beginPath(); x.moveTo(O2.x, O2.y); x.lineTo(O2.x + c1.x * 140, O2.y + c1.y * 140); x.lineTo(O2.x + c2.x * 140, O2.y + c2.y * 140); x.closePath(); x.fill(); x.restore(); }
+    const lp = { x: O2.x + n.x * 95, y: O2.y + n.y * 95 };
+    line(x, O2.x, O2.y, O2.x + n.x * 140, O2.y + n.y * 140, '#8e44ad', 1.5, [6, 4]);
+    text(x, 'מעלה ◀', lp.x - u.x * 85, lp.y - u.y * 85, '#1f6fd1', 'center', true);
+    text(x, '▶ מורד', lp.x + u.x * 85, lp.y + u.y * 85, '#c62828', 'center', true);
+    let cur = { ...O2 };
+    const stp = (dx, dy, c, lab) => { const q = { x: cur.x + dx, y: cur.y + dy }; arrow(x, cur.x, cur.y, q.x, q.y, c, lab, 3); cur = q; };
+    stp(0, S.Wt * kk, '#444', 'W');
+    S.list.forEach(q => { if (Math.abs(q.f) > 0.5) stp(q.f * u.x * kk, q.f * u.y * kk, q.col, q.lab); });
+    const Ral = S.G + S.list.reduce((a, q) => a + q.f, 0), inside = Math.abs(Ral) <= S.fm + 0.5;
+    const Rcol = inside ? '#1a9a4a' : Ral > 0 ? '#c62828' : '#1f6fd1';
+    arrow(x, O2.x, O2.y, cur.x, cur.y, Rcol, 'R', 4.5);
+    x.beginPath(); x.arc(O2.x, O2.y, 4, 0, 7); x.fillStyle = '#333'; x.fill();
+    const lx = IB.x + IB.w - 14; let ly = IB.y + 22;
+    const row = (t, c, b = false) => { text(x, t, lx, ly, c, 'right', b); ly += 21; };
+    row('כוחות על האשכול והמטען (בלי N):', '#555', true);
+    row(`W = ${fx(S.Wt)} N  (משקל)`, '#444');
+    S.list.forEach(q => row(`${q.lab} = ${fx(Math.abs(q.f))} N  (${q.name})`, q.col));
+    row(S.fm > 0.5 ? `אזור ירוק = מה שהחיכוך מחזיק (עד ${fx(S.fm)} N)` : 'אין חיכוך: R חייב להיות על הקו המקווקו', GREEN);
+    row(inside ? 'R בתוך האזור ⇐ האשכול לא זז' : `R מחוץ לאזור ⇐ האשכול נע ${Ral > 0 ? 'במורד' : 'במעלה'}`, Rcol, true);
+    // readout: why it moves the way it does
+    const along = S.k ? `החבל מושך את האשכול למעלה ב־<span class="f">T = ${fx(S.Th)} N</span> ⇐ לאורך הקו: <span class="f">W·sinθ − T = <b>${fx(S.Fs)} N</b></span>`
+      : su === 'y' ? (S.eta < 1 && act.s ? `חבל ה־Y: <span class="f">${fx(S.TA)} N</span> לעליון, <span class="f">${fx(S.TB)} N</span> לתחתון ⇐ לא מתקזז לגמרי ⇐ לאורך הקו: <span class="f"><b>${fx(S.Fs)} N</b></span>`
+                                    : `חבל ה־Y מושך לשני הצדדים ומתקזז ⇐ לאורך הקו נשאר <span class="f">W·sinθ = <b>${fx(S.Fs)} N</b></span>`)
+      : `לאורך הקו: <span class="f">W·sinθ = <b>${fx(S.Fs)} N</b></span>`;
+    const fr = Math.abs(S.Fs) <= S.fm
+      ? `<span class="ok">החיכוך הוא הבלם</span>: הוא מחזיק עד <span class="f">μ·N = ${fx(S.fm)} N</span> ⇐ האשכול לא זז לבד` + (S.k || su === 'y' ? ' ⇐ ' + liftNote(S) : '')
+      : `החיכוך (<span class="f">${fx(S.fm)} N</span>) לא מספיק ⇐ ` + ((S.Fs > 0 && !hasN) || (S.Fs < 0 && !hasC) ? `<span class="warn">אין חבל שמחזיק, האשכול נע ${S.Fs > 0 ? 'במורד' : 'במעלה'}</span>` + (S.k ? ' ⇐ המטען זז <b>לאורך הקו</b>, לא רק אנכית' : '') : `ה${S.Fs > 0 ? 'חבל הרגיל' : 'בלם הנגדי'} מחזיק <span class="f">${fx(S.Fs > 0 ? S.Tn : S.Tc)} N</span>`);
+    let pf = '';
+    if ((S.k || su === 'y') && S.eta < 1) {
+      const Wt = S.Wt, k = S.k, tot = e => { let q = 0; for (let i = 1; i <= k; i++) q += Math.pow(e, i); return q; };
+      pf = k ? `<br>חיכוך בגלגלות (η = ${S.eta}): במשיכה <span class="f">T = ${fx(Wt / tot(S.eta))} N</span>, בהחזקה <span class="f">${fx(Wt / k)} N</span>, בשחרור <span class="f">${fx(Wt / tot(1 / S.eta))} N</span>`
+             : `<br>חיכוך בגלגלות (η = ${S.eta}): במשיכה האשכול נמשך לכיוון המפעיל, בשחרור לכיוון העיגון התחתון`;
+    }
+    $('trR').innerHTML = along + pf + '<br>' + fr;
+    gate();
+  }
+  // would pulling / paying out the lifting rope break the trolley loose? (pulley friction changes the rope's pull)
+  function liftNote(S) {
+    const along = e => { if (S.k) { let q = 0; for (let i = 1; i <= S.k; i++) q += Math.pow(e, i); return S.G - S.Wt / q; } const ta = S.Wt / (e + e * e); return S.G - ta + ta * e * e * e; };
+    const say = (name, F) => `${name} ⇐ ` + (Math.abs(F) <= S.fm ? '<b>תנועה אנכית</b>' : `<span class="warn">האשכול נע ${F > 0 ? 'במורד' : 'במעלה'}</span>`);
+    return say('משיכה', along(S.eta)) + ', ' + say('שחרור', along(1 / S.eta));
+  }
+  // static = with every line on hold, nothing moves (or the אשכול is already stopped at the end of the line)
+  function isStatic() {
+    const saved = act; act = { s: 0, n: 0, c: 0 };
+    const S = state(); act = saved;
+    const blocked = S.sd !== 0 && (s + S.sd * 0.05 < 1 || s + S.sd * 0.05 > Lm - 1);
+    return (S.sd === 0 || blocked) && S.hd === 0;
+  }
+  function gate() {
+    const ok = isStatic();
+    $('tr_ns').style.display = ok ? 'none' : '';
+    if (!ok && Object.values(act).some(a => a)) {
+      act = { s: 0, n: 0, c: 0 };
+      document.querySelectorAll('#tr_ropes .rrow').forEach(r => r.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.a === '0')));
+    }
+    document.querySelectorAll('#tr_ropes button[data-a="-1"], #tr_ropes button[data-a="1"]').forEach(b => b.disabled = !ok);
+  }
+  const busy = () => { const S = state(); return Math.abs(S.sd) > 0 || Math.abs(S.hd) > 0; };
+  function loop(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (frozen) { raf = null; draw(); return; }
+    step(dt); draw();
+    const stuck = mot.sd === 0 && mot.hd === 0;
+    raf = !stuck && busy() ? requestAnimationFrame(loop) : null;
+    if (!raf) { mot = { sd: 0, hd: 0 }; draw(); }
+  }
+  const kick = () => { note = ''; if (frozen) { draw(); return; } if (!raf && busy()) { last = performance.now(); raf = requestAnimationFrame(loop); } else if (!raf) draw(); };
+  function buildRopes() {
+    const box = $('tr_ropes'); box.innerHTML = '';
+    const rows = [];
+    if (su !== 'sling') rows.push(['s', su === 'y' ? 'חבל Y (אנכי)' : `חבל ר' ${nS()}:1`]);
+    if (hasN) rows.push(['n', 'חבל רגיל']);
+    if (hasC) rows.push(['c', 'בלם נגדי']);
+    rows.forEach(([id, name]) => {
+      act[id] = 0;
+      const r = document.createElement('div'); r.className = 'rrow';
+      r.innerHTML = `<span>${name}</span><button class="alt" data-a="-1">משוך ▲</button><button class="alt on" data-a="0">החזק ■</button><button class="alt" data-a="1">שחרר ▼</button>`;
+      r.querySelectorAll('button').forEach(b => b.onclick = () => { act[id] = +b.dataset.a; r.querySelectorAll('button').forEach(q => q.classList.toggle('on', q === b)); kick(); });
+      box.appendChild(r);
+    });
+  }
+  function sync() {
+    document.querySelectorAll('.tr_su').forEach(b => b.classList.toggle('on', b.dataset.su === su));
+    $('tr_hasN').classList.toggle('on', hasN); $('tr_hasN').textContent = (hasN ? '− ' : '+ ') + 'חבל רגיל (לעליון)';
+    $('tr_hasC').classList.toggle('on', hasC); $('tr_hasC').textContent = (hasC ? '− ' : '+ ') + 'בלם נגדי (לתחתון)';
+    act = { s: 0, n: 0, c: 0 }; buildRopes(); kick();
+  }
+  function preset(k) {
+    const p = PRESETS[k]; su = p.su; hasN = p.N; hasC = p.C; s = p.s; h = p.h; trail = [];
+    document.querySelectorAll('#tr_presets button').forEach(b => b.classList.toggle('on', b.dataset.p === k));
+    $('tr_info').innerHTML = p.t; sync();
+  }
+  const custom = () => { document.querySelectorAll('#tr_presets button').forEach(b => b.classList.remove('on')); $('tr_info').innerHTML = 'מצב חופשי: בחרו על מה המטען תלוי, הוסיפו או הסירו חבלים, ומשכו או שחררו.'; };
+  document.querySelectorAll('#tr_presets button').forEach(b => b.onclick = () => preset(b.dataset.p));
+  document.querySelectorAll('.tr_su').forEach(b => b.onclick = () => { su = b.dataset.su; if (su === 'sling') h = HANG; else if (h < 3) h = 4; custom(); sync(); });
+  $('tr_hasN').onclick = () => { hasN = !hasN; custom(); sync(); };
+  $('tr_hasC').onclick = () => { hasC = !hasC; custom(); sync(); };
+  $('tr_rs').onclick = () => { s = 14; h = su === 'sling' ? HANG : 4; trail = []; kick(); };
+  $('tr_clr').onclick = () => { trail = []; draw(); };
+  $('tr_fb').onclick = () => { showF = !showF; $('tr_fb').classList.toggle('on', showF); $('tr_fb').textContent = showF ? 'הסתר כוחות על האשכול' : 'הצג כוחות על האשכול'; draw(); };
+  $('tr_frz').onclick = () => {
+    frozen = !frozen;
+    $('tr_frz').textContent = frozen ? '▶ הפעל זמן' : '⏸ הקפא זמן';
+    $('tr_frz').classList.toggle('on', frozen);
+    if (!frozen) mot = { sd: 0, hd: 0 };
+    kick();
+  };
+  onInputs(['tr_th', 'tr_m', 'tr_mu'], kick);
+  $('tr_eta').addEventListener('change', kick);
+  preset('hang');
+})();
+</script>
+</body>
+</html>
